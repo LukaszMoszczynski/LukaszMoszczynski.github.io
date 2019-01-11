@@ -1,9 +1,11 @@
 /*global*/
+@import url("https://fonts.googleapis.com/css?family=Poppins:200,200i,300,300i,400,400i,600,700,800,900");
 body {
   margin: 0;
   font-size: 14px;
   background-color: #FFF;
   letter-spacing: 1px;
+  font-family: 'Poppins', sans-serif;
 }
 
 .row {
@@ -22,6 +24,28 @@ body {
   right: 20px;
 }
 
+.fixedNav #navigation {
+  position: fixed;
+  top: 0;
+}
+
+/*loader*/
+.loader {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background-color: #FFF;
+  top: 0;
+  left: 0;
+  z-index: 20;
+}
+
+.loader .inner {
+  width: 100%;
+  height: 100%;
+  background: url(../images/loader.gif) center center no-repeat;
+}
+
 /*header*/
 .title-message {
   position: absolute;
@@ -35,7 +59,7 @@ body {
 }
 
 .title-message .heading {
-  font-weight: 100;
+  font-weight: 500;
   letter-spacing: 7px;
 }
 
@@ -45,10 +69,15 @@ body {
 }
 
 .title-message .heading .text {
+  display: -ms-flexbox;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+  -ms-flex-direction: row;
+      flex-direction: row;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  font-weight: 300;
 }
 
 .title-message .heading .text .sub {
@@ -68,6 +97,52 @@ body {
   background-color: rgba(0, 0, 0, 0.5);
 }
 
+/*navigation*/
+#navigation {
+  background-color: #7f8c8d;
+  padding: 20px 10px;
+  z-index: 10;
+  width: 100%;
+}
+
+#navigation .navbar-brand {
+  padding-left: 20px;
+  color: #FFF;
+  transition: all 0.2s linear, 1s;
+}
+
+#navigation .navbar-brand:hover {
+  color: red;
+}
+
+@media screen and (max-width: 991px) {
+  #navigation .navbar-brand {
+    padding-left: 10px;
+  }
+}
+
+#navigation button:focus {
+  outline: 0;
+}
+
+#navigation button .navbar-toggler-icon {
+  background: url(../images/icons/navigation.png);
+  background-size: 100%;
+}
+
+#navigation div ul li {
+  padding: 0 10px;
+}
+
+#navigation div ul li a {
+  color: #FFF;
+  transition: all 0.2s linear, 1s;
+}
+
+#navigation div ul li a:hover {
+  color: red;
+}
+
 /*about*/
 .aboutImage {
   max-width: 100%;
@@ -80,13 +155,16 @@ body {
 }
 
 .skillSection h2 {
-  margin-bottom: 20px;
+  margin-bottom: 50px;
 }
 
 .skillSection .owl-nav {
+  display: -ms-flexbox;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
 }
 
 .skillSection .owl-nav button span {
@@ -103,23 +181,30 @@ body {
 
 .skillSection .skill {
   text-align: center;
+  display: -ms-flexbox;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-direction: column;
+      flex-direction: column;
 }
 
 .skillSection .skill .ejs {
   color: #a51f54;
   height: 100px;
-  margin: 10px 0;
+  margin: 30px 0;
+  display: -ms-flexbox;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
 }
 
 .skillSection .skill img {
-  margin: 10px 0;
+  margin: 30px 0;
   height: 100px;
   width: 100px;
 }
@@ -140,6 +225,7 @@ body {
   line-height: 152px;
   display: inline-block;
   font-size: 35px;
+  color: red;
 }
 
 .skillSection .skill .chart .percent:after {
@@ -198,7 +284,7 @@ body {
   font-size: 56px;
   margin-bottom: 10px;
   font-weight: 400;
-  color: #7f8c8d;
+  color: red;
 }
 
 .squareItem .squareInnerContainer .squareContent h3 {
@@ -212,11 +298,22 @@ body {
   background-color: #7f8c8d;
 }
 
+.contactSection h2 {
+  width: 100%;
+  color: #FFF;
+  text-align: center;
+  padding-bottom: 30px;
+}
+
 .contactSection form {
+  display: -ms-flexbox;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-direction: column;
+      flex-direction: column;
 }
 
 .contactSection form input {
@@ -232,7 +329,7 @@ body {
 
 .contactSection form button {
   width: 100px;
-  height: 50px;
+  padding: 10px;
   cursor: pointer;
   color: #FFF;
   background-color: #7f8c8d;
@@ -255,10 +352,14 @@ body {
 }
 
 .contactSection .formData {
+  display: -ms-flexbox;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-direction: column;
+      flex-direction: column;
 }
 
 .contactSection .formData i {
@@ -277,6 +378,146 @@ body {
 
 .contactSection .formData a i:hover {
   transform: scale(1.1);
+  color: red;
 }
 
+/*portfolio*/
+.portfolioSection .heading {
+  text-align: center;
+  padding-bottom: 40px;
+  width: 100%;
+}
+
+.portfolioSection .filter {
+  text-align: center;
+  width: 100%;
+}
+
+.portfolioSection .filter li {
+  display: inline-block;
+}
+
+.portfolioSection .filter li a {
+  color: #7f8c8d;
+  border: 1px solid #7f8c8d;
+  padding: 10px;
+  display: block;
+  transition: 0.7s;
+  background: linear-gradient(60deg, #7f8c8d 50%, transparent 50%);
+  background-position: 100% 0;
+  background-size: 500%;
+}
+
+.portfolioSection .filter li a:hover:not(.current) {
+  text-decoration: none;
+  color: #FFF;
+  border: 1px solid #FFF;
+  background-position: 0 100%;
+}
+
+.portfolioSection .filter li .current {
+  background-color: red;
+  color: #FFF;
+  border: 1px solid #FFF;
+}
+
+.portfolioSection .filter li .current:hover {
+  text-decoration: none;
+}
+
+.portfolioSection .itemsContainer {
+  width: 100%;
+}
+
+.portfolioSection .itemsContainer .items {
+  padding: 0;
+}
+
+.portfolioSection .itemsContainer .items li {
+  display: inline-block;
+  padding: 5px;
+}
+
+.portfolioSection .itemsContainer .items li .item {
+  position: relative;
+  overflow: hidden;
+}
+
+.portfolioSection .itemsContainer .items li .item:hover .icons .openButton {
+  left: 0px;
+}
+
+.portfolioSection .itemsContainer .items li .item:hover .icons .projectLink {
+  right: 0px;
+}
+
+.portfolioSection .itemsContainer .items li .item:hover .imageOverlay {
+  opacity: 1;
+}
+
+.portfolioSection .itemsContainer .items li .item:hover img {
+  transform: scale(1.1);
+}
+
+.portfolioSection .itemsContainer .items li .item img {
+  width: 100%;
+  transition: all 0.2s linear, 0.5s;
+}
+
+.portfolioSection .itemsContainer .items li .item .icons {
+  position: absolute;
+  width: 90px;
+  height: 40px;
+  left: 50%;
+  top: 50%;
+  margin: -20px auto 0 -47px;
+  text-align: center;
+  z-index: 3;
+}
+
+.portfolioSection .itemsContainer .items li .item .icons a {
+  width: 40px;
+  height: 40px;
+  background-color: red;
+  display: inline-block;
+  position: relative;
+  transition: all 0.2s linear, 0.5s;
+}
+
+.portfolioSection .itemsContainer .items li .item .icons a i {
+  color: #FFF;
+  font-size: 20px;
+  margin-top: 9px;
+}
+
+.portfolioSection .itemsContainer .items li .item .icons .openButton {
+  float: left;
+  left: -300px;
+}
+
+.portfolioSection .itemsContainer .items li .item .icons .projectLink {
+  float: right;
+  right: -300px;
+}
+
+.portfolioSection .itemsContainer .items li .item .imageOverlay {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  opacity: 0;
+  transition: all 0.2s linear, 1s;
+}
+
+.copyrightSection {
+  background-color: #7f8c8d;
+  color: #FFF;
+  padding: 30px 5px;
+}
+
+.copyrightSection p {
+  margin: 0;
+}
 /*# sourceMappingURL=style.css.map */
