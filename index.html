@@ -62,7 +62,6 @@
 				</li>		
 			</ul>
 		</div>
-
 	</nav>
 
 	<section id="about" class="section">
@@ -359,12 +358,12 @@
 						</li>
 						<li class="apps col-xs-6 col-sm-4 col-md-3 col-lg-3">
 							<div class="item">
-								<img src="images/portfolio/thumbnail/QuoteSquare.png">
+								<img src="images/portfolio/thumbnail/CalculatorSquare.png">
 								<div class="icons">
-									<a href="" title="Viev live" class="openButton" target="_blank">
+									<a href="https://lukaszmoszczynski.github.io/MeasureCalculator/" title="Viev live" class="openButton" target="_blank">
 										<i class="fa fa-search"></i>
 									</a>
-									<a href="" target="_blank" class="projectLink" title="Viev source code">
+									<a href="https://github.com/LukaszMoszczynski/MeasureCalculator" target="_blank" class="projectLink" title="Viev source code">
 										<i class="fa fa-link"></i>
 									</a>
 								</div>
@@ -396,9 +395,9 @@
 			<h2>KONTAKT</h2>
 			<div class="col-md-12 form">
 				<form method="POST" action="https://formspree.io/moszczynski.luk@gmail.com">
-					<input type="name" name="name" placeholder="Imię">
-					<input type="email" name="email" placeholder="Adres e-mail">
-					<textarea name="message" placeholder="Wiadomość"></textarea>
+					<input type="name" name="name" required data-error="Wypełnij to pole" pattern="[a-zA-ZąĄććęęłŁńŃóÓśŚżŻŹŹ ]+" placeholder="Imię">
+					<input type="email" name="email" required data-error="Wpisz poprawny email" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" placeholder="Adres e-mail">
+					<textarea name="message" required data-error="Musisz wypełnić pole" pattern=".+" placeholder="Wiadomość"></textarea>
 					<button type="submit">Wyślij</button>
 				</form>
 			</div>
@@ -430,6 +429,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 	<script type="text/javascript" src="https://unpkg.com/isotope-layout@3.0.6/dist/isotope.pkgd.min.js"></script>
+	<script type="text/javascript" src="js/form.js"></script>
 	<script type="text/javascript" src="js/scripts.js"></script>
 </body>
 </html>
