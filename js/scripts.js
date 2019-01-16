@@ -45,11 +45,14 @@ $(document).ready(function() {
 				items:1
 			},
 			480:{
-				items:2
+				items:1
 			},
 			768:{
-				items:3
+				items:2
 			},
+			1024:{
+				items:3
+			}
 		}
 	});
 
@@ -57,6 +60,7 @@ $(document).ready(function() {
 	const date2 = new Date();
 	const timeDiff = Math.abs(date2.getTime() - date1.getTime());
 	const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+
 	$(".days").html(diffDays);
 
 	const skillsTopOffset = $('.skillSection').offset().top;
@@ -96,6 +100,7 @@ $(document).ready(function() {
 		$(this).addClass('current');
 
 		const selector = $(this).attr('data-filter');
+
 		$('.items').isotope({
 			filter: selector,
 			animationOptions: {
@@ -112,8 +117,8 @@ $(document).ready(function() {
 	$('#navigation a').click(function(e) {
 		e.preventDefault();
 
-		let targetElement = $(this).attr('href');
-		var targetPosition = $(targetElement).offset().top;
+		const targetElement = $(this).attr('href');
+		const targetPosition = $(targetElement).offset().top;
 		$('html, body').animate({scrollTop: targetPosition -50}, 'slow');
 	});
 
@@ -134,6 +139,21 @@ $(document).ready(function() {
 			body.removeClass('fixedNav');
 		}
 	}
+
+
+	$(document)
+    .one('focus.autoExpand', 'textarea.autoExpand', function(){
+        var savedValue = this.value;
+        this.value = '';
+        this.baseScrollHeight = this.scrollHeight;
+        this.value = savedValue;
+    })
+    .on('input.autoExpand', 'textarea.autoExpand', function(){
+        var minRows = this.getAttribute('data-min-rows')|0, rows;
+        this.rows = minRows;
+        rows = Math.ceil((this.scrollHeight - this.baseScrollHeight) / 16);
+        this.rows = minRows + rows;
+    });
 
 });
 

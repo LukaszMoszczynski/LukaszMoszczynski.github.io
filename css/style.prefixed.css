@@ -123,10 +123,14 @@ h2 {
 }
 
 .title-message .heading .text {
+  display: -ms-flexbox;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+  -ms-flex-direction: row;
+      flex-direction: row;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
   font-weight: 300;
 }
 
@@ -199,8 +203,10 @@ h2 {
 }
 
 #navigation div .navbar-nav {
+  display: -ms-flexbox;
   display: flex;
-  justify-content: flex-end;
+  -ms-flex-pack: end;
+      justify-content: flex-end;
   width: 100%;
 }
 
@@ -230,9 +236,12 @@ h2 {
 }
 
 .skillSection .owl-nav {
+  display: -ms-flexbox;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
 }
 
 .skillSection .owl-nav button span {
@@ -249,19 +258,26 @@ h2 {
 
 .skillSection .skill {
   text-align: center;
+  display: -ms-flexbox;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-direction: column;
+      flex-direction: column;
 }
 
 .skillSection .skill .ejs {
   color: #a51f54;
   height: 100px;
   margin: 30px 0;
+  display: -ms-flexbox;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
 }
 
 .skillSection .skill img {
@@ -362,10 +378,14 @@ h2 {
 }
 
 .contactSection form {
+  display: -ms-flexbox;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-direction: column;
+      flex-direction: column;
 }
 
 .contactSection form input {
@@ -422,10 +442,14 @@ h2 {
 }
 
 .contactSection .formData {
+  display: -ms-flexbox;
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-direction: column;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: start;
+      justify-content: flex-start;
+  -ms-flex-direction: column;
+      flex-direction: column;
 }
 
 .contactSection .formData i {
@@ -627,5 +651,4 @@ h2 {
 .copyrightSection p {
   margin: 0;
 }
-
-/*# sourceMappingURL=style.css.map */
+/*# sourceMappingURL=style.prefixed.css.map */
