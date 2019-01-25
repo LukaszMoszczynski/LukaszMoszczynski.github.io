@@ -24,7 +24,7 @@ $(document).ready(function() {
 	});
 
 	const typed = new Typed('.typed', {
-		strings: ["Front-end Developer.", "Web designer."],
+		strings: ["Front-end Developer.", "Developer for hire."],
 		typeSpeed: 70,
 		loop: true,
 		backSpeed: 20,
@@ -35,10 +35,10 @@ $(document).ready(function() {
 
 	$('.owl-carousel').owlCarousel({
 		loop:true,
-	    margin:10,
+	    margin:20,
 	    nav:true,
 	    autoplay:true,
-		autoplayTimeout:3000,
+		autoplayTimeout:5000,
 		autoplayHoverPause:true,
 		responsive:{
 			0:{
@@ -52,6 +52,9 @@ $(document).ready(function() {
 			},
 			1024:{
 				items:3
+			},
+			1600:{
+				items:4
 			}
 		}
 	});
@@ -143,13 +146,13 @@ $(document).ready(function() {
 
 	$(document)
     .one('focus.autoExpand', 'textarea.autoExpand', function(){
-        var savedValue = this.value;
+        const savedValue = this.value;
         this.value = '';
         this.baseScrollHeight = this.scrollHeight;
         this.value = savedValue;
     })
     .on('input.autoExpand', 'textarea.autoExpand', function(){
-        var minRows = this.getAttribute('data-min-rows')|0, rows;
+        let minRows = this.getAttribute('data-min-rows')|0, rows;
         this.rows = minRows;
         rows = Math.ceil((this.scrollHeight - this.baseScrollHeight) / 16);
         this.rows = minRows + rows;

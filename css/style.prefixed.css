@@ -9,6 +9,8 @@ body {
   background-color: #FFF;
   letter-spacing: 1px;
   font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+  color: #42464E;
 }
 
 .row {
@@ -22,13 +24,14 @@ body {
 h2 {
   margin-bottom: 50px;
   font-size: 40px;
+  font-weight: 600;
 }
 
 .slides-navigation a.prev {
   left: 20px;
 }
 
-@media screen and (max-width: 697px) {
+@media screen and (max-width: 768px) {
   .slides-navigation a.prev {
     display: none;
   }
@@ -38,7 +41,7 @@ h2 {
   right: 20px;
 }
 
-@media screen and (max-width: 697px) {
+@media screen and (max-width: 768px) {
   .slides-navigation a.next {
     display: none;
   }
@@ -229,10 +232,25 @@ h2 {
   padding-bottom: 30px;
 }
 
+#about h3 {
+  color: #D9243E;
+  padding-bottom: 30px;
+  font-weight: 700;
+}
+
+#about h6 {
+  font-weight: 600;
+}
+
+#about p {
+  padding: 20px 0;
+}
+
 /*skills*/
 .skillSection {
   background-color: #42464E;
   color: #FFF;
+  padding: 100px 50px;
 }
 
 .skillSection .owl-nav {
@@ -242,6 +260,10 @@ h2 {
       align-items: center;
   -ms-flex-pack: center;
       justify-content: center;
+}
+
+.skillSection .owl-nav button {
+  margin: 10px;
 }
 
 .skillSection .owl-nav button span {
@@ -393,7 +415,6 @@ h2 {
   margin: 10px;
   border: none;
   border-bottom: 2px solid #42464E;
-  border-right: 1px solid #42464E;
 }
 
 .contactSection form input:focus {
@@ -403,10 +424,8 @@ h2 {
 .contactSection form textarea {
   margin: 10px;
   width: 300px;
-  min-height: 100px;
   border: none;
   border-bottom: 2px solid #42464E;
-  border-right: 1px solid #42464E;
   display: block;
   box-sizing: padding-box;
   overflow: hidden;
@@ -623,6 +642,10 @@ h2 {
   .portfolioSection .itemsContainer .items li .item .icons .projectLink {
     left: 0;
   }
+}
+
+.portfolioSection .itemsContainer .items li .item .icon-jk {
+  margin: -20px auto 0 -20px;
 }
 
 .portfolioSection .itemsContainer .items li .item .imageOverlay {
