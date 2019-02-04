@@ -158,5 +158,12 @@ $(document).ready(function() {
         this.rows = minRows + rows;
     });
 
+
+    if($(window).width() < 992) {
+	 $(".navbar-nav li").click(function(){ 
+	   $(".navbar-toggler").click();
+	  });
+	}
+
 });
 

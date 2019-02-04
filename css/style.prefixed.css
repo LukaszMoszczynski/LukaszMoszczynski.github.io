@@ -9,12 +9,15 @@ body {
   background-color: #FFF;
   letter-spacing: 1px;
   font-family: 'Poppins', sans-serif;
-  overflow-x: hidden;
   color: #42464E;
 }
 
 .row {
   margin-right: 0;
+}
+
+.container {
+  padding-right: 0px;
 }
 
 .section {
@@ -25,6 +28,12 @@ h2 {
   margin-bottom: 50px;
   font-size: 40px;
   font-weight: 600;
+}
+
+@media screen and (max-width: 768px) {
+  h2 {
+    font-size: 32px;
+  }
 }
 
 .slides-navigation a.prev {
@@ -251,6 +260,11 @@ h2 {
   background-color: #42464E;
   color: #FFF;
   padding: 100px 50px;
+}
+
+.skillSection h2 {
+  width: 100%;
+  text-align: center;
 }
 
 .skillSection .owl-nav {
@@ -607,6 +621,15 @@ h2 {
   z-index: 3;
 }
 
+@media screen and (max-width: 768px) {
+  .portfolioSection .itemsContainer .items li .item .icons {
+    top: 70%;
+    margin: 0 -47px;
+    width: 180px;
+    left: 40%;
+  }
+}
+
 .portfolioSection .itemsContainer .items li .item .icons a {
   width: 40px;
   height: 40px;
@@ -616,10 +639,23 @@ h2 {
   transition: all 0.2s linear, 0.5s;
 }
 
+@media screen and (max-width: 768px) {
+  .portfolioSection .itemsContainer .items li .item .icons a {
+    width: 50px;
+    height: 50px;
+  }
+}
+
 .portfolioSection .itemsContainer .items li .item .icons a i {
   color: #FFF;
   font-size: 20px;
   margin-top: 9px;
+}
+
+@media screen and (max-width: 768px) {
+  .portfolioSection .itemsContainer .items li .item .icons a i {
+    margin-top: 15px;
+  }
 }
 
 .portfolioSection .itemsContainer .items li .item .icons .openButton {
@@ -627,25 +663,14 @@ h2 {
   left: -300px;
 }
 
-@media screen and (max-width: 768px) {
-  .portfolioSection .itemsContainer .items li .item .icons .openButton {
-    left: 0;
-  }
-}
-
 .portfolioSection .itemsContainer .items li .item .icons .projectLink {
   float: right;
   right: -300px;
 }
 
-@media screen and (max-width: 768px) {
-  .portfolioSection .itemsContainer .items li .item .icons .projectLink {
-    left: 0;
-  }
-}
-
 .portfolioSection .itemsContainer .items li .item .icon-jk {
   margin: -20px auto 0 -20px;
+  left: 50%;
 }
 
 .portfolioSection .itemsContainer .items li .item .imageOverlay {
@@ -657,12 +682,6 @@ h2 {
   top: 0px;
   opacity: 0;
   transition: all 0.2s linear, 1s;
-}
-
-@media screen and (max-width: 768px) {
-  .portfolioSection .itemsContainer .items li .item .imageOverlay {
-    opacity: 0.5;
-  }
 }
 
 .copyrightSection {

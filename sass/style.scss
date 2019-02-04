@@ -14,12 +14,15 @@ body {
 	background-color: $second-color;
 	letter-spacing: 1px;
 	font-family: 'Poppins', sans-serif;
-	overflow-x: hidden;
 	color: $main-color;
 }
 
 .row {
  	margin-right: 0;
+}
+
+.container {
+	padding-right: 0px;
 }
 
 .section {
@@ -30,6 +33,9 @@ h2 {
 	margin-bottom: 50px;
 	font-size: 40px;
 	font-weight: 600;
+	@media screen and (max-width: 768px) {
+		font-size: 32px;
+	}
 }
 
 .slides-navigation a.prev {
@@ -212,6 +218,10 @@ h2 {
 
 /*skills*/
 .skillSection {
+	h2 {
+		width: 100%;
+		text-align: center;
+	}
 	background-color: $main-color;
 	color: $second-color;
 	padding: 100px 50px;
@@ -500,36 +510,44 @@ h2 {
 						margin: -20px auto 0 -47px;
 						text-align: center;
 						z-index: 3;
+						@media screen and (max-width: 768px) {
+							top: 70%;
+							margin: 0 -47px;
+							width: 180px;
+							left: 40%;
+						}	
 						a {
 							width: 40px;
 							height: 40px;
 							background-color: $third-color;
 							display: inline-block;
 							position: relative;
-							transition: all 0.2s linear, 0.5s;
+							transition: all 0.2s linear, 0.5s;	
+							@media screen and (max-width: 768px) {
+								width: 50px;
+								height: 50px;
+							}
 							i {
 								color: $second-color;
 								font-size: 20px;
 								margin-top: 9px;
+								@media screen and (max-width: 768px) {
+									margin-top: 15px;
+								}
 							}
 						}
 						.openButton {
 							float: left;
 							left: -300px;
-							@media screen and (max-width:768px) {
-								left: 0;
-							}
 						}
 						.projectLink {
 							float: right;
 							right: -300px;
-							@media screen and (max-width: 768px) {
-								left: 0;
-							}
 						}
 					}
 					.icon-jk {
 						margin: -20px auto 0 -20px;
+						left: 50%;
 					}
 					.imageOverlay {
 						width: 100%;
@@ -539,10 +557,7 @@ h2 {
 						left: 0px;
 						top: 0px;
 						opacity: 0;
-						transition: all 0.2s linear, 1s;
-						@media screen and (max-width: 768px) {
-							opacity: 0.5;
-						}					
+						transition: all 0.2s linear, 1s;				
 					}
 				}				
 			}
