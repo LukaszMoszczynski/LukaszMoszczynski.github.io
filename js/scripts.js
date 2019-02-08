@@ -13,6 +13,22 @@ $(window).on('load', function() {
 			queue: false
 		}
 	});
+
+	const nodes = $(".overlay-head");
+
+	for(let i = 0; i < nodes.length; i++){
+		const words = nodes[i].innerText;
+		let html = "";
+		for(let j=0; j < words.length; j++) {
+			if(words[j] == " ") {
+				html += words[j];
+			} else {
+				html += "<span>" + words[j] + "</span>";
+			}
+		}
+		nodes[i].innerHTML = html;
+	} 
+
 });
 
 
@@ -86,7 +102,7 @@ $(document).ready(function() {
 		}
 
 
-		if(!countUpFinished && window.pageYOffset > statsTopOffset - $(window).height() + 400) {
+		if(!countUpFinished && window.pageYOffset > statsTopOffset - $(window).height() + 200) {
 			$('.counter').each(function() {
 				let element = $(this);
 				const endVal = parseInt(element.text());
@@ -97,6 +113,46 @@ $(document).ready(function() {
 			countUpFinished = true;
 		}
 	});	
+
+	const aboutTopOffset = $('#about').offset().top;
+
+	$(window).resize(function(){
+		animateAbout();
+	});
+
+	function animateAbout(){
+		if($(window).width() >= 991) {
+			$(window).scroll(function() {
+				if(window.pageYOffset > aboutTopOffset - $(window).height() + 400) {		  				
+					setTimeout(function(){
+						$('.slide1').animate({'margin-left':'0', 'opacity': '1'}, 1000);
+					}, 500);
+
+					setTimeout(function(){
+						$('.hide1').animate({'opacity': '1'}, 1000);
+					}, 1000);
+
+					setTimeout(function(){
+						$('.slide2').animate({'margin-left':'0', 'opacity': '1'}, 1000);
+					}, 1500);
+
+					setTimeout(function(){
+						$('.hide2').animate({'opacity': '1'}, 1000);
+					}, 2000);
+
+					setTimeout(function(){
+						$('.slide3').animate({'margin-left':'0', 'opacity': '1'}, 1000);
+					}, 2500);
+
+					setTimeout(function(){
+						$('.hide3').animate({'opacity': '1'}, 1000);
+					}, 3000);
+				}
+
+			});	
+		}
+	}
+	animateAbout();
 
 	$('#filters a').click(function() {
 		$('#filters .current').removeClass('current');
@@ -125,6 +181,14 @@ $(document).ready(function() {
 		$('html, body').animate({scrollTop: targetPosition -50}, 'slow');
 	});
 
+
+	$('.head-button a').click(function(e) {
+		e.preventDefault();
+
+		const targetElement = $(this).attr('href');
+		const targetPosition = $(targetElement).offset().top;
+		$('html, body').animate({scrollTop: targetPosition -50}, 'slow');
+	});
 
 	const nav = $('#navigation');
 	const navTop = nav.offset().top;

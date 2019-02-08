@@ -66,6 +66,7 @@ h2 {
 }
 
 .slides-pagination {
+  display: none;
   padding-bottom: 50px;
 }
 
@@ -89,6 +90,36 @@ h2 {
   }
 }
 
+.overlay-head span {
+  position: relative;
+  opacity: 0;
+  bottom: 1em;
+  animation: animateOverlay 1s ease-in-out forwards;
+}
+
+.overlay-head span:nth-child(4n) {
+  animation-delay: 1s;
+}
+
+.overlay-head span:nth-child(4n+1) {
+  animation-delay: 1.5s;
+}
+
+.overlay-head span:nth-child(4n+3) {
+  animation-delay: 2s;
+}
+
+.overlay-head span:nth-child(4n+2) {
+  animation-delay: 2.5s;
+}
+
+@keyframes animateOverlay {
+  to {
+    opacity: 1;
+    bottom: 0;
+  }
+}
+
 /*loader*/
 .loader {
   width: 100%;
@@ -107,6 +138,53 @@ h2 {
 }
 
 /*header*/
+.head-button {
+  position: absolute;
+  height: 40px;
+  width: 25px;
+  border: 2px solid #FFF;
+  z-index: 3;
+  top: 90%;
+  left: 50%;
+  border-radius: 12px;
+}
+
+.head-button a {
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  display: inline-block;
+}
+
+.head-button a p {
+  height: 5px;
+  width: 5px;
+  background-color: #FFF;
+  border-radius: 100%;
+  margin: 0 8px;
+  animation: dot-animation 1s linear infinite;
+}
+
+@keyframes dot-animation {
+  0% {
+    opacity: 0;
+    transform: scale(1, 1);
+    box-shadow: 0px 0px 14px 0.5px white;
+  }
+  5% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+    transform: scale(1.2, 1.2);
+  }
+  100% {
+    opacity: 0;
+    margin-top: 130%;
+    box-shadow: 0px 0px 14px 5px white;
+  }
+}
+
 .title-message {
   position: absolute;
   z-index: 3;
@@ -236,9 +314,26 @@ h2 {
 }
 
 /*about*/
-#about .aboutImage {
+#about .text-container {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+#about .image-container .aboutImage {
   max-width: 100%;
   padding-bottom: 30px;
+}
+
+@media screen and (max-width: 991px) {
+  #about .image-container {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+        align-items: center;
+    -ms-flex-pack: center;
+        justify-content: center;
+  }
 }
 
 #about h3 {
@@ -253,6 +348,28 @@ h2 {
 
 #about p {
   padding: 20px 0;
+}
+
+.slide-right {
+  margin-left: 300px;
+  opacity: 0;
+}
+
+@media screen and (max-width: 991px) {
+  .slide-right {
+    margin-left: 0;
+    opacity: 1;
+  }
+}
+
+.hide {
+  opacity: 0;
+}
+
+@media screen and (max-width: 991px) {
+  .hide {
+    opacity: 1;
+  }
 }
 
 /*skills*/
