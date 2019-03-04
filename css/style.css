@@ -1,7 +1,4 @@
 /*global*/
-/*#42464E
-#7f8c8d
-*/
 @import url("https://fonts.googleapis.com/css?family=Poppins:200,200i,300,300i,400,400i,600,700,800,900");
 body {
   margin: 0;
@@ -440,7 +437,11 @@ h2 {
 }
 
 .skillSection .skill .size-corect {
-  width: 140px;
+  width: 199px;
+}
+
+.skillSection .skill .ajax {
+  height: 96px;
 }
 
 .skillSection .skill .chart {
@@ -521,104 +522,6 @@ h2 {
   font-size: 13px;
   font-weight: 600;
   margin: 0;
-}
-
-/*contact*/
-.contactSection h2 {
-  width: 100%;
-  color: #42464E;
-  text-align: center;
-}
-
-.contactSection form {
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-align: center;
-      align-items: center;
-  -ms-flex-pack: center;
-      justify-content: center;
-  -ms-flex-direction: column;
-      flex-direction: column;
-}
-
-.contactSection form input {
-  width: 300px;
-  margin: 10px;
-  border: none;
-  border-bottom: 2px solid #42464E;
-}
-
-.contactSection form input:focus {
-  outline: 0;
-}
-
-.contactSection form textarea {
-  margin: 10px;
-  width: 300px;
-  border: none;
-  border-bottom: 2px solid #42464E;
-  display: block;
-  box-sizing: padding-box;
-  overflow: hidden;
-  resize: none;
-}
-
-.contactSection form textarea:focus {
-  outline: 0;
-}
-
-.contactSection form button {
-  width: 100px;
-  padding: 10px;
-  cursor: pointer;
-  color: #42464E;
-  background-color: #FFF;
-  border: 2px solid #42464E;
-  transition: 0.7s;
-  background: linear-gradient(60deg, #42464E 50%, transparent 50%);
-  background-position: 100% 0;
-  background-size: 500%;
-  margin: 5px 0 20px;
-}
-
-.contactSection form button:focus {
-  outline: 0;
-}
-
-.contactSection form button:hover {
-  color: #FFF;
-  border: 2px solid #FFF;
-  background-position: 0 100%;
-}
-
-.contactSection .formData {
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-align: center;
-      align-items: center;
-  -ms-flex-pack: start;
-      justify-content: flex-start;
-  -ms-flex-direction: column;
-      flex-direction: column;
-}
-
-.contactSection .formData i {
-  color: #42464E;
-  font-size: 30px;
-  margin-right: 10px;
-}
-
-.contactSection .formData p {
-  color: #42464E;
-}
-
-.contactSection .formData a i {
-  transition: 0.5s;
-}
-
-.contactSection .formData a i:hover {
-  transform: scale(1.1);
-  color: #D9243E;
 }
 
 /*portfolio*/
@@ -738,15 +641,6 @@ h2 {
   z-index: 3;
 }
 
-@media screen and (max-width: 768px) {
-  .portfolioSection .itemsContainer .items li .item .icons {
-    top: 70%;
-    margin: 0 -47px;
-    width: 180px;
-    left: 40%;
-  }
-}
-
 .portfolioSection .itemsContainer .items li .item .icons a {
   width: 40px;
   height: 40px;
@@ -756,23 +650,10 @@ h2 {
   transition: all 0.2s linear, 0.5s;
 }
 
-@media screen and (max-width: 768px) {
-  .portfolioSection .itemsContainer .items li .item .icons a {
-    width: 50px;
-    height: 50px;
-  }
-}
-
 .portfolioSection .itemsContainer .items li .item .icons a i {
   color: #FFF;
   font-size: 20px;
   margin-top: 9px;
-}
-
-@media screen and (max-width: 768px) {
-  .portfolioSection .itemsContainer .items li .item .icons a i {
-    margin-top: 15px;
-  }
 }
 
 .portfolioSection .itemsContainer .items li .item .icons .openButton {
@@ -801,10 +682,154 @@ h2 {
   transition: all 0.2s linear, 1s;
 }
 
+/*contact*/
+.contactSection h2 {
+  width: 100%;
+  color: #42464E;
+  text-align: center;
+}
+
+.contactSection button {
+  width: 100px;
+  padding: 10px;
+  cursor: pointer;
+  color: #42464E;
+  background-color: #FFF;
+  border: 2px solid #42464E;
+  transition: 0.7s;
+  background: linear-gradient(60deg, #42464E 50%, transparent 50%);
+  background-position: 100% 0;
+  background-size: 500%;
+  margin: 5px 0 20px;
+}
+
+.contactSection button:focus {
+  outline: 0;
+}
+
+.contactSection button:hover {
+  color: #FFF;
+  border: 2px solid #FFF;
+  background-position: 0 100%;
+}
+
+.contactSection form {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-direction: column;
+      flex-direction: column;
+}
+
+.contactSection form input {
+  width: 300px;
+  margin: 10px;
+  border: none;
+  border-bottom: 2px solid #42464E;
+}
+
+.contactSection form input:focus {
+  outline: 0;
+}
+
+.contactSection form textarea {
+  margin: 10px;
+  width: 300px;
+  border: none;
+  border-bottom: 2px solid #42464E;
+  display: block;
+  box-sizing: padding-box;
+  overflow: hidden;
+  resize: none;
+}
+
+.contactSection form textarea:focus {
+  outline: 0;
+}
+
+.contactSection .send-message {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: start;
+      justify-content: flex-start;
+  -ms-flex-direction: column;
+      flex-direction: column;
+}
+
+.contactSection .formData {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: start;
+      justify-content: flex-start;
+  -ms-flex-direction: column;
+      flex-direction: column;
+}
+
+.contactSection .formData i {
+  color: #42464E;
+  font-size: 30px;
+  margin-right: 10px;
+}
+
+.contactSection .formData p {
+  color: #42464E;
+}
+
+.contactSection .formData a i {
+  transition: 0.5s;
+}
+
+.contactSection .formData a i:hover {
+  transform: scale(1.1);
+  color: #D9243E;
+}
+
+.form-hide {
+  display: none !important;
+}
+
+@keyframes formFadeIn {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.formFadeInAnimation {
+  animation: formFadeIn 0.5s forwards;
+}
+
+@keyframes formFadeOut {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+}
+
+.formFadeOutAnimation {
+  animation: formFadeOut 0.5s forwards;
+}
+
 .copyrightSection {
   background-color: #42464E;
   color: #FFF;
   padding: 30px 5px;
+  text-align: center;
 }
 
 .copyrightSection p {

@@ -1,4 +1,3 @@
-
 $(window).on('load', function() {
 
 	$('.loader .inner').fadeOut(500, function() {
@@ -33,7 +32,7 @@ $(window).on('load', function() {
 
 
 $(document).ready(function() {
-
+//head
 	$('#slides').superslides({
 		animation: 'fade',
 		play: 5000
@@ -48,7 +47,7 @@ $(document).ready(function() {
 		autoInsertCss: true,
 		cursorChar: '|'
 	});
-
+//skill section
 	$('.owl-carousel').owlCarousel({
 		loop:true,
 	    margin:20,
@@ -74,7 +73,7 @@ $(document).ready(function() {
 			}
 		}
 	});
-
+//stat section
 	const date1 = new Date("10/01/2017");
 	const date2 = new Date();
 	const timeDiff = Math.abs(date2.getTime() - date1.getTime());
@@ -120,6 +119,8 @@ $(document).ready(function() {
 		animateAbout();
 	});
 
+
+
 	function animateAbout(){
 		if($(window).width() >= 991) {
 			$(window).scroll(function() {
@@ -154,6 +155,7 @@ $(document).ready(function() {
 	}
 	animateAbout();
 
+//gallery
 	$('#filters a').click(function() {
 		$('#filters .current').removeClass('current');
 		$(this).addClass('current');
@@ -172,7 +174,7 @@ $(document).ready(function() {
 		return false;
 	});
 
-
+//smoth scroll
 	$('#navigation a').click(function(e) {
 		e.preventDefault();
 
@@ -183,13 +185,14 @@ $(document).ready(function() {
 
 
 	$('.head-button a').click(function(e) {
+		
 		e.preventDefault();
-
 		const targetElement = $(this).attr('href');
 		const targetPosition = $(targetElement).offset().top;
 		$('html, body').animate({scrollTop: targetPosition -50}, 'slow');
 	});
 
+//sticky nav
 	const nav = $('#navigation');
 	const navTop = nav.offset().top;
 
@@ -207,7 +210,7 @@ $(document).ready(function() {
 		}
 	}
 
-
+//textarea
 	$(document)
     .one('focus.autoExpand', 'textarea.autoExpand', function(){
         const savedValue = this.value;
@@ -222,12 +225,59 @@ $(document).ready(function() {
         this.rows = minRows + rows;
     });
 
-
+//autoclose mobile menu
     if($(window).width() < 992) {
-	 $(".navbar-nav li").click(function(){ 
-	   $(".navbar-toggler").click();
+	 $('.navbar-nav li').click(function(){ 
+	   $('.navbar-toggler').click();
 	  });
 	}
 
+//form
+
+	function animateForm(firstClass, secondClass) {
+		firstClass.removeClass('formFadeInAnimation');
+		firstClass.addClass('formFadeOutAnimation');
+
+		setTimeout(function(){
+			firstClass.addClass('form-hide');
+		}, 550);
+
+		setTimeout(function(){
+			secondClass.removeClass('formFadeOutAnimation');
+			secondClass.addClass('formFadeInAnimation');
+			secondClass.removeClass('form-hide');
+		}, 600);	
+	}
+
+	$('#form').submit(function(e) {
+		var url = "https://jumprock.co/mail/LukM";
+
+		$.ajax({
+			type: 'POST',
+			url: url,
+			data: $('form').serialize(),
+			success: function() {
+
+				animateForm( $('#form'), $('.send-succes') );
+
+			},
+			error: function() {
+
+				animateForm( $('#form'), $('.send-error') );
+			}
+		});
+		e.preventDefault();
+	});
+
+	$('.form-message-button').on('click', function() {
+		$('#form').trigger('reset');
+
+		const formDiv = $(this).closest('div');
+
+		animateForm( formDiv, $('#form') );
+	});
+
 });
+
+
 
