@@ -40,7 +40,7 @@
     "concurrently": "^4.1.0",
     "glob-run": "^0.1.6",
     "jshint": "^2.9.5",
-    "node-sass": "^4.11.0",
+    "node-sass": "^4.13.1",
     "nu-html-checker": "^0.1.0",
     "onchange": "^3.3.0",
     "parallelshell": "^3.0.2",
