@@ -38,7 +38,7 @@
     "autoprefixer-cli": "^1.0.0",
     "browser-sync": "^2.18.13",
     "concurrently": "^4.1.0",
-    "glob-run": "^0.1.6",
+    "glob-run": "^0.1.7",
     "jshint": "^2.9.5",
     "node-sass": "^4.11.0",
     "nu-html-checker": "^0.1.0",
