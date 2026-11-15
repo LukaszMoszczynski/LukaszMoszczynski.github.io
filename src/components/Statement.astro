@@ -1,0 +1,21 @@
+---
+import { t, type Lang } from '../i18n/utils';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+<section class="statement wrap">
+  <p>{t(lang, 'statement.text')}</p>
+</section>
+<script>
+  import { motionEnabled, onPage } from '../scripts/lifecycle';
+  import { initStatement } from '../scripts/words';
+  onPage(() => {
+    const root = document.querySelector<HTMLElement>('.statement');
+    return root && motionEnabled() ? initStatement(root) : undefined;
+  });
+</script>
+<style>
+  .statement { padding-block: 100px }
+  .statement p { font-family: var(--font-display); font-weight: 500; font-size: clamp(24px, 3.2vw, 44px); line-height: 1.25; letter-spacing: -.02em; margin: 0; max-width: 26ch }
+  @media (max-width: 860px) { .statement { padding-block: 64px } }
+</style>
