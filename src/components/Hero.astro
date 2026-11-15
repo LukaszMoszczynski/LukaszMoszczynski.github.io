@@ -1,0 +1,47 @@
+---
+import { t, type Lang } from '../i18n/utils';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const lines = ['Łukasz', 'Moszczyński'].map((line) => [...line]);
+---
+<section class="hero" id="top">
+  <div class="wrap">
+    <p class="eyebrow">{t(lang, 'hero.eyebrow')}</p>
+    <h1 class="name" aria-label="Łukasz Moszczyński">
+      {lines.map((letters) => (
+        <span class="line" aria-hidden="true">{letters.map((letter) => <span class="char">{letter}</span>)}</span>
+      ))}
+    </h1>
+    <div class="hero-foot">
+      <p class="claim" set:html={t(lang, 'hero.claim')} />
+      <div class="sub-wrap">
+        <p class="sub">{t(lang, 'hero.sub')}</p>
+        <p class="grid-hint">{t(lang, 'hero.gridHint')}</p>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  import { onPage } from '../scripts/lifecycle';
+  import { initHero } from '../scripts/name-weight';
+  onPage(() => {
+    const root = document.querySelector<HTMLElement>('.hero');
+    return root ? initHero(root) : undefined;
+  });
+</script>
+<style is:global>
+  .hero { position: relative; padding-block: 150px 90px; overflow: hidden; isolation: isolate }
+  .eyebrow { font-family: var(--font-body); font-weight: 600; font-size: 14px; color: var(--muted); margin: 0 0 22px; display: flex; gap: 10px; align-items: center }
+  .eyebrow::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 25%, transparent) }
+  .name { font-family: var(--font-display); font-weight: 300; font-size: clamp(36px, 8.6vw, 150px); line-height: .98; letter-spacing: -.02em; margin: 0; cursor: default }
+  .name .line { display: block; overflow: hidden; padding-bottom: .08em; white-space: nowrap }
+  .name .line + .line { color: var(--accent) }
+  .char { display: inline-block; transition: font-weight .25s ease-out }
+  .hero-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 24px; margin-top: 32px }
+  .claim { font-family: var(--font-display); font-weight: 600; font-size: clamp(20px, 2.4vw, 30px); line-height: 1.2; letter-spacing: -.02em; margin: 0; max-width: 20ch }
+  .claim em { font-style: normal; color: var(--accent) }
+  .sub-wrap { display: grid; gap: 10px }
+  .sub { max-width: 40ch; color: var(--muted); margin: 0 }
+  .grid-hint { font-family: var(--font-mono); font-size: 13px; color: var(--accent); margin: 0 }
+  @media (prefers-reduced-motion: reduce) { .char { transition: none } }
+</style>

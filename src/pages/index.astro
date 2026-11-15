@@ -1,8 +1,9 @@
 ---
+import Hero from '../components/Hero.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { t } from '../i18n/utils';
 const lang = 'en';
 ---
 <BaseLayout lang={lang} title="Łukasz Moszczyński" description={t(lang, 'hero.sub')} path="/">
-  <h1 set:html={t(lang, 'hero.claim')} style="padding-top: 120px" />
+  <Hero lang={lang} />
 </BaseLayout>
