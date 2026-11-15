@@ -1,0 +1,61 @@
+---
+import '@fontsource-variable/unbounded';
+import '@fontsource-variable/manrope';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import { localizePath, t, type Lang } from '../i18n/utils';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props { lang: Lang; title: string; description: string; path: string }
+const { lang, title, description, path } = Astro.props;
+const origin = Astro.site ?? new URL('https://lukaszmoszczynski.github.io');
+const absolute = (target: Lang) => new URL(localizePath(path, target), origin).href;
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={absolute(lang)} />
+    <link rel="alternate" hreflang="en" href={absolute('en')} />
+    <link rel="alternate" hreflang="pl" href={absolute('pl')} />
+    <link rel="alternate" hreflang="x-default" href={absolute('en')} />
+    <script is:inline>
+      (function () {
+        var apply = function (target) {
+          var stored = null;
+          try { stored = localStorage.getItem('theme'); } catch (error) {}
+          var dark = matchMedia('(prefers-color-scheme: dark)').matches;
+          target.dataset.theme = stored === 'light' || stored === 'dark' ? stored : dark ? 'dark' : 'light';
+        };
+        apply(document.documentElement);
+        document.addEventListener('astro:before-swap', function (event) {
+          apply(event.newDocument.documentElement);
+        });
+      })();
+    </script>
+    <ClientRouter />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t(lang, 'a11y.skipToContent')}</a>
+    <Header lang={lang} />
+    <main id="main" class="wrap">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+  </body>
+</html>
+<style is:global>
+  .skip-link {
+    position: fixed; top: 8px; left: 8px; z-index: 30; padding: 10px 16px; border-radius: 999px;
+    background: var(--accent); color: var(--on-accent); font: 600 13px/1 var(--font-body);
+    transform: translateY(-200%);
+  }
+  .skip-link:focus { transform: none }
+</style>

@@ -1,0 +1,19 @@
+---
+import { t, type Lang } from '../i18n/utils';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+<button type="button" class="theme-toggle" data-theme-toggle aria-label={t(lang, 'a11y.toggleTheme')}>
+  {t(lang, 'theme.label')}
+</button>
+<script>
+  import { onPage } from '../scripts/lifecycle';
+  import { toggleTheme } from '../scripts/theme';
+
+  onPage(() => {
+    const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
+    const handle = () => { toggleTheme(); };
+    buttons.forEach((button) => button.addEventListener('click', handle));
+    return () => buttons.forEach((button) => button.removeEventListener('click', handle));
+  });
+</script>

@@ -1,0 +1,12 @@
+---
+import { t, type Lang } from '../i18n/utils';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+<footer class="site-footer wrap">
+  <p>{t(lang, 'footer.copyright')}</p>
+</footer>
+<style>
+  .site-footer { padding-block: 40px; color: var(--muted); font: 400 13px/1.4 var(--font-mono) }
+  .site-footer p { margin: 0 }
+</style>

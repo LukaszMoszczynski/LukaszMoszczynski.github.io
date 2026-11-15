@@ -1,18 +1,8 @@
 ---
-import '@fontsource-variable/unbounded';
-import '@fontsource-variable/manrope';
-import '@fontsource/ibm-plex-mono/400.css';
-import '@fontsource/ibm-plex-mono/500.css';
-import '../styles/tokens.css';
-import '../styles/global.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { t } from '../i18n/utils';
+const lang = 'en';
 ---
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Łukasz Moszczyński</title>
-  </head>
-  <body>
-    <main class="wrap"></main>
-  </body>
-</html>
+<BaseLayout lang={lang} title="Łukasz Moszczyński" description={t(lang, 'hero.sub')} path="/">
+  <h1 set:html={t(lang, 'hero.claim')} style="padding-top: 120px" />
+</BaseLayout>
