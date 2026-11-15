@@ -1,0 +1,56 @@
+---
+import { t, type Lang } from '../i18n/utils';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+
+// Real LinkedIn recommendations; they stay in the English original on every language.
+const quotes = [
+  { text: "“Łukasz demonstrated a superb understanding of frontend technologies and the ability to create innovative solutions. His programming skills are impeccable.”", name: 'Aleksandra Zalewska', role: 'Senior Frontend Developer · home.pl, 2023' },
+  { text: "“I was impressed with Łukasz's attention to detail, professionalism, and ability to deliver high-quality code within tight deadlines.”", name: 'Szymon Papis', role: 'Software Developer · 2023' },
+  { text: "“He's also a fast learner and by over two years of our collaboration, he made huge progress… an awesome person with super positive vibes who you simply cannot dislike.”", name: 'Dawid Krajewski', role: 'Co-Founder @ Sherlo · home.pl, 2022' },
+];
+---
+<section class="reco wrap" id="recommendations" aria-labelledby="reco-heading">
+  <div class="reco-copy">
+    <p class="reco-kicker">{t(lang, 'reco.kicker')}</p>
+    <h2 id="reco-heading">{t(lang, 'reco.heading')}</h2>
+    <p class="reco-hint">{t(lang, 'reco.hint')}</p>
+    <button type="button" class="next-quote">{t(lang, 'reco.next')}</button>
+    <p class="deck-announce" aria-live="polite" aria-atomic="true"></p>
+  </div>
+  <div class="deck" role="region" aria-label={t(lang, 'reco.kicker')}>
+    {quotes.map((quote) => (
+      <figure class="quote">
+        <blockquote lang="en">{quote.text}</blockquote>
+        <figcaption><b>{quote.name}</b><span>{quote.role}</span></figcaption>
+      </figure>
+    ))}
+  </div>
+</section>
+<script>
+  import { onPage } from '../scripts/lifecycle';
+  import { initDeck } from '../scripts/deck';
+  onPage(() => {
+    const root = document.querySelector<HTMLElement>('#recommendations');
+    return root ? initDeck(root) : undefined;
+  });
+</script>
+<style is:global>
+  .reco { padding-block: 40px 120px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 48px; align-items: center; overflow-x: clip }
+  .reco-kicker { font-family: var(--font-mono); font-size: 13px; color: var(--accent); margin: 0 0 12px }
+  .reco h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(28px, 4vw, 54px); letter-spacing: -.035em; line-height: 1.05; margin: 0 0 16px; text-wrap: balance }
+  .reco-hint { color: var(--muted); margin: 0 }
+  .reco .next-quote, .reco .deck-announce { display: none }
+  .reco.deck-on .next-quote { display: inline-flex; align-items: center; margin-top: 22px; min-height: 48px; font: 600 14px/1 var(--font-body); padding: 0 24px; border-radius: 999px; border: 0; background: var(--accent); color: var(--on-accent); cursor: pointer }
+  .reco.deck-on .next-quote:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px }
+  .reco:not(.deck-on) .reco-hint { display: none }
+  .reco .deck { display: grid; gap: 20px; width: 100%; max-width: 560px; min-width: 0 }
+  .reco.deck-on .deck { gap: 0; padding-bottom: 40px; touch-action: pan-y }
+  .reco .quote { margin: 0; padding: clamp(22px, 3vw, 34px); border-radius: 28px; background: var(--surface); box-shadow: 0 0 0 1px var(--line), 0 30px 60px -30px rgb(20 10 40 / .5); display: grid; align-content: space-between; gap: 18px; min-width: 0 }
+  .reco.deck-on .quote { grid-area: 1 / 1; cursor: grab; touch-action: pan-y; user-select: none }
+  .reco.deck-on .quote:active { cursor: grabbing }
+  .reco .quote blockquote { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: clamp(17px, 1.8vw, 22px); line-height: 1.35; letter-spacing: -.01em }
+  .reco .quote figcaption { display: grid; gap: 2px }
+  .reco .quote figcaption span { color: var(--muted); font-size: 14px }
+  @media (max-width: 860px) { .reco { grid-template-columns: minmax(0, 1fr); padding-block: 12px 72px; gap: 32px } }
+</style>
