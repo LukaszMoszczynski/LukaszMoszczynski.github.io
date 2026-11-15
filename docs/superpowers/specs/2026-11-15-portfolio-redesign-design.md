@@ -101,6 +101,8 @@ Each project = one content entry per language (Astro content collection) with: s
 | `qa-agent` | QA agent (home.pl) | none — description only | Claude writes test scenarios (Markdown) + Playwright specs for new features, runs master vs working branch, compares screenshots, comments on the GitLab merge request, produces a full HTML report |
 | `dark-factory` | Semi-dark factory (home.pl) | none — description only | Jira label triggers a factory in local Docker → agent solves the task → pushes to GitLab → his own auto-reviewer comments → factory picks up comments and fixes → loop until clean; a human makes the final call |
 
+**Factory loop animation (owner approved):** the `dark-factory` case study (and, in a compact form, its card visual) gets an interactive pipeline: Jira label → factory (local Docker) → GitLab push → auto-reviewer → comments → back to factory, ending in "review clean · ready for a human". A task "ticket" travels around the loop; the visitor clicks the label (or a "Run" button) to start a run and watches it go round 1–2 review cycles. Keyboard-operable; with reduced motion it shows the loop as a static labelled diagram.
+
 The two home.pl entries carry a short note: built at home.pl, shown as a description of the idea only. Their visuals are illustrative diagrams/animations, never screenshots.
 
 Source material for case-study text: the owner's local repos (`E:/projekty/dcc-grygorcewicz`, `design-system`, `wp-starter`, `omelanski`) and the descriptions above. The builder drafts copy; the owner reviews it.
