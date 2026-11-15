@@ -1,0 +1,41 @@
+---
+import { t, type Lang } from '../i18n/utils';
+import { AGENT_RUNS } from '../scripts/agent-runs';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const chips = [
+  { key: 'qa', label: t(lang, 'stack.ai.chip.qa') },
+  { key: 'factory', label: t(lang, 'stack.ai.chip.factory') },
+  { key: 'figma', label: t(lang, 'stack.ai.chip.figma') },
+] as const;
+---
+<div class="agent">
+  <div class="chips" role="group" aria-label={t(lang, 'stack.ai.chipsLabel')}>
+    {chips.map((chip) => (
+      <button type="button" class="chip" data-run={chip.key} aria-pressed={chip.key === 'qa' ? 'true' : 'false'}>{chip.label}</button>
+    ))}
+  </div>
+  <div class="term" aria-live="polite">
+    <span class="term-sr">{AGENT_RUNS.qa.map((line) => line.text).join('. ')}</span>
+    <div class="term-lines" aria-hidden="true">
+      {AGENT_RUNS.qa.map((line) => (
+        <div class={line.kind}>{line.kind === 'step' && <><span class="prompt">›</span>{' '}</>}{line.text}</div>
+      ))}
+    </div>
+  </div>
+  <p class="agent-caption">{t(lang, 'stack.ai.example')}</p>
+</div>
+<style is:global>
+  .agent { display: grid; gap: 12px; min-width: 0 }
+  .agent .chips { display: flex; flex-wrap: wrap; gap: 6px }
+  .agent .chip { font: 500 12px/1 var(--font-mono); padding: 9px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer }
+  .agent .chip:hover { border-color: var(--accent) }
+  .agent .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent) }
+  .agent .term { position: relative; background: var(--term-bg); color: var(--term-ink); border-radius: 16px; padding: 18px; font: 13px/1.7 var(--font-mono); min-height: 220px; overflow-x: auto; box-shadow: 0 0 0 1px var(--term-line) }
+  .agent .term-lines > div { white-space: nowrap }
+  .agent .term .comment { color: var(--term-comment) }
+  .agent .term .ok { color: var(--term-ok) }
+  .agent .term .prompt { color: var(--term-prompt) }
+  .agent .term-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
+  .agent .agent-caption { margin: 0; font: 12px/1.4 var(--font-mono); color: var(--muted) }
+</style>

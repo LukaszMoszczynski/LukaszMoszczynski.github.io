@@ -1,0 +1,65 @@
+---
+import AgentLog from './AgentLog.astro';
+import { t, localizePath, type Lang } from '../i18n/utils';
+import type { UiKey } from '../i18n/ui';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+
+const aiTags = ['Claude Code', 'Skills', 'Agents', 'MCP', 'Playwright', 'Docker', 'GitLab', 'Jira'];
+const cards = [
+  { key: 'frontend', tags: ['HTML', 'CSS', 'JavaScript', 'TypeScript', 'Tailwind', 'styled-components', 'Astro', 'GSAP', 'Squidex CMS', 'a11y'] },
+  { key: 'design', tags: ['Multi-brand', 'Figma variables', 'Tokens', 'Storybook', 'Atomic design'] },
+  { key: 'wordpress', tags: ['Block themes', 'WooCommerce', 'PHP', 'Przelewy24'] },
+];
+---
+<section class="stack wrap" id="stack" aria-labelledby="stack-heading">
+  <p class="stack-kicker">{t(lang, 'stack.kicker')}</p>
+  <h2 id="stack-heading">{t(lang, 'stack.heading')}</h2>
+  <div class="skill-grid">
+    <article class="skill ai">
+      <div class="info">
+        <h3 set:html={t(lang, 'stack.ai.title')} />
+        <p>{t(lang, 'stack.ai.text')}</p>
+        <ul>{aiTags.map((tag) => <li>{tag}</li>)}</ul>
+        <p class="stack-links">
+          <a href={localizePath('/work/qa-agent/', lang)}>{t(lang, 'stack.ai.linkQa')}</a>
+          <a href={localizePath('/work/dark-factory/', lang)}>{t(lang, 'stack.ai.linkFactory')}</a>
+        </p>
+      </div>
+      <AgentLog lang={lang} />
+    </article>
+    {cards.map((card) => (
+      <article class="skill">
+        <h3 set:html={t(lang, `stack.${card.key}.title` as UiKey)} />
+        <p>{t(lang, `stack.${card.key}.text` as UiKey)}</p>
+        <ul>{card.tags.map((tag) => <li>{tag}</li>)}</ul>
+      </article>
+    ))}
+  </div>
+</section>
+<script>
+  import { onPage } from '../scripts/lifecycle';
+  import { initAgentLog } from '../scripts/agent-log';
+  onPage(() => {
+    const root = document.querySelector<HTMLElement>('#stack .agent');
+    return root ? initAgentLog(root) : undefined;
+  });
+</script>
+<style is:global>
+  .stack { padding-block: 40px 120px }
+  .stack-kicker { font-family: var(--font-mono); font-size: 13px; color: var(--accent); margin: 0 0 12px }
+  .stack h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(28px, 4vw, 54px); letter-spacing: -.035em; line-height: 1.05; margin: 0 0 40px; text-wrap: balance }
+  .stack .skill-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px }
+  .stack .skill { background: color-mix(in srgb, var(--surface) 85%, transparent); backdrop-filter: blur(8px); border-radius: 24px; padding: 24px; box-shadow: 0 0 0 1px var(--line); display: grid; gap: 12px; align-content: start; min-width: 0 }
+  .stack .skill h3 { font-family: var(--font-display); font-weight: 600; font-size: 20px; letter-spacing: -.02em; margin: 0 }
+  .stack .skill p { margin: 0; color: var(--muted) }
+  .stack .skill ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px }
+  .stack .skill li { font: 500 12px/1 var(--font-mono); padding: 7px 9px; border-radius: 6px; background: var(--bg); box-shadow: 0 0 0 1px var(--line) }
+  .stack .skill.ai { grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: center; box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent) }
+  .stack .skill.ai h3 { font-size: clamp(24px, 2.6vw, 34px) }
+  .stack .skill.ai h3 em { font-style: normal; color: var(--accent) }
+  .stack .skill.ai .info { display: grid; gap: 12px; min-width: 0 }
+  .stack .stack-links { display: flex; flex-wrap: wrap; gap: 8px 20px }
+  .stack .stack-links a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px }
+  @media (max-width: 860px) { .stack { padding-block: 12px 72px } .stack .skill-grid { grid-template-columns: minmax(0, 1fr) } .stack .skill.ai { grid-template-columns: minmax(0, 1fr) } }
+</style>
