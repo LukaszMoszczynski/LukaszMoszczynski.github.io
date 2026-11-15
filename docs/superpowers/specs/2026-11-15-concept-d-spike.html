@@ -1,0 +1,686 @@
+<title>Combined Portfolio Concept</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@200..900&family=Manrope:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a blueprint grid that draws itself, cursor light over it, a name that reacts to the pointer, a pinned frame where tokens build a page, word-lit statement, stacked sticky case cards, fill-on-scroll contact */
+:root {
+  --bg: #f8f6fb; --surface: #ffffff; --card: #ffffff; --ink: #2a1d4d; --muted: #6b5f8a; --dim: #cfc7e0;
+  --accent: #eb6126; --violet: #7b5bd6; --line: #e3deef; --grid: #e9e4f2; --select: #1269b0;
+  --glow-a: rgb(235 97 38 / .30); --glow-b: rgb(123 91 214 / .28); --on-accent: #ffffff;
+  --display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d0a15; --surface: #1a1429; --card: #1f1832; --ink: #f4f0fb; --muted: #a99bc9; --dim: #3a3054;
+  --accent: #f07a3e; --violet: #8f70ea; --line: #2a2140; --grid: #1b1528; --select: #5aa7e6;
+  --glow-a: rgb(240 122 62 / .36); --glow-b: rgb(123 91 214 / .40); --on-accent: #0d0a15; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0d0a15; --surface: #1a1429; --card: #1f1832; --ink: #f4f0fb; --muted: #a99bc9; --dim: #3a3054;
+  --accent: #f07a3e; --violet: #8f70ea; --line: #2a2140; --grid: #1b1528; --select: #5aa7e6;
+  --glow-a: rgb(240 122 62 / .36); --glow-b: rgb(123 91 214 / .40); --on-accent: #0d0a15; color-scheme: dark }
+
+*, *::before, *::after { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.65; overflow-x: hidden }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg) }
+a { color: inherit }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px }
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); max-width: 1240px; margin-inline: auto }
+.mono { font-family: var(--mono); font-size: 13px; letter-spacing: .02em }
+
+/* blueprint grid */
+.grid-layer { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden }
+.grid-layer i { position: absolute; background: var(--grid) }
+.grid-layer .v { top: 0; bottom: 0; width: 1px; transform-origin: 50% 0 }
+.grid-layer .h { left: 0; right: 0; height: 1px; transform-origin: 0 50% }
+.grid-layer .tv { width: 1px; background: linear-gradient(transparent, var(--accent)) }
+.grid-layer .th { height: 1px; background: linear-gradient(90deg, transparent, var(--accent)) }
+.grid-layer .dot { width: 7px; height: 7px; margin: -3px 0 0 -3px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px 3px color-mix(in srgb, var(--accent) 70%, transparent) }
+.light-layer { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden }
+
+/* stack */
+.skills { padding-block: 40px 120px }
+.skill-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px }
+.skill { background: color-mix(in srgb, var(--surface) 85%, transparent); backdrop-filter: blur(8px); border-radius: 24px; padding: 24px; box-shadow: 0 0 0 1px var(--line); display: grid; gap: 12px; align-content: start }
+.skill h3 { font-family: var(--display); font-weight: 600; font-size: 20px; letter-spacing: -.02em; margin: 0 }
+.skill p { margin: 0; color: var(--muted) }
+.skill ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px }
+.skill li { font: 500 12px/1 var(--mono); padding: 7px 9px; border-radius: 6px; background: var(--bg); box-shadow: 0 0 0 1px var(--line) }
+.skill.ai { grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: center; box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent) }
+.skill.ai h3 { font-size: clamp(24px, 2.6vw, 34px) }
+.skill.ai h3 em { font-style: normal; color: var(--accent) }
+.skill.ai .info { display: grid; gap: 12px }
+.term { background: #0b0812; color: #e9e3f7; border-radius: 16px; padding: 18px; font: 13px/1.7 var(--mono); min-height: 220px; overflow-x: auto; box-shadow: 0 0 0 1px #2a2140 }
+.term div { white-space: nowrap }
+.term .c { color: #8f84a8 } .term .ok { color: #7ee2a8 } .term .a { color: #f07a3e }
+.steps li { cursor: pointer }
+.grid-layer .cell { width: 96px; height: 96px; background: color-mix(in srgb, var(--accent) 7%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent); opacity: 0; transition: opacity .3s }
+.grid-layer .ring { background: transparent; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; border: 1.5px solid var(--accent) }
+.sub-wrap { display: grid; gap: 10px }
+.grid-hint { color: var(--accent); margin: 0 }
+
+.journey { padding-block: 20px 120px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 40px; align-items: start }
+.journey-head { position: sticky; top: 110px }
+.tl { list-style: none; margin: 0; padding: 0 0 0 40px; position: relative; display: grid; gap: 34px }
+.tl::before { content: ""; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--line) }
+.tl-progress { position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(var(--violet), var(--accent)); transform-origin: 50% 0 }
+.tl-dot { position: absolute; left: 8px; top: 6px; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px 4px color-mix(in srgb, var(--accent) 60%, transparent) }
+.tl li { display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: 16px; position: relative; transition: opacity .4s }
+.tl li::before { content: ""; position: absolute; left: -38px; top: 7px; width: 10px; height: 10px; border-radius: 50%; background: var(--bg); box-shadow: 0 0 0 2px var(--line); transition: box-shadow .4s, background .4s }
+.tl li.lit::before { background: var(--accent); box-shadow: 0 0 0 2px var(--accent) }
+.tl.js li:not(.lit) { opacity: .35 }
+.tl .yr { color: var(--accent); padding-top: 2px }
+.tl b { font-family: var(--display); font-weight: 600; font-size: 18px; letter-spacing: -.01em; line-height: 1.3 }
+.tl p { margin: 4px 0 0; color: var(--muted) }
+
+.agent { display: grid; gap: 12px; min-width: 0 }
+.chips { display: flex; flex-wrap: wrap; gap: 6px }
+.run { font: 500 12px/1 var(--mono); padding: 9px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer }
+.run:hover { border-color: var(--accent) }
+.run.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent) }
+
+.quotes { padding-block: 40px 140px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 48px; align-items: center }
+.quotes h2 { margin-bottom: 12px }
+.next-quote { margin-top: 22px; font: 600 14px/1 var(--body); padding: 14px 22px; border-radius: 999px; border: 0; background: var(--accent); color: var(--on-accent); cursor: pointer }
+.deck { position: relative; height: 340px; max-width: 560px; width: 100% }
+.quote { position: absolute; inset: 0; margin: 0; padding: clamp(22px, 3vw, 34px); border-radius: 28px; background: var(--surface); box-shadow: 0 0 0 1px var(--line), 0 30px 60px -30px rgb(20 10 40 / .5);
+  display: grid; align-content: space-between; gap: 18px; cursor: grab; touch-action: pan-y; user-select: none }
+.quote:active { cursor: grabbing }
+.quote blockquote { margin: 0; font-family: var(--display); font-weight: 500; font-size: clamp(17px, 1.8vw, 22px); line-height: 1.35; letter-spacing: -.01em }
+.quote figcaption { display: grid; gap: 2px }
+.quote figcaption span { color: var(--muted); font-size: 14px }
+.steps li:hover:not(.on) { color: var(--ink) }
+
+.bar { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  padding-block: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+.logo { font-family: var(--display); font-weight: 800; font-size: 18px; text-decoration: none; letter-spacing: -.02em }
+.logo span { color: var(--accent) }
+.bar nav { display: flex; gap: 4px; padding: 6px; border-radius: 999px; background: color-mix(in srgb, var(--surface) 70%, transparent); backdrop-filter: blur(14px); box-shadow: 0 0 0 1px var(--line) }
+.bar nav a, .bar button { font: 600 13px/1 var(--body); border: 0; background: transparent; color: var(--ink); border-radius: 999px; padding: 9px 14px; cursor: pointer; text-decoration: none }
+.bar nav a:hover, .bar button:hover { background: var(--line) }
+
+/* hero */
+.hero { position: relative; padding-block: 150px 90px; overflow: hidden; isolation: isolate }
+.glow { position: absolute; width: 46vmax; height: 46vmax; border-radius: 50%; filter: blur(70px); z-index: -1; pointer-events: none; left: 0; top: 0 }
+.glow.a { background: radial-gradient(circle, var(--glow-a), transparent 65%); transform: translate(40vw, -5vmax) }
+.glow.b { background: radial-gradient(circle, var(--glow-b), transparent 65%); transform: translate(-10vw, 10vmax) }
+.eyebrow { font-weight: 600; font-size: 14px; color: var(--muted); margin: 0 0 22px; display: flex; gap: 10px; align-items: center }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 25%, transparent) }
+.name { font-family: var(--display); font-weight: 300; font-size: clamp(36px, 8.6vw, 150px); line-height: .98; letter-spacing: -.02em; margin: 0; cursor: default }
+.name .line { display: block; overflow: hidden; padding-bottom: .08em; white-space: nowrap }
+.name .line + .line { color: var(--accent) }
+.char { display: inline-block; transition: font-weight .25s ease-out }
+.hero-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 24px; margin-top: 32px }
+.claim { font-family: var(--display); font-weight: 600; font-size: clamp(20px, 2.4vw, 30px); line-height: 1.2; letter-spacing: -.02em; margin: 0; max-width: 20ch }
+.claim em { font-style: normal; color: var(--accent) }
+.sub { max-width: 40ch; color: var(--muted); margin: 0 }
+
+/* build section */
+.build { min-height: 100vh; display: grid; align-items: center; padding-block: 90px 40px }
+.build-in { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(24px, 5vw, 72px); align-items: center }
+.kicker { color: var(--accent); margin: 0 0 12px }
+h2 { font-family: var(--display); font-weight: 700; font-size: clamp(28px, 4vw, 54px); letter-spacing: -.035em; line-height: 1.05; margin: 0 0 24px; text-wrap: balance }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; max-width: 380px }
+.steps li { display: grid; grid-template-columns: 34px 1fr; align-items: baseline; padding: 10px 12px; border-radius: 10px; color: var(--muted); transition: background .3s, color .3s }
+.steps li b { font-weight: 600; font-size: 16px }
+.steps li small { grid-column: 2; font-size: 13px; line-height: 1.4; display: none }
+.steps li.on { background: var(--card); color: var(--ink); box-shadow: 0 0 0 1px var(--line) }
+.steps li.on small { display: block; color: var(--muted) }
+.steps li.on .mono { color: var(--accent) }
+.stage { position: relative; aspect-ratio: 4 / 3; width: 100%; max-width: 100%; border-radius: 24px; border: 1px dashed color-mix(in srgb, var(--select) 60%, transparent); background: color-mix(in srgb, var(--bg) 60%, transparent); backdrop-filter: blur(4px) }
+.stage-label { position: absolute; top: -26px; left: 0; color: var(--select) }
+.piece { position: absolute; display: grid; place-items: center; overflow: hidden }
+.piece .tag { position: absolute; left: 8px; bottom: 6px; font: 500 11px/1.2 var(--mono); opacity: .85 }
+.p-page { background: var(--card); box-shadow: 0 0 0 1px var(--line), 0 30px 60px -30px rgb(20 10 40 / .45) }
+.p-violet { background: var(--violet); color: #fff }
+.p-accent { background: var(--accent); color: var(--on-accent) }
+.p-type { color: var(--ink); box-shadow: inset 0 0 0 1px var(--line) }
+.p-type .aa { font-family: var(--display); font-weight: 700; font-size: clamp(24px, 3.4vw, 48px); letter-spacing: -.04em }
+.p-type .bar-fill { position: absolute; inset: 0; background: var(--ink); opacity: 0 }
+.p-space { background: repeating-linear-gradient(90deg, var(--accent) 0 2px, transparent 2px 12px); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink) }
+.p-space .bar-fill { position: absolute; inset: 0; background: var(--line); opacity: 0 }
+.p-radius { background: var(--surface); box-shadow: inset 0 0 0 2px var(--accent); color: var(--ink) }
+.p-accent .label { position: absolute; font-weight: 600; font-size: 13px; white-space: nowrap; opacity: 0 }
+
+/* statement + numbers */
+.statement { padding-block: 100px }
+.statement p { font-family: var(--display); font-weight: 500; font-size: clamp(24px, 3.2vw, 44px); line-height: 1.25; letter-spacing: -.02em; margin: 0; max-width: 26ch }
+.numbers { display: grid; grid-template-columns: repeat(6, 1fr); row-gap: 40px; padding-block: 40px 120px }
+.num { display: grid; gap: 4px }
+.num:nth-child(1) { grid-column: 1 / span 3 } .num:nth-child(2) { grid-column: 3 / span 3 } .num:nth-child(3) { grid-column: 4 / span 3 }
+.num b { font-family: var(--display); font-weight: 800; font-size: clamp(64px, 9vw, 128px); line-height: 1; color: var(--accent); letter-spacing: -.04em; font-variant-numeric: tabular-nums }
+.num span { font-weight: 600 }
+
+/* stacked cards */
+.work { padding-block: 40px 120px }
+.stack { display: grid; gap: 40px }
+.scard { position: sticky; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 32px; align-items: center; background: var(--surface); border-radius: 32px; padding: clamp(20px, 3vw, 40px);
+  box-shadow: 0 0 0 1px var(--line), 0 40px 80px -40px rgb(20 10 40 / .45); transform-origin: 50% 0 }
+.scard:nth-child(1) { top: 88px } .scard:nth-child(2) { top: 104px } .scard:nth-child(3) { top: 120px } .scard:nth-child(4) { top: 136px }
+.scard .meta { font-weight: 600; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent) }
+.scard h3 { font-family: var(--display); font-weight: 700; font-size: clamp(24px, 2.8vw, 38px); letter-spacing: -.03em; line-height: 1.05; margin: 8px 0 12px }
+.scard p { margin: 0 0 18px; color: var(--muted) }
+.scard a { font-weight: 600; text-decoration: none; display: inline-flex; gap: 8px; align-items: center }
+.scard a::after { content: "→"; transition: transform .3s }
+.scard a:hover::after { transform: translateX(5px) }
+.visual { perspective: 900px }
+.screen { aspect-ratio: 4 / 3; max-width: 100%; border-radius: 20px; position: relative; overflow: hidden; transform-style: preserve-3d; transition: transform .2s ease-out }
+.screen span { position: absolute; border-radius: 10px; background: rgb(255 255 255 / .9) }
+.screen .o { background: var(--accent) }
+.screen .k { background: #1a1230 }
+
+.contact { padding-block: 60px 40px; border-top: 1px solid var(--line) }
+.fill { font-family: var(--display); font-weight: 800; font-size: clamp(40px, 9vw, 150px); line-height: .95; letter-spacing: -.05em; margin: 0 0 36px; --p: 0%;
+  background: linear-gradient(90deg, var(--accent) 0 var(--p), var(--dim) var(--p) 100%); -webkit-background-clip: text; background-clip: text; color: transparent }
+.btns { display: flex; flex-wrap: wrap; gap: 12px }
+.btn { display: inline-flex; gap: 10px; text-decoration: none; font-weight: 600; padding: 16px 26px; border-radius: 999px; background: var(--ink); color: var(--bg) }
+.btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink) }
+.foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 14px; margin-top: 80px }
+
+@media (max-width: 860px) {
+  .build-in { grid-template-columns: 1fr } .steps li.on small { display: none }
+  .skill-grid { grid-template-columns: 1fr } .skill.ai { grid-template-columns: 1fr }
+  .journey, .quotes { grid-template-columns: 1fr } .journey-head { position: static } .deck { height: 400px }
+  .scard { grid-template-columns: 1fr; gap: 18px } .scard .visual { order: -1 }
+  .numbers { grid-template-columns: 1fr; row-gap: 28px } .num:nth-child(n) { grid-column: 1 }
+  .bar nav a { display: none }
+}
+@media (prefers-reduced-motion: reduce) { .char, .screen { transition: none } }
+</style>
+
+<div class="grid-layer" aria-hidden="true"></div>
+<div class="light-layer" aria-hidden="true"><div class="glow a"></div><div class="glow b"></div></div>
+
+<header class="bar">
+  <a class="logo" href="#top">ŁM<span>.</span></a>
+  <nav>
+    <a href="#work" data-pl="Projekty">Work</a>
+    <a href="#contact" data-pl="Kontakt">Contact</a>
+    <button id="lang" type="button" aria-label="Zmień język na polski">PL</button>
+    <button id="theme" type="button" aria-label="Toggle dark mode">Dark / Light</button>
+  </nav>
+</header>
+
+<main>
+  <section class="hero" id="top">
+    <div class="wrap">
+      <p class="eyebrow" data-pl="Frontend developer · Polska · otwarty na projekty">Frontend developer · Poland · open to projects</p>
+      <h1 class="name" aria-label="Łukasz Moszczyński"><span class="line" aria-hidden="true">Łukasz</span><span class="line" aria-hidden="true">Moszczyński</span></h1>
+      <div class="hero-foot">
+        <p class="claim" data-pl-html="Buduję interfejsy, które poruszają się <em>z sensem.</em>">I build interfaces that move <em>with intent.</em></p>
+        <div class="sub-wrap">
+          <p class="sub" data-pl="Frontend, design systemy i AI: buduję skille i agentów, które automatyzują pracę od Figmy po produkcję.">Frontend, design systems and AI: I build skills and agents that automate the work from Figma to production.</p>
+          <p class="grid-hint mono" data-pl="↳ kliknij w siatkę">↳ click the grid</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="build">
+    <div class="wrap build-in">
+      <div>
+        <p class="kicker mono" data-pl="jak pracuję">how I work</p>
+        <h2 data-pl="Od tokenu do strony.">From token to page.</h2>
+        <ol class="steps">
+          <li class="on"><span class="mono">01</span><b data-pl="Atomy">Atoms</b><small data-pl="Kolor, typografia, odstępy i zaokrąglenia jako tokeny.">Color, type, spacing and radius as tokens.</small></li>
+          <li><span class="mono">02</span><b data-pl="Molekuły">Molecules</b><small data-pl="Tokeny łączą się w pole i przycisk.">Tokens combine into a field and a button.</small></li>
+          <li><span class="mono">03</span><b data-pl="Organizmy">Organisms</b><small data-pl="Molekuły składają się w kartę.">Molecules come together as a card.</small></li>
+          <li><span class="mono">04</span><b data-pl="Strony">Pages</b><small data-pl="Karta staje się częścią prawdziwej strony.">The card becomes part of a real page.</small></li>
+        </ol>
+      </div>
+      <div class="stage" role="img" aria-label="Animated diagram of tokens assembling into a page">
+        <span class="stage-label mono">Frame · 1440 × 1080</span>
+        <div class="piece p-page"><span class="tag">color.surface</span></div>
+        <div class="piece p-violet"><span class="tag">color.brand</span></div>
+        <div class="piece p-type"><span class="aa">Aa</span><span class="bar-fill"></span><span class="tag">font.heading</span></div>
+        <div class="piece p-space"><span class="bar-fill"></span><span class="tag">space.3</span></div>
+        <div class="piece p-accent"><span class="label" data-pl="Kup teraz">Buy now</span><span class="tag">color.accent</span></div>
+        <div class="piece p-radius"><span class="tag">radius.full</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="statement wrap">
+    <p id="statement" data-pl="Przez jedenaście lat prowadziłem zespół w sklepie. W 2017 napisałem pierwszą linię kodu. Dziś jestem Technical Leaderem w home.pl i uczę agentów AI robić nudne części pracy.">For eleven years I ran a team on a shop floor. In 2017 I wrote my first line of code. Today I'm a Technical Leader at home.pl and I teach AI agents to do the boring parts of the job.</p>
+  </section>
+
+  <section class="journey wrap" id="journey">
+    <div class="journey-head">
+      <p class="kicker mono" data-pl="droga">the path</p>
+      <h2 data-pl="Od sklepu do kodu.">From the shop floor to code.</h2>
+    </div>
+    <ol class="tl">
+      <li><span class="yr mono">2007</span><div><b data-pl="Zastępca kierownika · Castorama">Deputy manager · Castorama</b><p data-pl="11,5 roku prowadzenia ludzi, klientów i wyników.">11.5 years leading people, customers and results.</p></div></li>
+      <li><span class="yr mono">2012</span><div><b data-pl="Informatyka · ZUT Szczecin">Computer science · ZUT Szczecin</b><p data-pl="Dwa lata studiów, 2012–2014.">Two years of studies, 2012–2014.</p></div></li>
+      <li><span class="yr mono">2017</span><div><b data-pl="Pierwsza linia kodu">First line of code</b><p data-pl="Bootcamp, kursy i pierwsze portfolio z małymi aplikacjami i grami.">Bootcamp, courses and a first portfolio of small apps and games.</p></div></li>
+      <li><span class="yr mono">2019</span><div><b>Junior Frontend Developer · home.pl</b><p data-pl="Zmiana zawodu po jedenastu latach.">A career change after eleven years.</p></div></li>
+      <li><span class="yr mono">2021</span><div><b>Frontend Developer · home.pl</b></div></li>
+      <li><span class="yr mono">2022</span><div><b>Software Engineer · home.pl</b></div></li>
+      <li><span class="yr mono">2024</span><div><b>Technical Leader · home.pl</b><p data-pl="Prowadzę techniczną stronę zespołu.">Leading the technical side of the team.</p></div></li>
+      <li><span class="yr mono" data-pl="teraz">now</span><div><b data-pl="Design systemy, sklepy i agenci AI">Design systems, shops and AI agents</b><p data-pl="Automatyzuję pracę od Figmy po produkcję.">Automating the work from Figma to production.</p></div></li>
+    </ol>
+  </section>
+
+  <section class="skills wrap" id="stack">
+    <p class="kicker mono" data-pl="stack">stack</p>
+    <h2 data-pl="Frontend to połowa. Druga połowa to AI.">Frontend is one half. The other half is AI.</h2>
+    <div class="skill-grid">
+      <article class="skill ai">
+        <div class="info">
+          <h3 data-pl-html="AI i <em>automatyzacja</em>">AI &amp; <em>automation</em></h3>
+          <p data-pl="W home.pl zbudowałem agenta QA, który pisze scenariusze i testy Playwright, porównuje mastera z gałęzią, komentuje merge requesty i robi raport HTML, oraz półciemną fabrykę, która zamienia oznaczone zadania z Jiry w przejrzane merge requesty.">At home.pl I built a QA agent that writes scenarios and Playwright tests, compares master with the branch, comments on merge requests and builds an HTML report, plus a semi-dark factory that turns labelled Jira tasks into reviewed merge requests.</p>
+          <ul><li>Claude Code</li><li>Skills</li><li>Agents</li><li>MCP</li><li>Playwright</li><li>Docker</li><li>GitLab</li><li>Jira</li></ul>
+        </div>
+        <div class="agent">
+          <div class="chips" role="group" aria-label="Agent runs">
+            <button type="button" class="run on" data-run="qa" data-pl="Agent QA">QA agent</button>
+            <button type="button" class="run" data-run="factory">Dark factory</button>
+            <button type="button" class="run" data-run="figma">Figma → code</button>
+          </div>
+          <div class="term" aria-live="polite"></div>
+        </div>
+      </article>
+      <article class="skill">
+        <h3>Frontend</h3>
+        <p data-pl="Semantyczny HTML, nowoczesny CSS i animacje, które respektują ograniczony ruch.">Semantic HTML, modern CSS and motion that respects reduced-motion settings.</p>
+        <ul><li>HTML</li><li>CSS</li><li>JavaScript</li><li>TypeScript</li><li>Tailwind</li><li>styled-components</li><li>Astro</li><li>GSAP</li><li>Squidex CMS</li><li>a11y</li></ul>
+      </article>
+      <article class="skill">
+        <h3 data-pl="Design systemy">Design systems</h3>
+        <p data-pl="Tokeny wielu marek z Figmy do kodu i z powrotem, komponenty i dokumentacja.">Multi-brand tokens from Figma to code and back, components and documentation.</p>
+        <ul><li>Multi-brand</li><li>Figma variables</li><li>Tokens</li><li>Storybook</li><li>Atomic design</li></ul>
+      </article>
+      <article class="skill">
+        <h3 data-pl="WordPress i e-commerce">WordPress &amp; e-commerce</h3>
+        <p data-pl="Motywy blokowe, sklepy i własne integracje płatności.">Block themes, shops and custom payment integrations.</p>
+        <ul><li>Block themes</li><li>WooCommerce</li><li>PHP</li><li>Przelewy24</li></ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="quotes wrap">
+    <div>
+      <p class="kicker mono" data-pl="rekomendacje z LinkedIn">LinkedIn recommendations</p>
+      <h2 data-pl="Słowami ludzi, z którymi pracowałem.">In the words of people I worked with.</h2>
+      <p class="muted" data-pl="Przeciągnij kartę w bok albo kliknij Dalej.">Drag a card aside or press Next.</p>
+      <button type="button" class="next-quote" data-pl="Dalej →">Next →</button>
+    </div>
+    <div class="deck">
+      <figure class="quote"><blockquote>“Łukasz demonstrated a superb understanding of frontend technologies and the ability to create innovative solutions. His programming skills are impeccable.”</blockquote>
+        <figcaption><b>Aleksandra Zalewska</b><span>Senior Frontend Developer · home.pl, 2023</span></figcaption></figure>
+      <figure class="quote"><blockquote>“I was impressed with Łukasz's attention to detail, professionalism, and ability to deliver high-quality code within tight deadlines.”</blockquote>
+        <figcaption><b>Szymon Papis</b><span>Software Developer · 2023</span></figcaption></figure>
+      <figure class="quote"><blockquote>“He's also a fast learner and by over two years of our collaboration, he made huge progress… an awesome person with super positive vibes who you simply cannot dislike.”</blockquote>
+        <figcaption><b>Dawid Krajewski</b><span>Co-Founder @ Sherlo · home.pl, 2022</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="work wrap" id="work">
+    <h2 data-pl="Wybrane projekty">Selected work</h2>
+    <div class="stack">
+      <article class="scard">
+        <div><span class="meta" data-pl="WordPress · sklep · płatności">WordPress · shop · payments</span>
+          <h3>DCC Grygorcewicz</h3>
+          <p data-pl="Motyw blokowy z Figmy, sklep WooCommerce z własną wtyczką Przelewy24, e-vouchery w PDF i przejścia stron w Swup.">Block theme from Figma, a WooCommerce shop with my own Przelewy24 plugin, PDF e-vouchers and Swup page transitions.</p>
+          <a href="#work" data-pl="Zobacz case study">See case study</a></div>
+        <div class="visual"><div class="screen" style="background:linear-gradient(135deg,#372662,#5b3fa8)"><span style="inset:8% 8% 82% 8%;opacity:.25"></span><span class="o" style="inset:24% 52% 62% 8%"></span><span style="inset:42% 8% 34% 8%;opacity:.85"></span><span style="inset:72% 68% 8% 8%"></span><span style="inset:72% 38% 8% 38%"></span><span class="o" style="inset:72% 8% 8% 68%"></span></div></div>
+      </article>
+      <article class="scard">
+        <div><span class="meta" data-pl="Tokeny · komponenty · Storybook">Tokens · components · Storybook</span>
+          <h3>Design System</h3>
+          <p data-pl="Tokeny wielu marek synchronizowane z Figmą, komponenty HTML/CSS/JS z animacjami GSAP i Storybook na GitHub Pages.">Multi-brand tokens synced with Figma, HTML/CSS/JS components with GSAP motion and Storybook on GitHub Pages.</p>
+          <a href="#work" data-pl="Zobacz case study">See case study</a></div>
+        <div class="visual"><div class="screen" style="background:linear-gradient(135deg,#eb6126,#c2410c)"><span class="k" style="inset:10% 70% 66% 8%"></span><span style="inset:10% 39% 66% 39%"></span><span style="inset:10% 8% 66% 70%;background:#372662"></span><span style="inset:44% 46% 42% 8%;border-radius:999px"></span><span class="k" style="inset:44% 8% 42% 58%;border-radius:999px"></span><span style="inset:66% 8% 10% 8%;opacity:.6"></span></div></div>
+      </article>
+      <article class="scard">
+        <div><span class="meta" data-pl="WordPress · starter">WordPress · starter</span>
+          <h3>WP Starter</h3>
+          <p data-pl="Startowy motyw z sekcjami z Figmy i tokenami design systemu. Każdy nowy projekt startuje od działającej bazy.">A starter theme with sections from Figma and design-system tokens. Every new project starts from a working base.</p>
+          <a href="#work" data-pl="Zobacz case study">See case study</a></div>
+        <div class="visual"><div class="screen" style="background:linear-gradient(135deg,#1a1230,#372662)"><span style="inset:8% 8% 84% 8%;opacity:.3"></span><span class="o" style="inset:22% 8% 50% 8%"></span><span style="inset:56% 54% 8% 8%;opacity:.8"></span><span style="inset:56% 8% 8% 54%;opacity:.8"></span></div></div>
+      </article>
+      <article class="scard">
+        <div><span class="meta" data-pl="Astro · strona statyczna">Astro · static site</span>
+          <h3>Omelański</h3>
+          <p data-pl="Szybka strona w Astro z kilkoma domenami i gotową paczką do wdrożenia na hostingu klienta.">A fast Astro site with several domains and a ready package for deployment on the client's hosting.</p>
+          <a href="#work" data-pl="Zobacz case study">See case study</a></div>
+        <div class="visual"><div class="screen" style="background:linear-gradient(135deg,#5b3fa8,#eb6126)"><span style="inset:14% 40% 70% 8%"></span><span style="inset:34% 56% 56% 8%;opacity:.7"></span><span class="k" style="inset:54% 8% 10% 8%;opacity:.85"></span></div></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="contact wrap" id="contact">
+    <h2 class="fill" id="fill" data-pl="Zbudujmy coś.">Let's build something.</h2>
+    <div class="btns">
+      <a class="btn" href="https://www.linkedin.com/in/%C5%82ukasz-moszczy%C5%84ski-764110161/" target="_blank" rel="noopener">LinkedIn ↗</a>
+      <a class="btn ghost" href="https://github.com/LukaszMoszczynski" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+    <div class="foot"><span>© 2026 Łukasz Moszczyński</span><span data-pl="Koncepcja D · połączenie">Concept D · combined</span></div>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(() => {
+  // always open at the top
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.scrollTo(0, 0);
+
+  const root = document.documentElement;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hasGsap = !!window.gsap && !reduce;
+  const finePointer = matchMedia('(pointer: fine)').matches;
+
+  // theme
+  const themeBtn = document.getElementById('theme');
+  const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  themeBtn.addEventListener('click', () => { root.dataset.theme = isDark() ? 'light' : 'dark' });
+
+  // blueprint grid lines
+  const gridLayer = document.querySelector('.grid-layer');
+  const cell = 96;
+  let columns = [], rows = [], gridOffset = 0, hoverCell;
+  const buildGrid = () => {
+    gridLayer.innerHTML = '';
+    columns = []; rows = [];
+    const offsetX = gridOffset = (innerWidth % cell) / 2;
+    hoverCell = document.createElement('i');
+    hoverCell.className = 'cell';
+    gridLayer.appendChild(hoverCell);
+    for (let x = offsetX; x <= innerWidth; x += cell) { columns.push(x); const line = document.createElement('i'); line.className = 'v'; line.style.left = x + 'px'; gridLayer.appendChild(line) }
+    for (let y = cell; y <= innerHeight; y += cell) { rows.push(y); const line = document.createElement('i'); line.className = 'h'; line.style.top = y + 'px'; gridLayer.appendChild(line) }
+  };
+
+  // a few lines at a time get traced by a glowing point, forever
+  const trace = (startX, startY, dir, length, onDone) => {
+    const vertical = dir === 'd' || dir === 'u';
+    const line = document.createElement('i');
+    const dot = document.createElement('i');
+    line.className = vertical ? 'tv' : 'th';
+    dot.className = 'dot';
+    line.style.background = `linear-gradient(${{ d: 'to bottom', u: 'to top', r: 'to right', l: 'to left' }[dir]}, transparent, var(--accent))`;
+    Object.assign(line.style, vertical
+      ? { left: startX + 'px', top: (dir === 'd' ? startY : startY - length) + 'px', height: length + 'px' }
+      : { top: startY + 'px', left: (dir === 'r' ? startX : startX - length) + 'px', width: length + 'px' });
+    Object.assign(dot.style, { left: startX + 'px', top: startY + 'px' });
+    gridLayer.append(line, dot);
+    const hidden = { d: 'inset(0% 0% 100% 0%)', u: 'inset(100% 0% 0% 0%)', r: 'inset(0% 100% 0% 0%)', l: 'inset(0% 0% 0% 100%)' }[dir];
+    const move = { d: { y: length }, u: { y: -length }, r: { x: length }, l: { x: -length } }[dir];
+    const duration = length / 160;
+    gsap.timeline({ onComplete: () => { line.remove(); dot.remove(); onDone && onDone() } })
+      .fromTo(line, { clipPath: hidden }, { clipPath: 'inset(0% 0% 0% 0%)', duration, ease: 'power1.inOut' })
+      .fromTo(dot, { x: 0, y: 0, scale: 0 }, { ...move, scale: 1, duration, ease: 'power1.inOut' }, 0)
+      .to([line, dot], { opacity: 0, duration: 0.8 }, '+=0.2');
+  };
+  const tracer = () => {
+    if (!columns.length || !rows.length) return gsap.delayedCall(1, tracer);
+    const vertical = Math.random() < 0.5;
+    const length = cell * gsap.utils.random(2, 4, 1);
+    const startX = vertical ? gsap.utils.random(columns) : gsap.utils.random(columns.slice(0, -2));
+    const startY = vertical ? gsap.utils.random([0, ...rows.slice(0, -2)]) : gsap.utils.random(rows);
+    trace(startX, startY, vertical ? 'd' : 'r', length, () => gsap.delayedCall(gsap.utils.random(0.2, 1.4), tracer));
+  };
+  buildGrid();
+  let resizeTimer;
+  addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(buildGrid, 150) });
+
+  // split name into letters
+  document.querySelectorAll('.name .line').forEach((line) => {
+    const text = line.textContent;
+    line.textContent = '';
+    for (const letter of text) { const span = document.createElement('span'); span.className = 'char'; span.textContent = letter; line.appendChild(span) }
+  });
+  const nameChars = [...document.querySelectorAll('.name .char')];
+  const hero = document.querySelector('.hero');
+
+  // letters get bolder near the pointer
+  if (!reduce && finePointer) {
+    let frame;
+    hero.addEventListener('pointermove', (event) => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => nameChars.forEach((char) => {
+        const box = char.getBoundingClientRect();
+        const distance = Math.hypot(event.clientX - (box.left + box.width / 2), event.clientY - (box.top + box.height / 2));
+        char.style.fontWeight = Math.round(300 + 600 * Math.max(0, 1 - distance / 260));
+      }));
+    });
+    hero.addEventListener('pointerleave', () => nameChars.forEach((char) => { char.style.fontWeight = '' }));
+  }
+
+  // statement words
+  const statement = document.getElementById('statement');
+  let wordTween;
+  const buildWords = () => {
+    statement.innerHTML = statement.textContent.split(' ').map((word) => `<span class="word">${word}</span>`).join(' ');
+    if (!hasGsap) return;
+    wordTween && wordTween.scrollTrigger && wordTween.scrollTrigger.kill();
+    wordTween = gsap.fromTo(statement.querySelectorAll('.word'), { opacity: 0.18 }, { opacity: 1, stagger: 0.1, ease: 'none',
+      scrollTrigger: { trigger: statement, start: 'top 80%', end: 'bottom 45%', scrub: true } });
+  };
+
+  // language
+  const langBtn = document.getElementById('lang');
+  const plain = [...document.querySelectorAll('[data-pl]')];
+  const rich = [...document.querySelectorAll('[data-pl-html]')];
+  plain.forEach((element) => { element.dataset.en = element.textContent });
+  rich.forEach((element) => { element.dataset.enHtml = element.innerHTML });
+  root.lang = 'en';
+  langBtn.addEventListener('click', () => {
+    const lang = root.lang === 'pl' ? 'en' : 'pl';
+    root.lang = lang;
+    plain.forEach((element) => { element.textContent = lang === 'pl' ? element.dataset.pl : element.dataset.en });
+    rich.forEach((element) => { element.innerHTML = lang === 'pl' ? element.dataset.plHtml : element.dataset.enHtml });
+    langBtn.textContent = lang === 'pl' ? 'EN' : 'PL';
+    langBtn.setAttribute('aria-label', lang === 'pl' ? 'Switch language to English' : 'Zmień język na polski');
+    buildWords();
+    if (hasGsap) ScrollTrigger.refresh();
+  });
+
+  // tilt on case visuals
+  if (!reduce && finePointer) {
+    document.querySelectorAll('.visual').forEach((visual) => {
+      const screen = visual.querySelector('.screen');
+      visual.addEventListener('pointermove', (event) => {
+        const box = visual.getBoundingClientRect();
+        const x = (event.clientX - box.left) / box.width - 0.5;
+        const y = (event.clientY - box.top) / box.height - 0.5;
+        screen.style.transform = `rotateY(${x * 14}deg) rotateX(${-y * 14}deg) scale(1.02)`;
+      });
+      visual.addEventListener('pointerleave', () => { screen.style.transform = '' });
+    });
+  }
+
+  // stage states: [left, top, width, height] in %, radius in px; order: page, violet, type, space, accent, radius
+  const pieces = [...document.querySelectorAll('.stage .piece')];
+  const states = [
+    [[68,10,26,34,14],[37,10,26,34,14],[6,10,26,34,14],[6,56,26,34,14],[37,56,26,34,14],[68,56,26,34,999]],
+    [[12,22,76,56,20],[18,44,44,14,10],[18,28,40,9,4],[18,64,64,3,2],[64,44,18,14,10],[20,46.5,5,9,999]],
+    [[12,5,76,90,22],[17,10,66,38,14],[17,53,48,8,4],[17,66,40,3,2],[17,76,30,11,999],[70,75,11,15,999]],
+    [[2,2,96,96,16],[6,18,88,46,12],[10,26,44,8,4],[6,7,88,5,999],[10,48,20,8,999],[72,28,13,17,999]],
+  ];
+  const toProps = ([left, top, width, height, radius]) => ({ left: left + '%', top: top + '%', width: width + '%', height: height + '%', borderRadius: radius + 'px' });
+  pieces.forEach((piece, index) => Object.assign(piece.style, toProps(states[0][index])));
+  const stepItems = [...document.querySelectorAll('.steps li')];
+  const setStep = (index) => stepItems.forEach((item, n) => item.classList.toggle('on', n === index));
+  let buildTrigger;
+  const goToStep = (index) => {
+    if (!buildTrigger) { pieces.forEach((piece, n) => Object.assign(piece.style, toProps(states[index][n]))); setStep(index); return }
+    window.scrollTo({ top: buildTrigger.start + (buildTrigger.end - buildTrigger.start) * index / (states.length - 1), behavior: 'smooth' });
+  };
+  stepItems.forEach((item, index) => {
+    item.tabIndex = 0;
+    item.setAttribute('role', 'button');
+    item.addEventListener('click', () => goToStep(index));
+    item.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); goToStep(index) } });
+  });
+
+  // agent runs you can pick
+  const runs = {
+    qa: [['c', '# new feature → tests, report, MR comment'], ['', 'agent: writing test scenarios → scenarios/checkout.md'], ['', 'agent: generating Playwright specs · 9 cases'], ['', 'run: master vs feature branch'], ['', 'screenshots: 18 pairs compared'], ['ok', '✓ 8 passed · 1 visual difference found'], ['ok', '✓ comment posted on the GitLab MR'], ['ok', '✓ full HTML report ready']],
+    factory: [['c', '# Jira label → reviewed merge request'], ['', 'jira: label added to the task'], ['', 'factory (local docker): task picked up'], ['', 'agent: implementing · running tests'], ['ok', '✓ branch pushed to GitLab'], ['', 'auto-reviewer: 2 comments left'], ['', 'factory: picked up the comments · fixing'], ['ok', '✓ review clean · ready for a human']],
+    figma: [['c', '# figma → code, one command'], ['', 'skill figma-design-to-code loaded'], ['', 'reading frame 95:645 · 66 variables'], ['', 'agent: building Section/Numbers'], ['ok', '✓ tokens synced · light + dark'], ['ok', '✓ deployed to preview']],
+  };
+  const term = document.querySelector('.term');
+  let termTimeline;
+  const showRun = (key) => {
+    term.innerHTML = runs[key].map(([kind, text]) => `<div class="${kind}">${kind ? '' : '<span class="a">›</span> '}${text}</div>`).join('');
+    document.querySelectorAll('.run').forEach((chip) => chip.classList.toggle('on', chip.dataset.run === key));
+    if (!hasGsap) return;
+    termTimeline && termTimeline.kill();
+    termTimeline = gsap.timeline({ repeat: -1, repeatDelay: 2.5 })
+      .from(term.children, { opacity: 0, x: -8, duration: 0.3, stagger: 0.45, ease: 'power2.out' })
+      .to(term.children, { opacity: 0, duration: 0.4 }, '+=2.5');
+  };
+  document.querySelectorAll('.run').forEach((chip) => chip.addEventListener('click', () => showRun(chip.dataset.run)));
+  showRun('qa');
+
+  // recommendation deck: drag aside or press Next
+  const deckCards = [...document.querySelectorAll('.deck .quote')];
+  let deckOrder = [...deckCards];
+  const deckLayout = (duration = 0.5) => deckOrder.forEach((card, index) => {
+    const props = { x: 0, y: index * 16, scale: 1 - index * 0.05, rotation: index === 0 ? 0 : (index % 2 ? -3 : 3), zIndex: deckOrder.length - index, opacity: 1 };
+    if (hasGsap) gsap.to(card, { ...props, duration, ease: 'power3.out' });
+    else { card.style.zIndex = props.zIndex; card.style.transform = `translateY(${props.y}px) scale(${props.scale}) rotate(${props.rotation}deg)` }
+  });
+  const nextQuote = (direction = 1) => {
+    const top = deckOrder.shift();
+    deckOrder.push(top);
+    if (!hasGsap) return deckLayout();
+    gsap.set(top, { zIndex: 10 });
+    gsap.to(top, { x: direction * Math.min(innerWidth * 0.7, 700), rotation: direction * 24, opacity: 0, duration: 0.35, ease: 'power2.in',
+      onComplete: () => { gsap.set(top, { x: 0, zIndex: 0 }); deckLayout() } });
+  };
+  deckLayout(0);
+  document.querySelector('.next-quote').addEventListener('click', () => nextQuote(1));
+  if (hasGsap) deckCards.forEach((card) => {
+    let startX = 0, startY = 0, deltaX = 0, dragging = false;
+    card.addEventListener('pointerdown', (event) => {
+      if (card !== deckOrder[0]) return;
+      dragging = true; startX = event.clientX; startY = event.clientY; deltaX = 0;
+      card.setPointerCapture(event.pointerId);
+    });
+    card.addEventListener('pointermove', (event) => {
+      if (!dragging) return;
+      deltaX = event.clientX - startX;
+      gsap.set(card, { x: deltaX, y: (event.clientY - startY) * 0.4, rotation: deltaX * 0.06 });
+    });
+    const release = () => {
+      if (!dragging) return;
+      dragging = false;
+      if (Math.abs(deltaX) > 110) nextQuote(Math.sign(deltaX));
+      else gsap.to(card, { x: 0, y: 0, rotation: 0, duration: 0.9, ease: 'elastic.out(1, 0.5)' });
+    };
+    card.addEventListener('pointerup', release);
+    card.addEventListener('pointercancel', release);
+  });
+
+  if (!hasGsap) { buildWords(); return }
+  gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.clearScrollMemory && ScrollTrigger.clearScrollMemory('manual');
+  buildWords();
+
+  // grid: the cell under the cursor glows, a click sends tracers in four directions
+  const onContent = (target) => target.closest('a, button, [role="button"], .stage, .scard, .skill, .quote, .bar, .tl');
+  if (finePointer) {
+    window.addEventListener('pointermove', (event) => {
+      if (!hoverCell) return;
+      hoverCell.style.opacity = onContent(event.target) ? 0 : 1;
+      gsap.set(hoverCell, { x: Math.floor((event.clientX - gridOffset) / cell) * cell + gridOffset, y: Math.floor(event.clientY / cell) * cell });
+    });
+  }
+  document.addEventListener('click', (event) => {
+    if (onContent(event.target) || !columns.length) return;
+    const nearest = (list, value) => list.reduce((best, item) => Math.abs(item - value) < Math.abs(best - value) ? item : best);
+    const x = nearest(columns, event.clientX), y = nearest([0, ...rows], event.clientY);
+    ['u', 'd', 'l', 'r'].forEach((dir) => trace(x, y, dir, cell * 3));
+    const ring = document.createElement('i');
+    ring.className = 'ring';
+    Object.assign(ring.style, { left: x + 'px', top: y + 'px' });
+    gridLayer.appendChild(ring);
+    gsap.fromTo(ring, { scale: 0.4, opacity: 1 }, { scale: 4, opacity: 0, duration: 0.9, ease: 'power2.out', onComplete: () => ring.remove() });
+  });
+
+  // career path draws itself as you scroll
+  const path = document.querySelector('.tl');
+  path.classList.add('js');
+  path.insertAdjacentHTML('afterbegin', '<span class="tl-progress" aria-hidden="true"></span><span class="tl-dot" aria-hidden="true"></span>');
+  gsap.fromTo('.tl-progress', { scaleY: 0 }, { scaleY: 1, ease: 'none', scrollTrigger: { trigger: path, start: 'top 70%', end: 'bottom 55%', scrub: 0.5 } });
+  gsap.fromTo('.tl-dot', { top: 6 }, { top: () => path.offsetHeight - 6, ease: 'none', scrollTrigger: { trigger: path, start: 'top 70%', end: 'bottom 55%', scrub: 0.5, invalidateOnRefresh: true } });
+  path.querySelectorAll('li').forEach((item) => ScrollTrigger.create({ trigger: item, start: 'top 62%',
+    onEnter: () => item.classList.add('lit'), onLeaveBack: () => item.classList.remove('lit') }));
+
+  // first load: grid draws, then the name rises
+  const intro = gsap.timeline();
+  intro.from('.grid-layer .v', { scaleY: 0, duration: 1.1, ease: 'power3.inOut', stagger: { each: 0.04, from: 'center' } })
+       .from('.grid-layer .h', { scaleX: 0, duration: 1.1, ease: 'power3.inOut', stagger: { each: 0.05, from: 'start' } }, 0.15)
+       .from('.glow', { opacity: 0, scale: 0.6, duration: 1.6, ease: 'power2.out' }, 0.3)
+       .from(nameChars, { yPercent: 120, rotate: 10, duration: 1.2, ease: 'expo.out', stagger: 0.035 }, 0.45)
+       .from('.eyebrow, .claim, .sub, .bar', { y: 18, opacity: 0, duration: 1, ease: 'expo.out', stagger: 0.08 }, 0.8)
+       .add(() => { tracer(); gsap.delayedCall(0.7, tracer); gsap.delayedCall(1.5, tracer) }, 1.2);
+
+  // cursor light over the whole page
+  const glowA = document.querySelector('.glow.a'), glowB = document.querySelector('.glow.b');
+  const ax = gsap.quickTo(glowA, 'x', { duration: 1.6, ease: 'power3' }), ay = gsap.quickTo(glowA, 'y', { duration: 1.6, ease: 'power3' });
+  const bx = gsap.quickTo(glowB, 'x', { duration: 2.6, ease: 'power3' }), by = gsap.quickTo(glowB, 'y', { duration: 2.6, ease: 'power3' });
+  if (finePointer) {
+    window.addEventListener('pointermove', (event) => {
+      const size = glowA.offsetWidth / 2;
+      ax(event.clientX - size); ay(event.clientY - size);
+      bx(innerWidth - event.clientX - size); by(innerHeight - event.clientY - size * 0.6);
+    });
+  } else {
+    gsap.to(glowA, { x: '+=20vw', y: '+=10vmax', duration: 9, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+    gsap.to(glowB, { x: '+=30vw', y: '-=6vmax', duration: 11, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+  }
+
+  // name lines drift apart on scroll
+  const lines = document.querySelectorAll('.name .line');
+  gsap.to(lines[0], { xPercent: -8, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
+  gsap.to(lines[1], { xPercent: 6, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
+
+  // build frame
+  gsap.from(pieces, { scale: 0, rotate: () => gsap.utils.random(-40, 40), duration: 1, ease: 'back.out(1.6)', stagger: 0.08,
+    scrollTrigger: { trigger: '.stage', start: 'top 80%', once: true } });
+  const tags = document.querySelectorAll('.piece .tag');
+  const fills = document.querySelectorAll('.piece .bar-fill');
+  const build = gsap.timeline({ defaults: { ease: 'power2.inOut', duration: 1 } });
+  build.addLabel('s0');
+  for (let step = 1; step < states.length; step++) {
+    pieces.forEach((piece, n) => build.to(piece, toProps(states[step][n]), `s${step - 1}`));
+    if (step === 1) {
+      build.to(tags, { opacity: 0, duration: 0.4 }, 's0')
+           .to(fills, { opacity: 1, duration: 0.6 }, 's0+=0.3')
+           .to('.aa', { opacity: 0, duration: 0.4 }, 's0')
+           .to('.piece .label', { opacity: 1, duration: 0.4 }, 's0+=0.6');
+    }
+    build.addLabel(`s${step}`);
+  }
+  buildTrigger = ScrollTrigger.create({
+    trigger: '.build', start: 'top top', end: '+=110%', pin: true, scrub: 0.35, animation: build,
+    snap: { snapTo: 'labels', duration: { min: 0.2, max: 0.6 }, ease: 'power1.inOut' },
+    onUpdate: (self) => setStep(Math.round(self.progress * (states.length - 1))),
+  });
+
+  // counters
+  document.querySelectorAll('[data-count]').forEach((counter) => {
+    const target = +counter.dataset.count;
+    ScrollTrigger.create({ trigger: counter, start: 'top 85%', once: true, onEnter: () => {
+      const state = { value: 0 };
+      gsap.to(state, { value: target, duration: 1.6, ease: 'power3.out', onUpdate: () => { counter.textContent = Math.round(state.value) } });
+    } });
+  });
+
+  // stacked cards
+  const cards = gsap.utils.toArray('.scard');
+  cards.forEach((card, index) => {
+    const next = cards[index + 1];
+    if (!next) return;
+    gsap.to(card, { scale: 0.92, opacity: 0.55, ease: 'none', scrollTrigger: { trigger: next, start: 'top bottom', end: 'top 140px', scrub: true } });
+  });
+
+  gsap.to('#fill', { '--p': '100%', ease: 'none', scrollTrigger: { trigger: '.contact', start: 'top 85%', end: 'top 25%', scrub: true } });
+})();
+</script>
