@@ -1,0 +1,75 @@
+---
+import ProjectVisual from './ProjectVisual.astro';
+import { getProjects } from '../content/projects';
+import { localizePath, t, type Lang } from '../i18n/utils';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const projects = await getProjects(lang);
+---
+<section class="work wrap" id="work" aria-labelledby="work-heading">
+  <h2 class="work-heading" id="work-heading">{t(lang, 'work.heading')}</h2>
+  <div class="work-stack">
+    {projects.map((project, index) => (
+      <article class="project-card" style={`--index: ${index}`} aria-labelledby={`work-${project.slug}`}>
+        <div class="project-copy">
+          <p class="project-meta">
+            <span>{project.data.meta}</span>
+            {project.data.origin && <span class="project-origin">{project.data.origin}</span>}
+          </p>
+          <h3 id={`work-${project.slug}`}>{project.data.title}</h3>
+          <p class="project-summary">{project.data.summary}</p>
+          {project.data.origin && <p class="project-note">{t(lang, 'work.homePlNote')}</p>}
+          <a class="project-link" href={localizePath(`/work/${project.slug}/`, lang)}>
+            {t(lang, 'work.caseStudy')}<span class="work-hidden">: {project.data.title}</span>
+          </a>
+        </div>
+        <ProjectVisual visual={project.data.visual} compact />
+      </article>
+    ))}
+  </div>
+</section>
+<script>
+  import { motionEnabled, onPage } from '../scripts/lifecycle';
+  import { initWorkStack } from '../scripts/work-stack';
+  onPage(() => {
+    const root = document.querySelector<HTMLElement>('.work');
+    return root && motionEnabled() ? initWorkStack(root) : undefined;
+  });
+</script>
+<style>
+  .work { padding-block: 40px 120px; scroll-margin-top: 72px }
+  .work-heading { font-family: var(--font-display); font-weight: 700; font-size: clamp(28px, 4vw, 54px); letter-spacing: -.035em; line-height: 1.05; margin: 0 0 40px }
+  .work-stack { display: grid; gap: 40px }
+  .project-card {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 32px; align-items: center;
+    background: var(--surface); border-radius: 32px; padding: clamp(20px, 3vw, 40px);
+    box-shadow: 0 0 0 1px var(--line), 0 40px 80px -40px rgb(20 10 40 / .45); transform-origin: 50% 0;
+  }
+  .project-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; font-weight: 600; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent) }
+  .project-origin {
+    font: 500 12px/1 var(--font-mono); letter-spacing: 0; text-transform: none; color: var(--ink);
+    padding: 5px 9px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); background: var(--bg);
+  }
+  .project-card h3 { font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 2.8vw, 38px); letter-spacing: -.03em; line-height: 1.05; margin: 8px 0 12px }
+  .project-summary { margin: 0 0 18px; color: var(--muted) }
+  .project-note { margin: -8px 0 18px; font-size: 14px; color: var(--muted); font-style: italic }
+  .project-link { font-weight: 600; text-decoration: none; display: inline-flex; gap: 8px; align-items: center }
+  .project-link::after { content: "→"; transition: transform .3s }
+  .project-link:hover::after { transform: translateX(5px) }
+  .work-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
+  /* Keep a whole card on screen below its sticky top. */
+  .project-card :global(.project-visual) { width: min(100%, calc((100svh - 260px) * 4 / 3)); justify-self: center }
+
+  /* Stacking only where a whole card fits below its sticky top; must match STACK_MEDIA in work-stack.ts. */
+  @media (min-width: 861px) and (min-height: 640px) {
+    .project-card { position: sticky; top: calc(88px + var(--index) * 16px) }
+  }
+  @media (max-width: 860px) {
+    .work { padding-block: 24px 72px }
+    .work-heading { margin-bottom: 24px }
+    .work-stack { gap: 24px }
+    .project-card { grid-template-columns: minmax(0, 1fr); gap: 18px; border-radius: 24px }
+    .project-card :global(.project-visual) { order: -1; width: 100% }
+  }
+  @media (prefers-reduced-motion: reduce) { .project-link::after { transition: none } }
+</style>
