@@ -1,7 +1,7 @@
 *, *::before, *::after { box-sizing: border-box }
 html { background: var(--bg) }
 body {
-  margin: 0; background: var(--bg); color: var(--ink);
+  margin: 0; color: var(--ink); /* no background: it would cover the fixed z-index -1 grid; html paints var(--bg) */
   font-family: var(--font-body); font-size: 17px; line-height: 1.65; overflow-x: hidden;
 }
 a { color: inherit }

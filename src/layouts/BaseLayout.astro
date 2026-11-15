@@ -9,6 +9,7 @@ import { ClientRouter } from 'astro:transitions';
 import { localizePath, t, type Lang } from '../i18n/utils';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Background from '../components/Background.astro';
 
 interface Props { lang: Lang; title: string; description: string; path: string }
 const { lang, title, description, path } = Astro.props;
@@ -43,6 +44,7 @@ const absolute = (target: Lang) => new URL(localizePath(path, target), origin).h
     <ClientRouter />
   </head>
   <body>
+    <Background />
     <a class="skip-link" href="#main">{t(lang, 'a11y.skipToContent')}</a>
     <Header lang={lang} />
     <main id="main" class="wrap">
