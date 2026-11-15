@@ -1,9 +1,11 @@
 ---
 import Hero from '../../components/Hero.astro';
+import TokenBuild from '../../components/TokenBuild.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { t } from '../../i18n/utils';
 const lang = 'pl';
 ---
 <BaseLayout lang={lang} title="Łukasz Moszczyński" description={t(lang, 'hero.sub')} path="/">
   <Hero lang={lang} />
+  <TokenBuild lang={lang} />
 </BaseLayout>
