@@ -43,7 +43,8 @@ test.describe('recommendations deck', () => {
     await page.mouse.down();
     await page.mouse.move(startX + 50, startY, { steps: 5 });
     await page.mouse.up();
-    await page.waitForTimeout(1200);
+    await expect.poll(async () => Math.abs((await card.boundingBox())!.x - box.x), { timeout: 3000 }).toBeLessThan(1);
+    expect(Math.abs((await card.boundingBox())!.y - box.y)).toBeLessThan(1);
     expect(await topName(page)).toBe(names[0]);
   });
 
@@ -53,6 +54,8 @@ test.describe('recommendations deck', () => {
     await next.focus();
     await page.keyboard.press('Enter');
     await expect.poll(() => topName(page)).toBe(names[1]);
+    await expect(page.locator('.deck-announce')).toContainText(names[1]);
+    await expect(page.locator('.deck-announce')).toContainText('Szymon');
     await page.keyboard.press('Enter');
     await expect.poll(() => topName(page)).toBe(names[2]);
     await page.keyboard.press('Enter');
@@ -65,6 +68,13 @@ test.describe('recommendations deck', () => {
     await page.goto('./');
     await page.getByRole('button', { name: /next/i }).click();
     await expect.poll(() => topName(page)).toBe(names[1]);
+    await expect(page.locator('.reco-hint')).not.toContainText(/drag/i);
+    await expect(page.locator('.quote').first()).toHaveCSS('cursor', 'default');
+  });
+
+  test('Dawid role matches the spec', async ({ page }) => {
+    await page.goto('./');
+    await expect(page.locator('.quote', { hasText: 'Dawid Krajewski' })).toContainText('Co-Founder @ Sherlo (formerly home.pl) · 2022');
   });
 
   test('quotes are identical in English on /pl/ and marked lang=en', async ({ page }) => {

@@ -7,14 +7,14 @@ const { lang } = Astro.props;
 const quotes = [
   { text: "“Łukasz demonstrated a superb understanding of frontend technologies and the ability to create innovative solutions. His programming skills are impeccable.”", name: 'Aleksandra Zalewska', role: 'Senior Frontend Developer · home.pl, 2023' },
   { text: "“I was impressed with Łukasz's attention to detail, professionalism, and ability to deliver high-quality code within tight deadlines.”", name: 'Szymon Papis', role: 'Software Developer · 2023' },
-  { text: "“He's also a fast learner and by over two years of our collaboration, he made huge progress… an awesome person with super positive vibes who you simply cannot dislike.”", name: 'Dawid Krajewski', role: 'Co-Founder @ Sherlo · home.pl, 2022' },
+  { text: "“He's also a fast learner and by over two years of our collaboration, he made huge progress… an awesome person with super positive vibes who you simply cannot dislike.”", name: 'Dawid Krajewski', role: 'Co-Founder @ Sherlo (formerly home.pl) · 2022' },
 ];
 ---
 <section class="reco wrap" id="recommendations" aria-labelledby="reco-heading">
   <div class="reco-copy">
     <p class="reco-kicker">{t(lang, 'reco.kicker')}</p>
     <h2 id="reco-heading">{t(lang, 'reco.heading')}</h2>
-    <p class="reco-hint">{t(lang, 'reco.hint')}</p>
+    <p class="reco-hint" data-reduced={t(lang, 'reco.hintReduced')}>{t(lang, 'reco.hint')}</p>
     <button type="button" class="next-quote">{t(lang, 'reco.next')}</button>
     <p class="deck-announce" aria-live="polite" aria-atomic="true"></p>
   </div>
@@ -40,7 +40,8 @@ const quotes = [
   .reco-kicker { font-family: var(--font-mono); font-size: 13px; color: var(--accent); margin: 0 0 12px }
   .reco h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(28px, 4vw, 54px); letter-spacing: -.035em; line-height: 1.05; margin: 0 0 16px; text-wrap: balance }
   .reco-hint { color: var(--muted); margin: 0 }
-  .reco .next-quote, .reco .deck-announce { display: none }
+  .reco .next-quote { display: none }
+  .reco .deck-announce { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; margin: 0 }
   .reco.deck-on .next-quote { display: inline-flex; align-items: center; margin-top: 22px; min-height: 48px; font: 600 14px/1 var(--font-body); padding: 0 24px; border-radius: 999px; border: 0; background: var(--accent); color: var(--on-accent); cursor: pointer }
   .reco.deck-on .next-quote:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px }
   .reco:not(.deck-on) .reco-hint { display: none }
@@ -49,6 +50,7 @@ const quotes = [
   .reco .quote { margin: 0; padding: clamp(22px, 3vw, 34px); border-radius: 28px; background: var(--surface); box-shadow: 0 0 0 1px var(--line), 0 30px 60px -30px rgb(20 10 40 / .5); display: grid; align-content: space-between; gap: 18px; min-width: 0 }
   .reco.deck-on .quote { grid-area: 1 / 1; cursor: grab; touch-action: pan-y; user-select: none }
   .reco.deck-on .quote:active { cursor: grabbing }
+  .reco.deck-still .quote { cursor: default; touch-action: auto }
   .reco .quote blockquote { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: clamp(17px, 1.8vw, 22px); line-height: 1.35; letter-spacing: -.01em }
   .reco .quote figcaption { display: grid; gap: 2px }
   .reco .quote figcaption span { color: var(--muted); font-size: 14px }

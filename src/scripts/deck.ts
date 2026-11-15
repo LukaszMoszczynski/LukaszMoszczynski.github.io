@@ -22,6 +22,12 @@ export function initDeck(root: HTMLElement): () => void {
   let announce = false;
 
   root.classList.add('deck-on');
+  const hint = root.querySelector<HTMLElement>('.reco-hint');
+  const originalHint = hint?.textContent ?? '';
+  if (reduced) {
+    root.classList.add('deck-still');
+    if (hint?.dataset.reduced) hint.textContent = hint.dataset.reduced;
+  }
 
   const expose = () => {
     order.forEach((card, index) => {
@@ -118,6 +124,7 @@ export function initDeck(root: HTMLElement): () => void {
       card.removeAttribute('aria-hidden');
     });
     if (announcer) announcer.textContent = '';
-    root.classList.remove('deck-on');
+    root.classList.remove('deck-on', 'deck-still');
+    if (hint) hint.textContent = originalHint;
   };
 }
