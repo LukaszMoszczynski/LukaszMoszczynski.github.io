@@ -76,19 +76,21 @@ const mainLinks = [
     background: color-mix(in srgb, var(--surface) 75%, transparent); backdrop-filter: blur(14px); box-shadow: 0 0 0 1px var(--line);
     color: var(--ink); font: 600 13px/1 var(--font-body);
   }
+  /* The global focus ring has a 6px radius; a pill keeps its round ends. */
+  .seg:focus-visible { border-radius: 999px }
   .seg-thumb {
     position: absolute; z-index: -1; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px;
     background: var(--accent); box-shadow: 0 6px 16px -6px var(--glow-a);
     transition: transform .35s cubic-bezier(.3, .7, .2, 1.2);
   }
   .seg-option { display: grid; place-items: center; min-width: 40px; height: 40px; padding-inline: 8px; border-radius: 999px; text-decoration: none; color: inherit; transition: color .3s }
-  .lang-seg { cursor: default }
+  .lang-seg { text-decoration: none }
   .lang-seg .seg-option.is-current { color: var(--on-accent) }
-  .lang-seg a.seg-option:hover { color: var(--accent-ink) }
+  .lang-seg:is(:hover, :focus-visible) .seg-option.is-target { color: var(--accent-ink) }
   .lang-seg[data-current="pl"] .seg-thumb { transform: translateX(100%) }
   /* While the thumb slides to the other language, the colours follow it. */
   .lang-seg.is-switching .seg-option.is-current { color: var(--ink) }
-  .lang-seg.is-switching a.seg-option { color: var(--on-accent) }
+  .lang-seg.is-switching .seg-option.is-target { color: var(--on-accent) }
   :root[data-theme="dark"] .theme-seg .seg-thumb { transform: translateX(100%) }
   :root:not([data-theme="dark"]) .theme-seg .seg-option:first-of-type, :root[data-theme="dark"] .theme-seg .seg-option:last-of-type { color: var(--on-accent) }
 

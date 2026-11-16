@@ -8,14 +8,10 @@ const isNotFound = /\/404(\.html|\/)?$/.test(Astro.url.pathname);
 const href = isNotFound ? localizePath('/', target) : switchLangPath(Astro.url, target);
 const options: Lang[] = ['en', 'pl'];
 ---
-<!-- Segmented EN | PL: the current language is plain text, the other a real link (works without JS). -->
-<div class="seg lang-seg" data-current={lang}>
+<!-- Segmented EN | PL: the whole pill is one link to the other language (works without JS). -->
+<a class="seg lang-seg" data-current={lang} href={href} hreflang={target} lang={target} data-lang-switch aria-label={`${t(lang, 'lang.label')} – ${t(lang, 'a11y.switchLang')}`}>
   <span class="seg-thumb" aria-hidden="true"></span>
-  {options.map((option) => option === lang ? (
-    <span class="seg-option is-current" lang={option}>{option.toUpperCase()}</span>
-  ) : (
-    <a class="seg-option" href={href} hreflang={target} lang={target} data-lang-switch aria-label={`${t(lang, 'lang.label')} – ${t(lang, 'a11y.switchLang')}`}>
-      {t(lang, 'lang.label')}
-    </a>
+  {options.map((option) => (
+    <span class:list={['seg-option', option === lang ? 'is-current' : 'is-target']} lang={option}>{option.toUpperCase()}</span>
   ))}
-</div>
+</a>

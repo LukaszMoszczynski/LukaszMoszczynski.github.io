@@ -53,6 +53,64 @@ test('language switch keeps the page: a case study opens in the other language',
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 });
 
+test.describe('whole-pill switches', () => {
+  // Points across the pill: left edge, the current (orange) half, the middle, the other half, right edge.
+  const spots = [0.03, 0.25, 0.5, 0.75, 0.97];
+
+  for (const spot of spots) {
+    test(`clicking the language pill at ${Math.round(spot * 100)}% switches EN → PL and back`, async ({ page }) => {
+      await page.goto('./');
+      const pill = page.locator('header [data-lang-switch]');
+      const box = (await pill.boundingBox())!;
+      await page.mouse.click(box.x + box.width * spot, box.y + box.height / 2);
+      await expect(page).toHaveURL(/\/portfolio-preview\/pl\/$/);
+      await expect(page.locator('html')).toHaveAttribute('lang', 'pl');
+      await expect(page.locator('html')).not.toHaveAttribute('data-astro-transition', /.*/);
+      const back = (await page.locator('header [data-lang-switch]').boundingBox())!;
+      await page.mouse.click(back.x + back.width * spot, back.y + back.height / 2);
+      await expect(page).toHaveURL(/\/portfolio-preview\/$/);
+      await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    });
+
+    test(`clicking the theme pill at ${Math.round(spot * 100)}% toggles the theme`, async ({ page }) => {
+      await page.emulateMedia({ colorScheme: 'light' });
+      await page.goto('./');
+      const toggle = page.getByRole('switch', { name: 'Dark mode' });
+      const box = (await toggle.boundingBox())!;
+      await page.mouse.click(box.x + box.width * spot, box.y + box.height / 2);
+      await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+      await page.mouse.click(box.x + box.width * spot, box.y + box.height / 2);
+      await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    });
+  }
+
+  test('the language pill is one link holding both labels, with the other language as its target', async ({ page }) => {
+    await page.goto('./');
+    const pill = page.locator('header .lang-seg');
+    await expect(pill).toHaveJSProperty('tagName', 'A');
+    await expect(pill).toHaveAttribute('hreflang', 'pl');
+    await expect(pill).toHaveAttribute('lang', 'pl');
+    await expect(pill).toHaveAccessibleName('PL – Zmień język na polski');
+    await expect(pill.locator('.seg-option')).toHaveText(['EN', 'PL']);
+    await expect(page.locator('header a[hreflang]')).toHaveCount(1);
+  });
+
+  test('the menu holds no extra copies of the switches', async ({ page }) => {
+    await page.goto('./');
+    await page.getByRole('button', { name: 'Menu' }).click();
+    await expect(page.locator('#site-menu [data-lang-switch], #site-menu [data-theme-toggle]')).toHaveCount(0);
+  });
+
+  test.describe('no JS', () => {
+    test.use({ javaScriptEnabled: false });
+    test('clicking the current-language half still follows the link', async ({ page }) => {
+      await page.goto('./');
+      await page.locator('header .lang-seg .is-current').click();
+      await expect(page).toHaveURL(/\/portfolio-preview\/pl\/$/);
+    });
+  });
+});
+
 test('header links resolve under the base path', async ({ page }) => {
   await page.goto('./');
   const hrefs = await page.locator('header a').evaluateAll((links) => links.map((link) => link.getAttribute('href')));
