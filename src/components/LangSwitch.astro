@@ -8,10 +8,15 @@ const isNotFound = /\/404(\.html|\/)?$/.test(Astro.url.pathname);
 const href = isNotFound ? localizePath('/', target) : switchLangPath(Astro.url, target);
 const options: Lang[] = ['en', 'pl'];
 ---
-<!-- Segmented EN | PL: the whole pill is one link to the other language (works without JS). -->
+<!--
+  Segmented EN | PL: the whole pill is one link to the other language (works without JS).
+  The link's text is the target language. The current language under the thumb is a state
+  marker drawn from data-label (CSS), so the name "PL – Zmień język na polski" holds all
+  of the link's text (WCAG 2.5.3 label in name).
+-->
 <a class="seg lang-seg" data-current={lang} href={href} hreflang={target} lang={target} data-lang-switch aria-label={`${t(lang, 'lang.label')} – ${t(lang, 'a11y.switchLang')}`}>
   <span class="seg-thumb" aria-hidden="true"></span>
-  {options.map((option) => (
-    <span class:list={['seg-option', option === lang ? 'is-current' : 'is-target']} lang={option}>{option.toUpperCase()}</span>
-  ))}
+  {options.map((option) => option === lang
+    ? <span class="seg-option is-current" data-label={option.toUpperCase()} aria-hidden="true"></span>
+    : <span class="seg-option is-target" lang={option}>{option.toUpperCase()}</span>)}
 </a>

@@ -29,7 +29,7 @@ test.describe('contact', () => {
     test.skip(browserName !== 'chromium', 'clipboard permissions are chromium-only');
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.goto('pl/');
-    const button = page.locator('#contact').getByRole('button', { name: 'Skopiuj numer telefonu' });
+    const button = page.locator('#contact').getByRole('button', { name: 'Kopiuj numer telefonu' });
     await button.scrollIntoViewIfNeeded();
     await button.click();
     await expect(button).toHaveText('Skopiowano');

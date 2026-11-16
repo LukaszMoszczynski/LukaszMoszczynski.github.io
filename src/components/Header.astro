@@ -15,8 +15,8 @@ const mainLinks = [
 ];
 ---
 <header class="bar">
-  <!-- Wordmark: the full name; phones show "Łukasz M." (the accessible name stays the full name). -->
-  <a class="logo" href={home} aria-label={t(lang, 'nav.logoLabel')}><span class="logo-text fx-underline"><span class="logo-full">Łukasz Moszczyński</span><span class="logo-short" aria-hidden="true">Łukasz M.</span></span></a>
+  <!-- Wordmark: the full name; phones show "Łukasz M.". The name is the visible text plus ", home" (WCAG 2.5.3). -->
+  <a class="logo" href={home}><span class="logo-text fx-underline"><span class="logo-full">Łukasz Moszczyński</span><span class="logo-short">Łukasz M.</span><span class="visually-hidden">{t(lang, 'nav.logoHome')}</span></span></a>
   <div class="bar-tools">
     <LangSwitch lang={lang} />
     <ThemeToggle lang={lang} />
@@ -101,6 +101,7 @@ const mainLinks = [
   .seg-option { display: grid; place-items: center; min-width: 40px; height: 40px; padding-inline: 8px; border-radius: 999px; text-decoration: none; color: inherit; transition: color .3s }
   .lang-seg { text-decoration: none }
   .lang-seg .seg-option.is-current { color: var(--on-accent) }
+  .lang-seg .seg-option.is-current::before { content: attr(data-label) / "" }
   .lang-seg:is(:hover, :focus-visible) .seg-option.is-target { color: var(--accent-ink) }
   .lang-seg[data-current="pl"] .seg-thumb { transform: translateX(100%) }
   /* While the thumb slides to the other language, the colours follow it. */

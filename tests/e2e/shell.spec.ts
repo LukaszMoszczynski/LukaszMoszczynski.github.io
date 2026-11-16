@@ -19,9 +19,12 @@ test('theme switch flips the emulated scheme, updates aria-checked and persists'
   await expect(toggle).toHaveAttribute('aria-checked', 'false');
 });
 
+/** The wordmark's name is its visible text (full or short) plus ", home". */
+const LOGO_NAME = /^Łukasz (Moszczyński|M\.) ?, home$/;
+
 test('header controls are named by their visible text first (WCAG 2.5.3)', async ({ page }) => {
   await page.goto('./');
-  await expect(page.getByRole('link', { name: 'Łukasz Moszczyński, home', exact: true })).toHaveCount(1);
+  await expect(page.getByRole('link', { name: LOGO_NAME })).toHaveCount(1);
   await expect(page.getByRole('link', { name: /^PL – / })).toHaveCount(1);
   await expect(page.getByRole('switch', { name: 'Dark mode' })).toHaveCount(1);
   await expect(menuButton(page)).toHaveAttribute('aria-controls', 'site-menu');
@@ -33,7 +36,8 @@ test.describe('wordmark', () => {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('./');
       const logo = page.locator('header .logo');
-      await expect(logo).toHaveAccessibleName('Łukasz Moszczyński, home');
+      // Label in name: the visible text starts the accessible name (WCAG 2.5.3).
+      await expect(logo).toHaveAccessibleName(width <= 480 ? /^Łukasz M\. ?, home$/ : /^Łukasz Moszczyński ?, home$/);
       await expect(logo).toHaveCSS('font-weight', '600');
       await expect(logo).toHaveCSS('text-transform', 'none');
       const visible = width <= 480 ? 'Łukasz M.' : 'Łukasz Moszczyński';
@@ -56,7 +60,7 @@ test.describe('wordmark', () => {
 
   test('the 404 page carries the same wordmark', async ({ page }) => {
     await page.goto('this-page-does-not-exist/');
-    await expect(page.getByRole('link', { name: 'Łukasz Moszczyński, home', exact: true })).toHaveCount(1);
+    await expect(page.getByRole('link', { name: LOGO_NAME })).toHaveCount(1);
   });
 
   test('hover and keyboard focus draw the underline and colour the name', async ({ page }, testInfo) => {
@@ -140,7 +144,10 @@ test.describe('whole-pill switches', () => {
     await expect(pill).toHaveAttribute('hreflang', 'pl');
     await expect(pill).toHaveAttribute('lang', 'pl');
     await expect(pill).toHaveAccessibleName('PL – Zmień język na polski');
-    await expect(pill.locator('.seg-option')).toHaveText(['EN', 'PL']);
+    // The target is real text; the current language is a state marker drawn by CSS from data-label.
+    await expect(pill.locator('.seg-option.is-target')).toHaveText('PL');
+    await expect(pill.locator('.seg-option.is-current')).toHaveAttribute('data-label', 'EN');
+    expect(await pill.locator('.seg-option.is-current').evaluate((element) => getComputedStyle(element, '::before').content)).toContain('EN');
     await expect(page.locator('header a[hreflang]')).toHaveCount(1);
   });
 

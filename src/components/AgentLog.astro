@@ -15,9 +15,10 @@ const chips = [
       <button type="button" class="chip" data-run={chip.key} aria-pressed={chip.key === 'qa' ? 'true' : 'false'}>{chip.label}</button>
     ))}
   </div>
-  <div class="term" aria-live="polite" lang="en">
-    <span class="term-sr">{AGENT_RUNS.qa.map((line) => line.text).join('. ')}</span>
-    <div class="term-lines" aria-hidden="true">
+  <!-- Focusable: on narrow screens the log scrolls sideways, and keyboard users must be able to scroll it. -->
+  <div class="term" role="region" tabindex="0" aria-label={t(lang, 'stack.ai.termLabel')} aria-live="polite">
+    <span class="term-sr" lang="en">{AGENT_RUNS.qa.map((line) => line.text).join('. ')}</span>
+    <div class="term-lines" aria-hidden="true" lang="en">
       {AGENT_RUNS.qa.map((line) => (
         <div class={line.kind}>{line.kind === 'step' && <><span class="prompt">›</span>{' '}</>}{line.text}</div>
       ))}
@@ -32,6 +33,7 @@ const chips = [
   .agent .chip:hover { border-color: var(--accent) }
   .agent .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent) }
   .agent .term { position: relative; background: var(--term-bg); color: var(--term-ink); border-radius: 16px; padding: 18px; font: 13px/1.7 var(--font-mono); min-height: 220px; overflow-x: auto; box-shadow: 0 0 0 1px var(--term-line) }
+  .agent .term:focus-visible { border-radius: 16px }
   .agent .term-lines > div { white-space: nowrap }
   .agent .term .comment { color: var(--term-comment) }
   .agent .term .ok { color: var(--term-ok) }
