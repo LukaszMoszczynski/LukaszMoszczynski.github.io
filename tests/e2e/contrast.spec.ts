@@ -49,7 +49,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await expect(page.locator('html')).toHaveAttribute('data-theme', scheme);
     const tokens = await page.evaluate(() => {
       const style = getComputedStyle(document.documentElement);
-      const names = ['--bg', '--muted', '--accent-ink', '--accent-display', '--focus-ring', '--ink', '--glow-a', '--glow-b'];
+      const names = ['--bg', '--muted', '--accent-ink', '--accent-display', '--focus-ring', '--control-line', '--ink', '--glow-a', '--glow-b'];
       return {
         ...Object.fromEntries(names.map((name) => [name, style.getPropertyValue(name).trim()])),
         strength: Number(getComputedStyle(document.querySelector('.light-layer')!).opacity),
@@ -63,7 +63,7 @@ for (const scheme of ['light', 'dark'] as const) {
     // The two glows can meet (the second one mirrors the pointer).
     const underBoth = over(glowB, glowB[3] * tokens.strength, underA);
     const backgrounds = [bg, underA, underB, underBoth].map(rgbString);
-    const needs: Array<[string, number]> = [['--ink', 4.5], ['--muted', 4.5], ['--accent-ink', 4.5], ['--accent-display', 3], ['--focus-ring', 3]];
+    const needs: Array<[string, number]> = [['--ink', 4.5], ['--muted', 4.5], ['--accent-ink', 4.5], ['--accent-display', 3], ['--focus-ring', 3], ['--control-line', 3]];
     for (const [token, minimum] of needs) {
       for (const background of backgrounds) {
         expect(contrast(tokens[token], background), `${token} ${tokens[token]} on ${background}`).toBeGreaterThanOrEqual(minimum);
@@ -94,6 +94,21 @@ for (const scheme of ['light', 'dark'] as const) {
     // The token-build section lives on the design-system case study.
     await page.goto('work/design-system/');
     await smallAccent('.build-kicker');
+  });
+
+  test(`outline buttons have a border of at least 3:1 in the ${scheme} theme (1.4.11)`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    await page.goto('./');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', scheme);
+    const background = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
+    const previous = page.locator('#recommendations .prev-quote');
+    await previous.scrollIntoViewIfNeeded();
+    await expect(previous).toBeVisible();
+    for (const selector of ['#recommendations .prev-quote', '#contact .copy-btn']) {
+      const border = await page.locator(selector).first().evaluate((element) => getComputedStyle(element).boxShadow);
+      const color = border.match(/rgba?\([^)]*\)/)?.[0] ?? '';
+      expect(contrast(color, background), `${selector} border ${color} on ${background}`).toBeGreaterThanOrEqual(3);
+    }
   });
 
   test(`hovered pills keep AA text in the ${scheme} theme`, async ({ page }, testInfo) => {

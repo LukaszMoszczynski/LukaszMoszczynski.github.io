@@ -29,7 +29,7 @@ const chips = [
 <style is:global>
   .agent { display: grid; gap: 12px; min-width: 0 }
   .agent .chips { display: flex; flex-wrap: wrap; gap: 6px }
-  .agent .chip { font: 500 12px/1 var(--font-mono); padding: 9px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer }
+  .agent .chip { font: 500 12px/1 var(--font-mono); padding: 9px 12px; border-radius: 999px; border: 1px solid var(--control-line); background: var(--bg); color: var(--ink); cursor: pointer }
   .agent .chip:hover { border-color: var(--accent) }
   .agent .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent) }
   .agent .term { position: relative; background: var(--term-bg); color: var(--term-ink); border-radius: 16px; padding: 18px; font: 13px/1.7 var(--font-mono); min-height: 220px; overflow-x: auto; box-shadow: 0 0 0 1px var(--term-line) }
