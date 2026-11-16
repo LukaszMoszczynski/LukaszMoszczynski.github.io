@@ -2,8 +2,9 @@
 import { t, type Lang } from '../i18n/utils';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
+// The name starts with the visible text (WCAG 2.5.3); aria-pressed says whether dark mode is on.
 ---
-<button type="button" class="theme-toggle" data-theme-toggle aria-label={t(lang, 'a11y.toggleTheme')}>
+<button type="button" class="theme-toggle" data-theme-toggle aria-label={`${t(lang, 'theme.label')}, ${t(lang, 'a11y.toggleTheme')}`}>
   {t(lang, 'theme.label')}
 </button>
 <script>
@@ -12,7 +13,15 @@ const { lang } = Astro.props;
 
   onPage(() => {
     const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
-    const handle = () => { toggleTheme(); };
+    const sync = () => {
+      const dark = document.documentElement.dataset.theme === 'dark';
+      buttons.forEach((button) => button.setAttribute('aria-pressed', String(dark)));
+    };
+    const handle = () => {
+      toggleTheme();
+      sync();
+    };
+    sync();
     buttons.forEach((button) => button.addEventListener('click', handle));
     return () => buttons.forEach((button) => button.removeEventListener('click', handle));
   });

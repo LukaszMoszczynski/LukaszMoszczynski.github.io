@@ -7,8 +7,8 @@ const { lang } = Astro.props;
 const home = localizePath('/', lang);
 ---
 <header class="bar">
-  <a class="logo" href={home} aria-label={t(lang, 'nav.logoLabel')}>ŁM<span>.</span></a>
-  <nav>
+  <a class="logo" href={home} aria-label={`ŁM. ${t(lang, 'nav.logoLabel')}`}>ŁM<span>.</span></a>
+  <nav aria-label={t(lang, 'nav.label')}>
     <a class="nav-link" href={`${home}#work`}>{t(lang, 'nav.work')}</a>
     <a class="nav-link" href={`${home}#contact`}>{t(lang, 'nav.contact')}</a>
     <LangSwitch lang={lang} />

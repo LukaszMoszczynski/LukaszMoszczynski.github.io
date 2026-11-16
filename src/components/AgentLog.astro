@@ -15,7 +15,7 @@ const chips = [
       <button type="button" class="chip" data-run={chip.key} aria-pressed={chip.key === 'qa' ? 'true' : 'false'}>{chip.label}</button>
     ))}
   </div>
-  <div class="term" aria-live="polite">
+  <div class="term" aria-live="polite" lang="en">
     <span class="term-sr">{AGENT_RUNS.qa.map((line) => line.text).join('. ')}</span>
     <div class="term-lines" aria-hidden="true">
       {AGENT_RUNS.qa.map((line) => (

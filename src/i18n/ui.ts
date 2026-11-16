@@ -2,9 +2,10 @@ export const ui = {
   en: {
     'nav.work': 'Work',
     'nav.contact': 'Contact',
+    'nav.label': 'Main',
     'nav.logoLabel': 'Łukasz Moszczyński, home',
     'a11y.switchLang': 'Zmień język na polski',
-    'a11y.toggleTheme': 'Toggle dark mode',
+    'a11y.toggleTheme': 'dark mode',
     'a11y.skipToContent': 'Skip to content',
     'theme.label': 'Dark / Light',
     'lang.label': 'PL',
@@ -125,9 +126,10 @@ export const ui = {
   pl: {
     'nav.work': 'Projekty',
     'nav.contact': 'Kontakt',
+    'nav.label': 'Główna',
     'nav.logoLabel': 'Łukasz Moszczyński, strona główna',
     'a11y.switchLang': 'Switch language to English',
-    'a11y.toggleTheme': 'Przełącz tryb ciemny',
+    'a11y.toggleTheme': 'tryb ciemny',
     'a11y.skipToContent': 'Przejdź do treści',
     'theme.label': 'Ciemny / Jasny',
     'lang.label': 'EN',
