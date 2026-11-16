@@ -23,3 +23,19 @@ export async function themeSwitch(page: Page) {
   await showSwitches(page);
   return page.locator('header [data-theme-toggle]:visible');
 }
+
+/**
+ * Starts the page in a theme the way a returning reader would have it: a stored choice.
+ * Seeded once per tab, so a later switch and reload keep the reader's new choice.
+ */
+export async function useTheme(page: Page, theme: 'light' | 'dark'): Promise<void> {
+  await page.addInitScript((value) => {
+    try {
+      if (sessionStorage.getItem('theme-seeded')) return;
+      sessionStorage.setItem('theme-seeded', '1');
+      localStorage.setItem('theme', value);
+    } catch {
+      // storage blocked: the test will see the default theme
+    }
+  }, theme);
+}

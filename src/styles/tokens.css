@@ -22,21 +22,13 @@
   --font-body: "Manrope Variable", "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0d0a15; --surface: #1a1429; --card: #1f1832; --ink: #f4f0fb; --muted: #b6a9d4; --dim: #3a3054;
-    --accent: #f07a3e; --violet: #8f70ea; --line: #2a2140; --grid: #1b1528; --select: #5aa7e6;
-    --glow-a: rgb(240 122 62 / .36); --glow-b: rgb(123 91 214 / .40); --on-accent: #0d0a15; --accent-ink: #f58b54; --accent-display: #f07a3e; --focus-ring: #f07a3e; --control-line: #9a8dbd; --glow-strength: .6; color-scheme: dark;
-    --spot-a: rgb(240 122 62 / .36); --spot-b: rgb(123 91 214 / .40); --spot-strength: .6; --spot-size: 46vmax;
-    --spot-cell: rgb(240 122 62 / .04); --spot-cell-edge: rgb(240 122 62 / .35); --spot-dot: rgb(240 122 62 / .7);
-  }
-}
-:root[data-theme="dark"] {
+/* Dark is the default: everything but an explicit light choice (also before JS sets data-theme, and without JS). */
+:root:not([data-theme="light"]) {
   --bg: #0d0a15; --surface: #1a1429; --card: #1f1832; --ink: #f4f0fb; --muted: #b6a9d4; --dim: #3a3054;
   --accent: #f07a3e; --violet: #8f70ea; --line: #2a2140; --grid: #1b1528; --select: #5aa7e6;
   --glow-a: rgb(240 122 62 / .36); --glow-b: rgb(123 91 214 / .40); --on-accent: #0d0a15; --accent-ink: #f58b54; --accent-display: #f07a3e; --focus-ring: #f07a3e; --control-line: #9a8dbd; --glow-strength: .6; color-scheme: dark;
-    --spot-a: rgb(240 122 62 / .36); --spot-b: rgb(123 91 214 / .40); --spot-strength: .6; --spot-size: 46vmax;
-    --spot-cell: rgb(240 122 62 / .04); --spot-cell-edge: rgb(240 122 62 / .35); --spot-dot: rgb(240 122 62 / .7);
+  --spot-a: rgb(240 122 62 / .36); --spot-b: rgb(123 91 214 / .40); --spot-strength: .6; --spot-size: 46vmax;
+  --spot-cell: rgb(240 122 62 / .04); --spot-cell-edge: rgb(240 122 62 / .35); --spot-dot: rgb(240 122 62 / .7);
 }
 
 /* Terminal surfaces stay dark in both themes */

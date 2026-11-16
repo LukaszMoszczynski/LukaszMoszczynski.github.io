@@ -2,10 +2,13 @@ export const THEME_KEY = 'theme';
 
 export type Theme = 'light' | 'dark';
 
-/** Invalid or missing stored value falls back to the system preference. */
-export function resolveTheme(stored: string | null, systemDark: boolean): Theme {
+/** The site starts dark, whatever the OS prefers. */
+export const DEFAULT_THEME: Theme = 'dark';
+
+/** A valid stored choice wins; anything else (missing, invalid) is the dark default. */
+export function resolveTheme(stored: string | null): Theme {
   if (stored === 'light' || stored === 'dark') return stored;
-  return systemDark ? 'dark' : 'light';
+  return DEFAULT_THEME;
 }
 
 export function applyTheme(theme: Theme, target: HTMLElement = document.documentElement): void {

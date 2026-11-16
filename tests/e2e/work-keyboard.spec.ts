@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { useTheme } from './helpers';
 
 const COUNT = 6;
 
@@ -93,7 +94,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
 }
 
 test('the ring uses the accent in the dark theme too', async ({ page }) => {
-  await page.emulateMedia({ colorScheme: 'dark' });
+  await useTheme(page, 'dark');
   await page.goto('./');
   await page.locator('#work .work-all a').focus();
   await page.keyboard.press('Shift+Tab');

@@ -27,8 +27,8 @@ const { lang, title, description, path, noindex } = Astro.props;
         var apply = function (target) {
           var stored = null;
           try { stored = localStorage.getItem('theme'); } catch (error) {}
-          var dark = matchMedia('(prefers-color-scheme: dark)').matches;
-          target.dataset.theme = stored === 'light' || stored === 'dark' ? stored : dark ? 'dark' : 'light';
+          // Dark unless the reader chose light (resolveTheme in theme.ts); the OS setting is not consulted.
+          target.dataset.theme = stored === 'light' || stored === 'dark' ? stored : 'dark';
           // "Pause animations" (motion-pause.ts): remembered across pages and visits.
           var paused = false;
           try { paused = localStorage.getItem('motion-paused') === '1'; } catch (error) {}

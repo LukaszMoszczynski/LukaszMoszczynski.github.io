@@ -1,6 +1,7 @@
 import { readdirSync } from 'node:fs';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
+import { useTheme } from './helpers';
 
 /** WCAG 2.2 AA audit with axe on every page, both themes, desktop and phone. */
 const slugs = readdirSync('src/content/projects/en').map((file) => file.replace(/\.[^.]+$/, ''));
@@ -39,7 +40,7 @@ for (const scheme of ['light', 'dark'] as const) {
   for (const path of pages) {
     test(`axe: no WCAG 2.2 AA violations on ${path} (${scheme})`, async ({ page }) => {
       test.setTimeout(60_000);
-      await page.emulateMedia({ colorScheme: scheme });
+      await useTheme(page, scheme);
       await page.goto(path);
       await expect(page.locator('html')).toHaveAttribute('data-theme', scheme);
       await expect(page.locator('html')).not.toHaveClass(/init-pending/);

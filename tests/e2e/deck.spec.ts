@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { useTheme } from './helpers';
 
 const names = ['Aleksandra Zalewska', 'Szymon Papis', 'Dawid Krajewski'];
 
@@ -127,7 +128,7 @@ test.describe('recommendations deck', () => {
 
   for (const scheme of ['light', 'dark'] as const) {
     test(`focus rings on the buttons and the deck use the accent (${scheme})`, async ({ page }) => {
-      await page.emulateMedia({ colorScheme: scheme });
+      await useTheme(page, scheme);
       await page.goto('./');
       const accent = await page.evaluate(() => {
         const probe = document.createElement('i');

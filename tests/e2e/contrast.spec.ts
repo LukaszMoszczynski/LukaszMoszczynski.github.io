@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { useTheme } from './helpers';
 
 /** WCAG relative luminance of an `rgb(r, g, b)` or `#rrggbb` colour. */
 function luminance(color: string): number {
@@ -44,7 +45,7 @@ const rgbString = (channels: number[]) => `rgb(${channels.map((channel) => Math.
 
 for (const scheme of ['light', 'dark'] as const) {
   test(`text and focus rings keep AA over the cursor glow at its peak in the ${scheme} theme (1.4.3, 1.4.11)`, async ({ page }) => {
-    await page.emulateMedia({ colorScheme: scheme });
+    await useTheme(page, scheme);
     await page.goto('./');
     await expect(page.locator('html')).toHaveAttribute('data-theme', scheme);
     const tokens = await page.evaluate(() => {
@@ -78,7 +79,7 @@ for (const scheme of ['light', 'dark'] as const) {
 
 for (const scheme of ['light', 'dark'] as const) {
   test(`small-text colour pairs reach AA in the ${scheme} theme`, async ({ page }) => {
-    await page.emulateMedia({ colorScheme: scheme });
+    await useTheme(page, scheme);
     await page.goto('./');
     await expect(page.locator('html')).toHaveAttribute('data-theme', scheme);
     const tokens = await page.evaluate((names) => {
@@ -101,7 +102,7 @@ for (const scheme of ['light', 'dark'] as const) {
   });
 
   test(`outline buttons have a border of at least 3:1 in the ${scheme} theme (1.4.11)`, async ({ page }) => {
-    await page.emulateMedia({ colorScheme: scheme });
+    await useTheme(page, scheme);
     await page.goto('./');
     await expect(page.locator('html')).toHaveAttribute('data-theme', scheme);
     const background = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
@@ -117,7 +118,7 @@ for (const scheme of ['light', 'dark'] as const) {
 
   test(`hovered pills keep AA text in the ${scheme} theme`, async ({ page }, testInfo) => {
     test.skip(testInfo.project.name === 'phone', 'hover needs a fine pointer');
-    await page.emulateMedia({ colorScheme: scheme });
+    await useTheme(page, scheme);
     await page.goto('./');
     for (const selector of ['#contact .contact-btn:not(.ghost)', '#contact .contact-btn.ghost', '#contact .copy-btn']) {
       const pill = page.locator(selector).first();

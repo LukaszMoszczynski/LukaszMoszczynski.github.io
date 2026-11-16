@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { useTheme } from './helpers';
 import { ui } from '../../src/i18n/ui';
 
 const statementText = ui.en['statement.text'];
@@ -101,7 +102,7 @@ test.describe('statement turns orange word by word as the reader scrolls past', 
 
   for (const scheme of ['light', 'dark'] as const) {
     test(`ink before, first words orange midway, all orange after (${scheme})`, async ({ page }) => {
-      await page.emulateMedia({ colorScheme: scheme });
+      await useTheme(page, scheme);
       await page.goto('./');
       await expect(page.locator('.statement .word').first()).toBeAttached();
       const ink = await resolved(page, '--ink');

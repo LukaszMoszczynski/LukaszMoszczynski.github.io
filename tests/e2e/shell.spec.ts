@@ -1,11 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
-import { langSwitch, showSwitches, themeSwitch } from './helpers';
+import { langSwitch, showSwitches, themeSwitch, useTheme } from './helpers';
 
 const menuButton = (page: Page) => page.getByRole('button', { name: 'Menu' });
 const menu = (page: Page) => page.locator('#site-menu');
 
 test('theme switch flips the emulated scheme, updates aria-checked and persists', async ({ page }) => {
-  await page.emulateMedia({ colorScheme: 'light' });
+  await useTheme(page, 'light');
   await page.goto('./');
   const toggle = await themeSwitch(page);
   await expect(toggle).toHaveAttribute('aria-checked', 'false');
@@ -83,14 +83,59 @@ test.describe('wordmark', () => {
   });
 });
 
-test('invalid stored theme falls back to system dark at first paint', async ({ browser }) => {
-  const context = await browser.newContext({ colorScheme: 'dark' });
-  await context.addInitScript(() => localStorage.setItem('theme', 'blue'));
-  const page = await context.newPage();
-  await page.goto('http://localhost:4321/portfolio-preview/');
-  const background = await page.evaluate(() => getComputedStyle(document.documentElement).backgroundColor);
-  expect(background).toBe('rgb(13, 10, 21)');
-  await context.close();
+test.describe('dark is the default theme', () => {
+  const DARK_BG = 'rgb(13, 10, 21)';
+  const LIGHT_BG = 'rgb(248, 246, 251)';
+
+  for (const os of ['light', 'dark'] as const) {
+    test(`with no saved choice the site starts dark, from the first paint, when the OS prefers ${os}`, async ({ browser }) => {
+      const context = await browser.newContext({ colorScheme: os });
+      const page = await context.newPage();
+      // Before the first paint: the head script has set the theme by the time the document is parsed (module scripts run later).
+      await page.addInitScript(() => {
+        document.addEventListener('readystatechange', () => {
+          if (document.readyState === 'interactive' && !(window as Window & { firstPaint?: string }).firstPaint) {
+            (window as Window & { firstPaint?: string }).firstPaint = document.documentElement.dataset.theme;
+          }
+        });
+      });
+      await page.goto('http://localhost:4321/portfolio-preview/');
+      expect(await page.evaluate(() => (window as Window & { firstPaint?: string }).firstPaint)).toBe('dark');
+      await expect(page.locator('html')).toHaveCSS('background-color', DARK_BG);
+      await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+      await expect(page.locator('[data-theme-toggle]').first()).toHaveAttribute('aria-checked', 'true');
+      await context.close();
+    });
+  }
+
+  test('an invalid stored value also starts dark', async ({ browser }) => {
+    const context = await browser.newContext({ colorScheme: 'light' });
+    await context.addInitScript(() => localStorage.setItem('theme', 'blue'));
+    const page = await context.newPage();
+    await page.goto('http://localhost:4321/portfolio-preview/');
+    expect(await page.evaluate(() => getComputedStyle(document.documentElement).backgroundColor)).toBe(DARK_BG);
+    await context.close();
+  });
+
+  test('a saved light choice wins over the dark default and lasts across pages', async ({ browser }) => {
+    const context = await browser.newContext({ colorScheme: 'dark' });
+    await context.addInitScript(() => localStorage.setItem('theme', 'light'));
+    const page = await context.newPage();
+    await page.goto('http://localhost:4321/portfolio-preview/');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    expect(await page.evaluate(() => getComputedStyle(document.documentElement).backgroundColor)).toBe(LIGHT_BG);
+    await page.goto('http://localhost:4321/portfolio-preview/work/');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await context.close();
+  });
+
+  test.describe('no JS', () => {
+    test.use({ javaScriptEnabled: false, colorScheme: 'light' });
+    test('the page is dark without scripts too', async ({ page }) => {
+      await page.goto('./');
+      await expect(page.locator('html')).toHaveCSS('background-color', DARK_BG);
+    });
+  });
 });
 
 test('language switch goes to /pl/ and sets html lang', async ({ page }) => {
@@ -136,7 +181,7 @@ test.describe('whole-pill switches', () => {
     });
 
     test(`clicking the theme pill at ${Math.round(spot * 100)}% toggles the theme`, async ({ page }) => {
-      await page.emulateMedia({ colorScheme: 'light' });
+      await useTheme(page, 'light');
       await page.goto('./');
       const toggle = await themeSwitch(page);
       await page.waitForTimeout(700);
@@ -312,7 +357,7 @@ test.describe('theme switch after many language switches', () => {
 
   for (const count of [10, 11]) {
     test(`after ${count} language switches one click flips the theme and a second flips it back`, async ({ page }) => {
-      await page.emulateMedia({ colorScheme: 'light' });
+      await useTheme(page, 'light');
       await page.goto('./');
       for (let index = 0; index < count; index++) {
         const lang = await page.locator('html').getAttribute('lang');
@@ -334,7 +379,7 @@ test.describe('theme switch after many language switches', () => {
 
   test('a theme click while the page transition plays is not lost', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name === 'phone', 'phones have no theme switch in the header; the menu closes with the page');
-    await page.emulateMedia({ colorScheme: 'light' });
+    await useTheme(page, 'light');
     await page.goto('./');
     const html = page.locator('html');
     const theme = (await page.locator('.bar-tools [data-theme-toggle]').boundingBox())!;
