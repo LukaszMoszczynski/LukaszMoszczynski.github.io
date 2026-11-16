@@ -237,3 +237,67 @@ test('robots.txt points at the sitemap under the base path', async ({ request })
   expect(response.ok()).toBe(true);
   expect(await response.text()).toMatch(/^Sitemap: https:\/\/lukaszmoszczynski\.github\.io\/portfolio-preview\/sitemap-index\.xml$/m);
 });
+
+test.describe('theme switch after many language switches', () => {
+  const settled = (page: Page) => expect(page.locator('html')).not.toHaveAttribute('data-astro-transition', /.*/);
+
+  for (const count of [10, 11]) {
+    test(`after ${count} language switches one click flips the theme and a second flips it back`, async ({ page }) => {
+      await page.emulateMedia({ colorScheme: 'light' });
+      await page.goto('./');
+      for (let index = 0; index < count; index++) {
+        const lang = await page.locator('html').getAttribute('lang');
+        await page.locator('header [data-lang-switch]').click();
+        await expect(page.locator('html')).not.toHaveAttribute('lang', lang!);
+        await settled(page);
+      }
+      await expect(page.locator('html')).toHaveAttribute('lang', count % 2 ? 'pl' : 'en');
+      const html = page.locator('html');
+      const toggle = page.locator('header [data-theme-toggle]');
+      await toggle.click();
+      await expect(html).toHaveAttribute('data-theme', 'dark');
+      await expect(toggle).toHaveAttribute('aria-checked', 'true');
+      await toggle.click();
+      await expect(html).toHaveAttribute('data-theme', 'light');
+      await expect(toggle).toHaveAttribute('aria-checked', 'false');
+    });
+  }
+
+  test('a theme click while the page transition plays is not lost', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'light' });
+    await page.goto('./');
+    const html = page.locator('html');
+    const theme = (await page.locator('header [data-theme-toggle]').boundingBox())!;
+    await page.locator('header [data-lang-switch]').click();
+    // The browser hit-tests to <html> while a view transition plays; click right then.
+    await expect(html).toHaveAttribute('data-astro-transition', /.+/);
+    await page.mouse.click(theme.x + theme.width / 2, theme.y + theme.height / 2);
+    await settled(page);
+    await expect(html).toHaveAttribute('lang', 'pl');
+    await expect(html).toHaveAttribute('data-theme', 'dark');
+    await expect(page.locator('header [data-theme-toggle]')).toHaveAttribute('aria-checked', 'true');
+  });
+
+  test('a second click on the language pill while its thumb slides does not queue a second switch', async ({ page }) => {
+    await page.goto('./');
+    const historyBefore = await page.evaluate(() => history.length);
+    const pill = page.locator('header [data-lang-switch]');
+    const box = (await pill.boundingBox())!;
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+    await expect(page).toHaveURL(/\/portfolio-preview\/pl\/$/);
+    await settled(page);
+    await page.waitForTimeout(600);
+    await expect(page).toHaveURL(/\/portfolio-preview\/pl\/$/);
+    expect(await page.evaluate(() => history.length)).toBe(historyBefore + 1);
+  });
+
+  test('the language switch is a client-side navigation, not a full page load', async ({ page }) => {
+    await page.goto('./');
+    await page.evaluate(() => ((window as Window & { stayMarker?: number }).stayMarker = 1));
+    await page.locator('header [data-lang-switch]').click();
+    await expect(page.locator('html')).toHaveAttribute('lang', 'pl');
+    await settled(page);
+    expect(await page.evaluate(() => (window as Window & { stayMarker?: number }).stayMarker)).toBe(1);
+  });
+});

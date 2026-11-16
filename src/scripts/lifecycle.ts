@@ -1,6 +1,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { takePlace } from './reading-place';
+import { installTransitionClickReplay } from './transition-clicks';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -91,6 +92,7 @@ function runAll(): void {
 }
 
 if (typeof document !== 'undefined') {
+  installTransitionClickReplay();
   document.addEventListener('astro:before-preparation', (event) => {
     navigationType = (event as Event & { navigationType: typeof navigationType }).navigationType;
   });

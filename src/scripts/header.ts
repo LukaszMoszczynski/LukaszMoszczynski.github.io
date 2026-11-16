@@ -35,6 +35,11 @@ export function initHeader(root: HTMLElement): () => void {
     listen(langLink, 'click', (event) => {
       const click = event as MouseEvent;
       if (click.metaKey || click.ctrlKey || click.shiftKey || click.altKey || click.button !== 0) return;
+      // A second click while the thumb slides would queue a second navigation that cleanup never cancels.
+      if (langTimer !== undefined) {
+        event.preventDefault();
+        return;
+      }
       rememberPlace(new URL(langLink.href).pathname);
       if (!motion) return;
       event.preventDefault();
@@ -138,6 +143,7 @@ export function initHeader(root: HTMLElement): () => void {
   return () => {
     removers.forEach((remove) => remove());
     clearTimeout(langTimer);
+    langTimer = undefined;
     langSeg?.classList.remove('is-switching');
     timeline?.kill();
     timeline = undefined;
