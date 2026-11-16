@@ -1,5 +1,6 @@
 import { CELL, cellOrigin, gridLines, nearestCrossing, tracerShape, type GridLines, type Point, type TracerShape } from './grid';
 import { gsap, hasFinePointer, prefersReducedMotion } from './lifecycle';
+import { motionPaused, onMotionPauseChange } from './motion-pause';
 
 type Direction = 'up' | 'down' | 'left' | 'right';
 type Origin = 'ambient' | 'burst';
@@ -55,6 +56,7 @@ export function initBackground(): () => void {
   let lines: GridLines = { columns: [], rows: [], offsetX: 0 };
   let lineElements: HTMLElement[] = [];
   let stopped = false;
+  const ambientTracers = new Set<gsap.core.Timeline>();
 
   /** Remembers an animation until it completes, keeping its own onComplete. */
   const track = <T extends gsap.core.Animation>(animation: T): T => {
@@ -141,6 +143,7 @@ export function initBackground(): () => void {
     const timeline = gsap.timeline({
       delay: motion.delay,
       onComplete: () => {
+        ambientTracers.delete(timeline);
         line.remove();
         dot.remove();
         onDone?.();
@@ -151,6 +154,7 @@ export function initBackground(): () => void {
       .fromTo(dot, { x: 0, y: 0, scale: 0 }, { ...move, scale: 1, duration, ease: motion.ease, immediateRender: true }, 0)
       .to([line, dot], { opacity: 0, duration: 0.8 }, `+=${motion.linger}`);
     track(timeline);
+    if (kind === 'ambient') ambientTracers.add(timeline);
   };
 
   // ambient tracers: at most three at a time, forever, each with its own length and speed; paused while the tab is hidden
@@ -161,7 +165,7 @@ export function initBackground(): () => void {
   };
   function spawnAmbient() {
     if (stopped) return;
-    if (document.hidden) {
+    if (document.hidden || motionPaused()) {
       waiting++;
       return;
     }
@@ -182,13 +186,14 @@ export function initBackground(): () => void {
       schedule(gsap.utils.random(0.2, 1.4));
     }, motion);
   }
-  listen(document, 'visibilitychange', () => {
-    if (document.hidden) return;
+  const resumeWaiting = () => {
+    if (document.hidden || motionPaused()) return;
     while (waiting > 0) {
       waiting--;
       schedule(gsap.utils.random(0, 1));
     }
-  });
+  };
+  listen(document, 'visibilitychange', resumeWaiting);
 
   // click burst: four tracers from the nearest crossing and a ring pulse
   listen(document, 'click', (event: MouseEvent) => {
@@ -208,6 +213,7 @@ export function initBackground(): () => void {
   });
 
   // hover cell and cursor light follow a fine pointer; on touch the light drifts
+  const drift: gsap.core.Tween[] = [];
   const glowSize = () => glowA.offsetWidth / 2;
   const hoverCell = span('cell');
   if (hasFinePointer()) {
@@ -229,9 +235,19 @@ export function initBackground(): () => void {
     });
     listen(document.documentElement, 'pointerleave', () => { hoverCell.style.opacity = '0'; });
   } else {
-    track(gsap.to(glowA, { x: `+=${innerWidth * 0.2}`, y: `+=${glowSize() * 0.45}`, duration: 9, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
-    track(gsap.to(glowB, { x: `+=${innerWidth * 0.3}`, y: `-=${glowSize() * 0.26}`, duration: 11, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
+    drift.push(
+      track(gsap.to(glowA, { x: `+=${innerWidth * 0.2}`, y: `+=${glowSize() * 0.45}`, duration: 9, ease: 'sine.inOut', yoyo: true, repeat: -1, paused: motionPaused() })),
+      track(gsap.to(glowB, { x: `+=${innerWidth * 0.3}`, y: `-=${glowSize() * 0.26}`, duration: 11, ease: 'sine.inOut', yoyo: true, repeat: -1, paused: motionPaused() })),
+    );
   }
+
+  // "Pause animations": running ambient tracers jump to their end (and are not replaced), the drift stops.
+  // Click bursts and the pointer light answer the reader, so they keep working.
+  listeners.push(onMotionPauseChange((paused) => {
+    drift.forEach((tween) => (paused ? tween.pause() : tween.resume()));
+    if (paused) ambientTracers.forEach((timeline) => timeline.progress(1));
+    else resumeWaiting();
+  }));
 
   // first load only: lines draw in (≤ 1.2 s), glows bloom, then tracers start
   const intro = gsap.timeline();

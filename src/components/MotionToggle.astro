@@ -1,0 +1,33 @@
+---
+import { t, type Lang } from '../i18n/utils';
+interface Props { lang: Lang; place: 'footer' | 'menu' }
+const { lang, place } = Astro.props;
+---
+<!--
+  "Pause animations" (WCAG 2.2.2). Pressed = paused. Hidden until motion-toggle.ts shows it:
+  without JS or with reduced motion nothing moves on its own, so there is nothing to pause.
+-->
+<button type="button" class:list={['motion-toggle', `motion-toggle-${place}`]} aria-pressed="false" data-motion-toggle hidden>
+  <span class="motion-toggle-icon" aria-hidden="true"><i></i><i></i></span>
+  <span>{t(lang, 'motion.pause')}</span>
+</button>
+<style is:global>
+  .motion-toggle {
+    display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 8px 16px 8px 12px; border: 0; border-radius: 999px; cursor: pointer;
+    font: 500 13px/1.2 var(--font-mono); color: var(--ink); background: transparent; box-shadow: inset 0 0 0 1.5px var(--line);
+    transition: box-shadow .25s, color .25s;
+  }
+  .motion-toggle[hidden] { display: none }
+  .motion-toggle:hover { box-shadow: inset 0 0 0 1.5px var(--accent) }
+  .motion-toggle:focus-visible { border-radius: 999px }
+  .motion-toggle[aria-pressed="true"] { box-shadow: inset 0 0 0 1.5px var(--accent); color: var(--accent-ink) }
+  /* Two bars (pause) while motion runs; they become a play triangle once paused. */
+  .motion-toggle-icon { position: relative; display: inline-flex; gap: 3px; width: 12px; height: 12px }
+  .motion-toggle-icon i { width: 4px; height: 12px; border-radius: 1px; background: currentColor }
+  .motion-toggle[aria-pressed="true"] .motion-toggle-icon i:first-child {
+    width: 0; height: 0; border-radius: 0; background: none;
+    border-style: solid; border-width: 6px 0 6px 10px; border-color: transparent transparent transparent currentColor;
+  }
+  .motion-toggle[aria-pressed="true"] .motion-toggle-icon i:last-child { display: none }
+  @media (prefers-reduced-motion: reduce) { .motion-toggle { transition: none } }
+</style>

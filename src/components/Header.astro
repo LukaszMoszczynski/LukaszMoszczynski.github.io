@@ -3,6 +3,7 @@ import { localizePath, t, type Lang } from '../i18n/utils';
 import { getProjects } from '../content/projects';
 import LangSwitch from './LangSwitch.astro';
 import ThemeToggle from './ThemeToggle.astro';
+import MotionToggle from './MotionToggle.astro';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const home = localizePath('/', lang);
@@ -45,6 +46,7 @@ const mainLinks = [
           <li><a href={localizePath(`/work/${project.slug}/`, lang)}>{project.data.title}</a></li>
         ))}
       </ul>
+      <div class="menu-motion"><MotionToggle lang={lang} place="menu" /></div>
     </nav>
   </div>
 </header>
@@ -150,6 +152,7 @@ const mainLinks = [
   }
   .menu-projects a:is(:hover, :focus-visible) { color: var(--accent-ink); box-shadow: inset 0 0 0 1.5px var(--accent) }
   html.menu-open { overflow: hidden }
+  .menu-motion { margin-top: 32px }
 
   /* Narrow phones: the pills are one target each, so their halves can be a little narrower to leave room for the name. */
   @media (max-width: 400px) {

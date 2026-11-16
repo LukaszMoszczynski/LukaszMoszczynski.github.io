@@ -29,6 +29,10 @@ const { lang, title, description, path, noindex } = Astro.props;
           try { stored = localStorage.getItem('theme'); } catch (error) {}
           var dark = matchMedia('(prefers-color-scheme: dark)').matches;
           target.dataset.theme = stored === 'light' || stored === 'dark' ? stored : dark ? 'dark' : 'light';
+          // "Pause animations" (motion-pause.ts): remembered across pages and visits.
+          var paused = false;
+          try { paused = localStorage.getItem('motion-paused') === '1'; } catch (error) {}
+          target.classList.toggle('motion-paused', paused);
         };
         // `motion`: animations may run, so CSS shows their start states from the first paint.
         // `init-pending`: removed by lifecycle.ts once every section has set itself up.
@@ -68,8 +72,10 @@ const { lang, title, description, path, noindex } = Astro.props;
   import { onPage } from '../scripts/lifecycle';
   import { initHoverFx } from '../scripts/hover-fx';
   import { initCardLinks } from '../scripts/card-links';
+  import { initMotionToggles } from '../scripts/motion-toggle';
   onPage(initHoverFx);
   onPage(initCardLinks);
+  onPage(initMotionToggles);
 </script>
 <style is:global>
   .skip-link {
