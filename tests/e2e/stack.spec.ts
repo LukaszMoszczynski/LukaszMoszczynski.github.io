@@ -6,7 +6,7 @@ test.describe('stack and agent log', () => {
     await page.goto('./');
     const chip = page.locator('#stack .chip', { hasText: ui.en['stack.ai.chip.qa'] });
     await expect(chip).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('#stack .term-lines')).toContainText('new feature');
+    await expect(page.locator('#stack .term-lines:not(.term-sizer)')).toContainText('new feature');
   });
 
   test('clicking the factory chip switches lines and pressed state', async ({ page }) => {
@@ -15,7 +15,7 @@ test.describe('stack and agent log', () => {
     await factory.click();
     await expect(factory).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('#stack .chip[data-run="qa"]')).toHaveAttribute('aria-pressed', 'false');
-    await expect(page.locator('#stack .term-lines')).toContainText('Jira label');
+    await expect(page.locator('#stack .term-lines:not(.term-sizer)')).toContainText('Jira label');
   });
 
   test('terminal is a polite live region with an example-run caption', async ({ page }) => {
@@ -37,7 +37,7 @@ test.describe('stack and agent log', () => {
   test('reduced motion shows every line without replay', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('./');
-    const lines = page.locator('#stack .term-lines > div');
+    const lines = page.locator('#stack .term-lines:not(.term-sizer) > div');
     await expect(lines).toHaveCount(8);
     const opacities = await lines.evaluateAll((nodes) => nodes.map((node) => Number(getComputedStyle(node).opacity)));
     expect(opacities.every((value) => value === 1)).toBe(true);
@@ -49,15 +49,19 @@ test.describe('stack and agent log', () => {
     test.setTimeout(60_000);
     await page.goto('./');
     await expect(page.locator('html')).not.toHaveClass(/init-pending/);
-    const visibleText = () => page.locator('#stack .term-lines').evaluate((element) =>
+    const visibleText = () => page.locator('#stack .term-lines:not(.term-sizer)').evaluate((element) =>
       [...element.children].filter((line) => Number(getComputedStyle(line).opacity) > 0.5 && (line.textContent ?? '').trim()).length);
     await page.locator('#stack .term').evaluate((element) => element.scrollIntoView({ behavior: 'instant', block: 'center' }));
     await page.waitForTimeout(500);
     expect(await visibleText()).toBeGreaterThan(0);
+    // The box is as tall as the tallest run from the start: switching tabs never moves the page.
+    const height = () => page.locator('#stack .term').evaluate((element) => element.getBoundingClientRect().height);
+    const startHeight = await height();
     for (const run of ['factory', 'figma', 'qa']) {
       await page.locator(`#stack .chip[data-run="${run}"]`).click();
       await page.waitForTimeout(500);
       expect(await visibleText(), run).toBeGreaterThan(0);
+      expect(await height(), run).toBe(startHeight);
     }
     // A whole loop (8 lines × 0.45 s + 2.5 s hold + fade) and into the next one: never an empty box.
     for (let sample = 0; sample < 40; sample++) {
@@ -70,7 +74,7 @@ test.describe('stack and agent log', () => {
     await page.addInitScript(() => localStorage.setItem('motion-paused', '1'));
     await page.goto('./');
     await page.locator('#stack .term').scrollIntoViewIfNeeded();
-    const lines = page.locator('#stack .term-lines > div');
+    const lines = page.locator('#stack .term-lines:not(.term-sizer) > div');
     await expect(lines).toHaveCount(8);
     const opacities = await lines.evaluateAll((nodes) => nodes.map((node) => Number(getComputedStyle(node).opacity)));
     expect(opacities.every((value) => value === 1)).toBe(true);

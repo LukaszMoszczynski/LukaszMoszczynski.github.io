@@ -228,7 +228,7 @@ test.describe('pause animations (2.2.2)', () => {
     expect(await ambientTracers(page)).toBe(0);
     // The agent log shows the whole run at rest.
     await page.locator('.agent .term').scrollIntoViewIfNeeded();
-    const opacities = async () => page.locator('.term-lines > div').evaluateAll((lines) => lines.map((line) => getComputedStyle(line).opacity));
+    const opacities = async () => page.locator('.term-lines:not(.term-sizer) > div').evaluateAll((lines) => lines.map((line) => getComputedStyle(line).opacity));
     await page.waitForTimeout(1200);
     expect(new Set(await opacities())).toEqual(new Set(['1']));
     // The menu copy follows.

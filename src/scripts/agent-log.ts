@@ -38,7 +38,7 @@ export function renderLines(container: HTMLElement, key: RunKey): HTMLElement[] 
  */
 export function initAgentLog(root: HTMLElement): () => void {
   const chips = [...root.querySelectorAll<HTMLButtonElement>('.chip')];
-  const lines = root.querySelector<HTMLElement>('.term-lines');
+  const lines = root.querySelector<HTMLElement>('.term-lines:not(.term-sizer)');
   const announcer = root.querySelector<HTMLElement>('.term-sr');
   if (!chips.length || !lines) return () => {};
 
@@ -80,26 +80,6 @@ export function initAgentLog(root: HTMLElement): () => void {
     chip.addEventListener('click', handler);
     return handler;
   });
-  // Phones wrap the lines, so runs differ in height: the box keeps the tallest one, and a tab switch never moves the page.
-  let measuredWidth = 0;
-  const measure = () => {
-    measuredWidth = lines.clientWidth;
-    lines.style.removeProperty('--term-height');
-    let tallest = 0;
-    for (const key of Object.keys(AGENT_RUNS) as RunKey[]) {
-      renderLines(lines, key);
-      tallest = Math.max(tallest, lines.offsetHeight);
-    }
-    lines.style.setProperty('--term-height', `${tallest}px`);
-  };
-  measure();
-  const onResize = () => {
-    if (lines.clientWidth === measuredWidth) return;
-    measure();
-    show(current, false);
-  };
-  window.addEventListener('resize', onResize);
-
   const initial = (chips.find((chip) => chip.getAttribute('aria-pressed') === 'true')?.dataset.run ?? 'qa') as RunKey;
   show(initial, false);
   const stopListening = onMotionPauseChange(() => show(current, false));
@@ -107,8 +87,6 @@ export function initAgentLog(root: HTMLElement): () => void {
   return () => {
     chips.forEach((chip, index) => chip.removeEventListener('click', handlers[index]));
     stopListening();
-    window.removeEventListener('resize', onResize);
-    lines.style.removeProperty('--term-height');
     timeline?.kill();
     trigger.kill();
     gsap.set(lines.children, { clearProps: 'opacity,transform' });

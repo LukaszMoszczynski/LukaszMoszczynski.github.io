@@ -18,9 +18,20 @@ const chips = [
   <!-- Focusable: on narrow screens the log scrolls sideways, and keyboard users must be able to scroll it. -->
   <div class="term" role="region" tabindex="0" aria-label={t(lang, 'stack.ai.termLabel')} aria-live="polite">
     <span class="term-sr" lang="en">{AGENT_RUNS.qa.map((line) => line.text).join('. ')}</span>
-    <div class="term-lines" aria-hidden="true" lang="en">
-      {AGENT_RUNS.qa.map((line) => (
-        <div class={line.kind}>{line.kind === 'step' && <><span class="prompt">›</span>{' '}</>}{line.text}</div>
+    <!-- Every run is laid out, invisible, in the same grid cell: the box is as tall as the tallest run from the first paint,
+         so a tab switch (or wrapping on phones) never moves the page. -->
+    <div class="term-stack">
+      <div class="term-lines" aria-hidden="true" lang="en">
+        {AGENT_RUNS.qa.map((line) => (
+          <div class={line.kind}>{line.kind === 'step' && <><span class="prompt">›</span>{' '}</>}{line.text}</div>
+        ))}
+      </div>
+      {Object.values(AGENT_RUNS).map((run) => (
+        <div class="term-lines term-sizer" aria-hidden="true">
+          {run.map((line) => (
+            <div class={line.kind}>{line.kind === 'step' && <><span class="prompt">›</span>{' '}</>}{line.text}</div>
+          ))}
+        </div>
       ))}
     </div>
   </div>
@@ -34,11 +45,13 @@ const chips = [
   .agent .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent) }
   .agent .term { position: relative; background: var(--term-bg); color: var(--term-ink); border-radius: 16px; padding: 18px; font: 13px/1.7 var(--font-mono); min-height: 220px; overflow-x: auto; box-shadow: 0 0 0 1px var(--term-line) }
   .agent .term:focus-visible { border-radius: 16px }
+  .agent .term-stack { display: grid }
+  .agent .term-stack > * { grid-area: 1 / 1 }
+  .agent .term-sizer { visibility: hidden }
   .agent .term-lines > div { white-space: nowrap }
   /* Phones: lines wrap with a hanging indent instead of running off the box; the box keeps the height of the longest run. */
   @media (max-width: 560px) {
     .agent .term { padding: 14px; font-size: 12px; min-height: 0 }
-    .agent .term-lines { min-height: var(--term-height, 0px) }
     .agent .term-lines > div { white-space: normal; padding-left: 1.4em; text-indent: -1.4em }
   }
   .agent .term .comment { color: var(--term-comment) }
