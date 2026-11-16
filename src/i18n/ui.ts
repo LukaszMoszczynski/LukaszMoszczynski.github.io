@@ -115,6 +115,12 @@ export const ui = {
     'factory.stage.fix': 'Fix · the factory picks up the comments',
     'factory.stage.clean': 'review clean · ready for a human',
     'footer.copyright': '© 2026 Łukasz Moszczyński',
+    'meta.homeTitle': 'Łukasz Moszczyński · Technical Leader, Frontend, AI',
+    'meta.caseSuffix': 'Case study',
+    'notFound.title': 'Page not found',
+    'notFound.text': 'This page does not exist or has moved.',
+    'notFound.homeEn': 'Back to the English home',
+    'notFound.homePl': 'Wróć na stronę główną po polsku',
   },
   pl: {
     'nav.work': 'Projekty',
@@ -232,6 +238,12 @@ export const ui = {
     'factory.stage.fix': 'Poprawki · fabryka pobiera komentarze',
     'factory.stage.clean': 'review czyste · gotowe dla człowieka',
     'footer.copyright': '© 2026 Łukasz Moszczyński',
+    'meta.homeTitle': 'Łukasz Moszczyński · Technical Leader, Frontend, AI (PL)',
+    'meta.caseSuffix': 'Studium przypadku',
+    'notFound.title': 'Nie znaleziono strony',
+    'notFound.text': 'Ta strona nie istnieje albo została przeniesiona.',
+    'notFound.homeEn': 'Back to the English home',
+    'notFound.homePl': 'Wróć na stronę główną po polsku',
   },
 } as const;
 

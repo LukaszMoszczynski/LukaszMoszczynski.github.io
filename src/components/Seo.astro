@@ -1,0 +1,24 @@
+---
+import { localizePath, type Lang } from '../i18n/utils';
+
+interface Props { lang: Lang; title: string; description: string; path: string }
+const { lang, title, description, path } = Astro.props;
+const origin = Astro.site ?? new URL('https://lukaszmoszczynski.github.io');
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const absolute = (target: Lang) => new URL(localizePath(path, target), origin).href;
+const image = new URL(`${base}og.png`, origin).href;
+---
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+<link rel="canonical" href={absolute(lang)} />
+<link rel="alternate" hreflang="en" href={absolute('en')} />
+<link rel="alternate" hreflang="pl" href={absolute('pl')} />
+<link rel="alternate" hreflang="x-default" href={absolute('en')} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={image} />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content={lang === 'pl' ? 'pl_PL' : 'en_US'} />
+<meta property="og:url" content={absolute(lang)} />
+<meta name="twitter:card" content="summary_large_image" />

@@ -8,7 +8,7 @@ interface Props { lang: Lang; project: ProjectEntry; next: ProjectEntry }
 const { lang, project, next } = Astro.props;
 const { title, summary, meta, tags, links, origin, visual } = project.data;
 ---
-<BaseLayout lang={lang} title={`${title} · Łukasz Moszczyński`} description={summary} path={`/work/${project.slug}/`}>
+<BaseLayout lang={lang} title={`${title} · ${t(lang, 'meta.caseSuffix')} · Łukasz Moszczyński`} description={summary} path={`/work/${project.slug}/`}>
   <article class="case" aria-labelledby="case-title">
     <header class="case-hero">
       <div class="case-copy">
