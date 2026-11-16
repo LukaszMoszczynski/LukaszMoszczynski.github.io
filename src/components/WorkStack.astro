@@ -23,7 +23,7 @@ const projects = await getProjects(lang);
             {t(lang, 'work.caseStudy')}<span class="work-hidden">: {project.data.title}</span>
           </a>
         </div>
-        <ProjectVisual visual={project.data.visual} compact />
+        <ProjectVisual visual={project.data.visual} compact lang={lang} transitionName={`visual-${project.slug}`} />
       </article>
     ))}
   </div>

@@ -1,0 +1,103 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import ProjectVisual from '../components/ProjectVisual.astro';
+import FactoryLoop from '../components/FactoryLoop.astro';
+import { localizePath, t, type Lang } from '../i18n/utils';
+import type { ProjectEntry } from '../content/projects';
+interface Props { lang: Lang; project: ProjectEntry; next: ProjectEntry }
+const { lang, project, next } = Astro.props;
+const { title, summary, meta, tags, links, origin, visual } = project.data;
+---
+<BaseLayout lang={lang} title={`${title} · Łukasz Moszczyński`} description={summary} path={`/work/${project.slug}/`}>
+  <article class="case" aria-labelledby="case-title">
+    <header class="case-hero">
+      <div class="case-copy">
+        <a class="case-back" href={`${localizePath('/', lang)}#work`}>{t(lang, 'case.back')}</a>
+        <p class="case-meta">
+          <span>{meta}</span>
+          {origin && <span class="case-origin">{origin}</span>}
+        </p>
+        <h1 id="case-title">{title}</h1>
+        <p class="case-summary">{summary}</p>
+        {origin && <p class="case-note">{t(lang, 'work.homePlNote')}</p>}
+        <ul class="case-tags" aria-label={t(lang, 'case.tags')}>
+          {tags.map((tag) => <li>{tag}</li>)}
+        </ul>
+        {links.length > 0 && (
+          <ul class="case-links" aria-label={t(lang, 'case.links')}>
+            {links.map((link) => (
+              <li>
+                <a href={link.href} target="_blank" rel="noopener noreferrer">
+                  {link.label} ↗<span class="case-hidden"> {t(lang, 'contact.newTab')}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <ProjectVisual visual={visual} lang={lang} transitionName={`visual-${project.slug}`} />
+    </header>
+
+    {visual === 'dark-factory' && <FactoryLoop lang={lang} />}
+
+    <div class="case-prose">
+      <slot />
+    </div>
+
+    <nav class="case-next" aria-label={t(lang, 'case.next')}>
+      <a href={localizePath(`/work/${next.slug}/`, lang)} rel="next">
+        <span class="case-next-label">{t(lang, 'case.next')}</span>
+        <span class="case-next-title">{next.data.title}</span>
+      </a>
+    </nav>
+  </article>
+</BaseLayout>
+<style>
+  .case { padding-block: 120px 96px }
+  .case-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: center }
+  .case-back {
+    display: inline-flex; align-items: center; min-height: 40px; margin-bottom: 16px;
+    font-weight: 600; font-size: 15px; text-decoration: none; color: var(--muted);
+  }
+  .case-back:hover { color: var(--accent) }
+  .case-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; font-weight: 600; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent) }
+  .case-origin {
+    font: 500 12px/1 var(--font-mono); letter-spacing: 0; text-transform: none; color: var(--ink);
+    padding: 5px 9px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); background: var(--bg);
+  }
+  h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 3.9vw, 56px); letter-spacing: -.045em; line-height: 1.02; margin: 12px 0 20px; overflow-wrap: break-word }
+  .case-summary { margin: 0 0 18px; font-size: clamp(17px, 1.6vw, 20px); color: var(--muted); max-width: 46ch }
+  .case-note { margin: 0 0 18px; font-size: 14px; color: var(--muted); font-style: italic }
+  .case-tags, .case-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px }
+  .case-tags li { font: 500 12px/1 var(--font-mono); padding: 8px 11px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); background: var(--surface) }
+  .case-links { margin-top: 20px; gap: 12px }
+  .case-links a {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 10px 20px; border-radius: 999px;
+    font-weight: 600; text-decoration: none; background: var(--ink); color: var(--bg);
+  }
+  .case-links a:hover { background: var(--accent); color: var(--on-accent) }
+  .case-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
+
+  .case-prose { max-width: 72ch; margin-top: 72px }
+  .case-prose :global(h2) { font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 2.6vw, 32px); letter-spacing: -.03em; line-height: 1.15; margin: 56px 0 16px }
+  .case-prose :global(h2:first-child) { margin-top: 0 }
+  .case-prose :global(p), .case-prose :global(ul), .case-prose :global(ol) { margin: 0 0 16px }
+  .case-prose :global(ul), .case-prose :global(ol) { padding-left: 1.4em; display: grid; gap: 8px }
+  .case-prose :global(li::marker) { color: var(--accent) }
+  .case-prose :global(code) { font: .9em var(--font-mono); padding: 1px 6px; border-radius: 6px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line) }
+
+  .case-next { margin-top: 88px; border-top: 1px solid var(--line); padding-top: 32px }
+  .case-next a { display: inline-grid; gap: 6px; text-decoration: none; min-height: 44px }
+  .case-next-label { font: 500 13px/1 var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em }
+  .case-next-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(26px, 4vw, 48px); letter-spacing: -.035em; line-height: 1.05 }
+  .case-next-title::after { content: " →"; color: var(--accent); display: inline-block; transition: transform .3s }
+  .case-next a:hover .case-next-title::after { transform: translateX(6px) }
+
+  @media (max-width: 860px) {
+    .case { padding-block: 88px 64px }
+    .case-hero { grid-template-columns: minmax(0, 1fr); gap: 28px }
+    .case-prose { margin-top: 48px }
+    .case-next { margin-top: 56px }
+  }
+  @media (prefers-reduced-motion: reduce) { .case-next-title::after { transition: none } }
+</style>

@@ -1,17 +1,18 @@
 ---
 import type { Project } from '../content/projects';
-interface Props { visual: Project['visual']; compact?: boolean }
-const { visual, compact = false } = Astro.props;
+import { t, type Lang } from '../i18n/utils';
+interface Props { visual: Project['visual']; compact?: boolean; lang?: Lang; transitionName?: string }
+const { visual, compact = false, lang = 'en', transitionName } = Astro.props;
 
 /** Dark-factory loop: five stations on a ring, ticket between the factory and GitLab. */
-const LOOP = ['Jira', 'factory', 'GitLab', 'review', 'fix'];
+const LOOP = [t(lang, 'visual.jira'), t(lang, 'visual.factory'), t(lang, 'visual.gitlab'), t(lang, 'visual.review'), t(lang, 'visual.fix')];
 const loopNodes = LOOP.map((label, index) => {
   const angle = -Math.PI / 2 + (index * 2 * Math.PI) / LOOP.length;
   return { label, x: 200 + Math.cos(angle) * 100, y: 150 + Math.sin(angle) * 100, anchor: Math.cos(angle) > 0.3 ? 'start' : Math.cos(angle) < -0.3 ? 'end' : 'middle' };
 });
 const round = (value: number) => Math.round(value * 10) / 10;
 ---
-<div class:list={['project-visual', { 'is-compact': compact }]} aria-hidden="true">
+<div class:list={['project-visual', { 'is-compact': compact }]} aria-hidden="true" transition:name={transitionName}>
   <div class={`project-screen v-${visual}`}>
     {visual === 'dcc' && (
       <>
@@ -35,7 +36,7 @@ const round = (value: number) => Math.round(value * 10) / 10;
         <span class="shape dark pill" style="inset: 42% 8% 46% 54%"></span>
         <span class="shape" style="inset: 64% 8% 10% 8%; opacity: .7"></span>
         <span class="shape dark" style="inset: 72% 60% 18% 14%"></span>
-        {!compact && <span class="label" style="left: 8%; top: 3%">color · radius · space</span>}
+        {!compact && <span class="label" style="left: 8%; top: 3%">{t(lang, 'visual.tokens')}</span>}
       </>
     )}
     {visual === 'qa-agent' && (
@@ -47,8 +48,8 @@ const round = (value: number) => Math.round(value * 10) / 10;
         <span class="check warn" style="inset: 72% 7% 12% 64%"></span>
         {!compact && (
           <>
-            <span class="label" style="left: 7%; top: 2%">master</span>
-            <span class="label" style="left: 53%; top: 2%">branch</span>
+            <span class="label" style="left: 7%; top: 2%">{t(lang, 'visual.master')}</span>
+            <span class="label" style="left: 53%; top: 2%">{t(lang, 'visual.branch')}</span>
           </>
         )}
       </>
@@ -66,7 +67,7 @@ const round = (value: number) => Math.round(value * 10) / 10;
           </g>
         ))}
         <rect x="270" y="168" width="26" height="18" rx="4" class="ticket-chip" transform="rotate(-20 283 177)" />
-        {!compact && <text x="200" y="154" text-anchor="middle" class="center">human ✓</text>}
+        {!compact && <text x="200" y="154" text-anchor="middle" class="center">{t(lang, 'visual.human')}</text>}
       </svg>
     )}
     {visual === 'wp-starter' && (
@@ -91,7 +92,7 @@ const round = (value: number) => Math.round(value * 10) / 10;
         </svg>
         <span class="shape pill domain" style="inset: 17% 63% 72% 7%">{!compact && <b>www</b>}</span>
         <span class="shape pill domain" style="inset: 45% 63% 45% 7%; opacity: .8">{!compact && <b>.com</b>}</span>
-        <span class="shape pill domain" style="inset: 73% 63% 17% 7%; opacity: .65">{!compact && <b>old</b>}</span>
+        <span class="shape pill domain" style="inset: 73% 63% 17% 7%; opacity: .65">{!compact && <b>{t(lang, 'visual.old')}</b>}</span>
         <span class="shape page" style="inset: 14% 7% 14% 61%"><i class="dark" style="inset: 6% 8% 78% 8%"></i><i class="accent" style="inset: 28% 30% 52% 8%"></i><i style="inset: 54% 8% 34% 8%"></i><i style="inset: 70% 26% 20% 8%"></i></span>
       </>
     )}
