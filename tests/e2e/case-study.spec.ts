@@ -3,8 +3,8 @@ import { expect, test, type Page } from '@playwright/test';
 /** Waits until the ClientRouter has finished its view transition. */
 const settled = (page: Page) => expect(page.locator('html')).not.toHaveAttribute('data-astro-transition', /.*/);
 
-const SLUGS = ['dcc', 'design-system', 'qa-agent', 'dark-factory', 'wp-starter', 'omelanski'];
-const HOME_PL = ['qa-agent', 'dark-factory'];
+const SLUGS = ['dcc', 'design-system', 'qa-agent', 'delivery-loop', 'wp-starter', 'omelanski'];
+const HOME_PL = ['qa-agent', 'delivery-loop'];
 const SECTIONS = {
   en: { prefix: '', headings: ['Problem', 'What I built', 'Highlights'], next: 'Next project', note: 'Built at home.pl' },
   pl: { prefix: 'pl/', headings: ['Problem', 'Co zbudowałem', 'Najważniejsze'], next: 'Następny projekt', note: 'Zbudowane w home.pl' },
@@ -79,12 +79,24 @@ test.describe('case study pages', () => {
     const caseName = await page.locator('.case-hero .project-visual').evaluate((element) => getComputedStyle(element).viewTransitionName);
     expect(caseName).toBe('visual-dcc');
   });
+
+  test('the delivery loop page has no static hero visual; its interactive loop takes the shared name', async ({ page }) => {
+    await page.goto('./');
+    const card = page.locator('#work .project-card', { has: page.locator('a.project-link[href$="/work/delivery-loop/"]') });
+    expect(await card.locator('.project-visual').evaluate((element) => getComputedStyle(element).viewTransitionName)).toBe('visual-delivery-loop');
+    await card.locator('a.project-link').click();
+    await expect(page).toHaveURL(/\/work\/delivery-loop\/$/);
+    await expect(page.locator('.case-hero .project-visual')).toHaveCount(0);
+    await expect(page.locator('.project-visual')).toHaveCount(0);
+    const loopName = await page.locator('.factory-loop .factory-board').evaluate((element) => getComputedStyle(element).viewTransitionName);
+    expect(loopName).toBe('visual-delivery-loop');
+  });
 });
 
-test.describe('factory loop', () => {
+test.describe('delivery loop', () => {
   test('Run walks the ticket round the loop to a clean review', async ({ page }) => {
     test.setTimeout(60_000);
-    await page.goto('work/dark-factory/');
+    await page.goto('work/delivery-loop/');
     const factory = page.locator('.factory-loop');
     const run = factory.getByRole('button', { name: 'Run' });
     const status = factory.locator('.factory-status');
@@ -92,7 +104,7 @@ test.describe('factory loop', () => {
     await run.click();
     await expect(run).toBeDisabled();
     await expect(factory.getByRole('button', { name: 'Jira label' })).toBeDisabled();
-    await expect(status).toHaveText(/Factory in local Docker/);
+    await expect(status).toHaveText(/Agents in local Docker/);
     await expect(status).toHaveText(/Auto-reviewer/, { timeout: 10_000 });
     await expect(status).toHaveText('review clean · ready for a human', { timeout: 25_000 });
     await expect(run).toBeEnabled();
@@ -101,7 +113,7 @@ test.describe('factory loop', () => {
 
   test('Enter on the Jira label starts a run (PL)', async ({ page }) => {
     test.setTimeout(60_000);
-    await page.goto('pl/work/dark-factory/');
+    await page.goto('pl/work/delivery-loop/');
     const factory = page.locator('.factory-loop');
     const label = factory.getByRole('button', { name: 'etykieta Jira' });
     const box = (await label.boundingBox())!;
@@ -118,9 +130,9 @@ test.describe('factory loop', () => {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
     page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
-    await page.goto('work/dark-factory/');
+    await page.goto('work/delivery-loop/');
     await page.locator('.factory-loop').getByRole('button', { name: 'Run' }).click();
-    await expect(page.locator('.factory-status')).toHaveText(/Factory in local Docker/);
+    await expect(page.locator('.factory-status')).toHaveText(/Agents in local Docker/);
     await page.getByRole('navigation', { name: 'Next project' }).getByRole('link').click();
     await expect(page).toHaveURL(/\/work\/wp-starter\/$/);
     await page.waitForTimeout(1500);
@@ -128,21 +140,21 @@ test.describe('factory loop', () => {
   });
 });
 
-test.describe('factory loop, reduced motion', () => {
+test.describe('delivery loop, reduced motion', () => {
   test.use({ reducedMotion: 'reduce' });
   test('is a static labelled diagram listing every stage', async ({ page }) => {
-    await page.goto('work/dark-factory/');
+    await page.goto('work/delivery-loop/');
     const factory = page.locator('.factory-loop');
     await expect(factory.locator('.factory-stages li')).toHaveText([
-      'Jira label · the task goes to the factory',
-      'Factory in local Docker · the agent solves the task',
+      'Jira label · the task goes to the agent pipeline',
+      'Agents in local Docker · they solve the task',
       'Push to GitLab · a merge request opens',
       'Auto-reviewer reads the merge request',
       'Comments · the review asks for changes',
-      'Fix · the factory picks up the comments',
+      'Fix · the agents pick up the comments',
       'review clean · ready for a human',
     ]);
-    for (const label of ['Jira label', 'factory', 'GitLab push', 'auto-review', 'comments', 'fix', 'human']) {
+    for (const label of ['Jira label', 'agent pipeline', 'GitLab push', 'auto-review', 'comments', 'fix', 'human']) {
       await expect(factory.locator('.factory-diagram .factory-label:visible', { hasText: new RegExp(`^${label}$`) })).toBeVisible();
     }
     await expect(factory.getByRole('button')).toHaveCount(0);

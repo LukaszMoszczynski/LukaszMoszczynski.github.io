@@ -1,4 +1,4 @@
-/** Gsap-free data for the dark-factory loop, safe to import on the server. */
+/** Gsap-free data for the delivery loop, safe to import on the server. */
 
 export type FactoryStage = 'label' | 'factory' | 'push' | 'review' | 'comments' | 'fix' | 'clean';
 

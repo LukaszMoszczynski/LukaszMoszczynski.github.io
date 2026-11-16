@@ -4,7 +4,7 @@ import { t, type Lang } from '../i18n/utils';
 interface Props { visual: Project['visual']; compact?: boolean; lang?: Lang; transitionName?: string }
 const { visual, compact = false, lang = 'en', transitionName } = Astro.props;
 
-/** Dark-factory loop: five stations on a ring, ticket between the factory and GitLab. */
+/** Delivery loop: five stations on a ring, ticket between the agents and GitLab. */
 const LOOP = [t(lang, 'visual.jira'), t(lang, 'visual.factory'), t(lang, 'visual.gitlab'), t(lang, 'visual.review'), t(lang, 'visual.fix')];
 const loopNodes = LOOP.map((label, index) => {
   const angle = -Math.PI / 2 + (index * 2 * Math.PI) / LOOP.length;
@@ -54,7 +54,7 @@ const round = (value: number) => Math.round(value * 10) / 10;
         )}
       </>
     )}
-    {visual === 'dark-factory' && (
+    {visual === 'delivery-loop' && (
       <svg class="loop" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet">
         <circle cx="200" cy="150" r="100" class="ring" />
         <circle cx="200" cy="150" r="100" class="ring-run" pathLength="100" />
@@ -108,7 +108,7 @@ const round = (value: number) => Math.round(value * 10) / 10;
   .v-dcc { background: linear-gradient(135deg, #372662, #5b3fa8) }
   .v-design-system { background: linear-gradient(135deg, #eb6126, #c2410c) }
   .v-qa-agent { background: linear-gradient(135deg, #1a1230, #2a1d4d) }
-  .v-dark-factory { background: radial-gradient(circle at 50% 50%, #372662, #1a1230 70%) }
+  .v-delivery-loop { background: radial-gradient(circle at 50% 50%, #372662, #1a1230 70%) }
   .v-wp-starter { background: linear-gradient(135deg, #1a1230, #372662) }
   .v-omelanski { background: linear-gradient(135deg, #5b3fa8, #eb6126) }
 

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const SLUGS = ['dcc', 'design-system', 'qa-agent', 'dark-factory', 'wp-starter', 'omelanski'];
+const SLUGS = ['dcc', 'design-system', 'qa-agent', 'delivery-loop', 'wp-starter', 'omelanski'];
 
 test.describe('selected work', () => {
   for (const [path, prefix] of [['./', 'work/'], ['pl/', 'pl/work/']]) {

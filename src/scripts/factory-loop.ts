@@ -8,7 +8,7 @@ const HOLD_SECONDS = 0.4;
 const TO_CENTER_SECONDS = 0.6;
 
 /**
- * Dark-factory loop: Run (or the Jira label) sends a ticket round the ring of
+ * Delivery loop: Run (or the Jira label) sends a ticket round the ring of
  * six stations for one or two random review cycles, ending in the centre with
  * "review clean · ready for a human". Each stage is announced through a polite
  * live region. Both buttons are aria-disabled while a run is going, so focus

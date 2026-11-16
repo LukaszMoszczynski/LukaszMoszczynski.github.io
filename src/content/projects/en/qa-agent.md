@@ -15,7 +15,7 @@ Every new feature needs tests and a careful look at what changed on screen. Writ
 
 ## What I built
 
-An agent built on Claude that takes a new feature and does the routine QA work:
+An agent built on Claude, with skills and instructions I wrote, that takes a new feature and does the routine QA work:
 
 - writes **test scenarios** in Markdown that anyone on the team can read;
 - turns them into **Playwright specs**;

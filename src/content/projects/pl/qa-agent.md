@@ -15,7 +15,7 @@ Każda nowa funkcja potrzebuje testów i uważnego sprawdzenia, co zmieniło si�
 
 ## Co zbudowałem
 
-Agenta opartego na Claude, który bierze nową funkcję i robi rutynową część QA:
+Agenta opartego na Claude, ze skillami i instrukcjami, które sam napisałem. Bierze nową funkcję i robi rutynową część QA:
 
 - pisze **scenariusze testów** w Markdownie, zrozumiałe dla każdego w zespole;
 - zamienia je na **specy Playwright**;

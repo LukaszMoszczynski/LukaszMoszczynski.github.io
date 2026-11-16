@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getProjects } from '../../src/content/projects';
 
-const ORDER = ['dcc', 'design-system', 'qa-agent', 'dark-factory', 'wp-starter', 'omelanski'];
+const ORDER = ['dcc', 'design-system', 'qa-agent', 'delivery-loop', 'wp-starter', 'omelanski'];
 
 describe('getProjects', () => {
   for (const lang of ['en', 'pl'] as const) {
@@ -12,7 +12,7 @@ describe('getProjects', () => {
 
     it(`marks both home.pl entries with origin and no links (${lang})`, async () => {
       const projects = await getProjects(lang);
-      const homePl = projects.filter((project) => project.slug === 'qa-agent' || project.slug === 'dark-factory');
+      const homePl = projects.filter((project) => project.slug === 'qa-agent' || project.slug === 'delivery-loop');
       expect(homePl).toHaveLength(2);
       for (const project of homePl) {
         expect(project.data.origin).toBe('home.pl');
@@ -23,7 +23,7 @@ describe('getProjects', () => {
     it(`gives only home.pl entries an origin (${lang})`, async () => {
       const projects = await getProjects(lang);
       const withOrigin = projects.filter((project) => project.data.origin).map((project) => project.slug);
-      expect(withOrigin).toEqual(['qa-agent', 'dark-factory']);
+      expect(withOrigin).toEqual(['qa-agent', 'delivery-loop']);
     });
   }
 

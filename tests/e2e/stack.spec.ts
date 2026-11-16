@@ -27,11 +27,11 @@ test.describe('stack and agent log', () => {
   test('AI card links to both case studies; Polish chip uses the case-study name', async ({ page }) => {
     await page.goto('./');
     await expect(page.locator('#stack .skill.ai a[href$="work/qa-agent/"]')).toHaveCount(1);
-    await expect(page.locator('#stack .skill.ai a[href$="work/dark-factory/"]')).toHaveCount(1);
+    await expect(page.locator('#stack .skill.ai a[href$="work/delivery-loop/"]')).toHaveCount(1);
     await expect(page.locator('#stack .skill')).toHaveCount(4);
     await page.goto('pl/');
-    await expect(page.locator('#stack .chip[data-run="factory"]')).toHaveText('Półciemna fabryka');
-    await expect(page.locator('#stack .skill.ai a[href$="pl/work/dark-factory/"]')).toHaveCount(1);
+    await expect(page.locator('#stack .chip[data-run="factory"]')).toHaveText('Człowiek w pętli');
+    await expect(page.locator('#stack .skill.ai a[href$="pl/work/delivery-loop/"]')).toHaveCount(1);
   });
 
   test('reduced motion shows every line without replay', async ({ page }) => {

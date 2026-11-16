@@ -8,10 +8,13 @@ import type { ProjectEntry } from '../content/projects';
 interface Props { lang: Lang; project: ProjectEntry; next: ProjectEntry }
 const { lang, project, next } = Astro.props;
 const { title, summary, meta, tags, links, origin, visual } = project.data;
+/** The delivery loop shows only its interactive diagram, which takes over the shared visual name. */
+const hasLoop = visual === 'delivery-loop';
+const transitionName = `visual-${project.slug}`;
 ---
 <BaseLayout lang={lang} title={`${title} · ${t(lang, 'meta.caseSuffix')} · Łukasz Moszczyński`} description={summary} path={`/work/${project.slug}/`}>
   <article class="case" aria-labelledby="case-title">
-    <header class="case-hero">
+    <header class:list={['case-hero', { 'is-text-only': hasLoop }]}>
       <div class="case-copy">
         <a class="case-back" href={`${localizePath('/', lang)}#work`}>{t(lang, 'case.back')}</a>
         <p class="case-meta">
@@ -36,10 +39,10 @@ const { title, summary, meta, tags, links, origin, visual } = project.data;
           </ul>
         )}
       </div>
-      <ProjectVisual visual={visual} lang={lang} transitionName={`visual-${project.slug}`} />
+      {!hasLoop && <ProjectVisual visual={visual} lang={lang} transitionName={transitionName} />}
     </header>
 
-    {visual === 'dark-factory' && <FactoryLoop lang={lang} />}
+    {hasLoop && <FactoryLoop lang={lang} transitionName={transitionName} />}
     {project.slug === 'design-system' && <TokenBuild lang={lang} />}
 
     <div class="case-prose">
@@ -57,6 +60,8 @@ const { title, summary, meta, tags, links, origin, visual } = project.data;
 <style>
   .case { padding-block: 120px 96px }
   .case-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: center }
+  .case-hero.is-text-only { grid-template-columns: minmax(0, 1fr) }
+  .case-hero.is-text-only .case-summary { max-width: 62ch }
   .case-back {
     display: inline-flex; align-items: center; min-height: 40px; margin-bottom: 16px;
     font-weight: 600; font-size: 15px; text-decoration: none; color: var(--muted);
