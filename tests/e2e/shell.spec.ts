@@ -21,10 +21,59 @@ test('theme switch flips the emulated scheme, updates aria-checked and persists'
 
 test('header controls are named by their visible text first (WCAG 2.5.3)', async ({ page }) => {
   await page.goto('./');
-  await expect(page.getByRole('link', { name: /^ŁM\./ })).toHaveCount(1);
+  await expect(page.getByRole('link', { name: 'Łukasz Moszczyński, home', exact: true })).toHaveCount(1);
   await expect(page.getByRole('link', { name: /^PL – / })).toHaveCount(1);
   await expect(page.getByRole('switch', { name: 'Dark mode' })).toHaveCount(1);
   await expect(menuButton(page)).toHaveAttribute('aria-controls', 'site-menu');
+});
+
+test.describe('wordmark', () => {
+  for (const width of [360, 390, 480, 481, 560, 561, 768, 1440]) {
+    test(`shows the name at ${width}px without touching the header tools`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('./');
+      const logo = page.locator('header .logo');
+      await expect(logo).toHaveAccessibleName('Łukasz Moszczyński, home');
+      await expect(logo).toHaveCSS('font-weight', '600');
+      await expect(logo).toHaveCSS('text-transform', 'none');
+      const visible = width <= 480 ? 'Łukasz M.' : 'Łukasz Moszczyński';
+      await expect(logo.getByText(visible, { exact: true })).toBeVisible();
+      await expect(logo).toHaveCSS('font-size', width <= 560 ? '15px' : '16px');
+      // The glyphs themselves (a range), not the box, which could shrink and let the text overflow.
+      const text = await logo.locator(width <= 480 ? '.logo-short' : '.logo-full').evaluate((element) => {
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        const box = range.getBoundingClientRect();
+        return { left: box.left, right: box.right, overflow: element.closest('.logo')!.scrollWidth - element.closest<HTMLElement>('.logo')!.clientWidth };
+      });
+      const tools = (await page.locator('header .bar-tools').boundingBox())!;
+      expect(text.left).toBeGreaterThanOrEqual(0);
+      expect(text.right).toBeLessThanOrEqual(tools.x - 8);
+      expect(text.overflow).toBeLessThanOrEqual(0);
+      expect(tools.x + tools.width).toBeLessThanOrEqual(width);
+    });
+  }
+
+  test('the 404 page carries the same wordmark', async ({ page }) => {
+    await page.goto('this-page-does-not-exist/');
+    await expect(page.getByRole('link', { name: 'Łukasz Moszczyński, home', exact: true })).toHaveCount(1);
+  });
+
+  test('hover and keyboard focus draw the underline and colour the name', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'hover needs a fine pointer');
+    await page.goto('./');
+    const logo = page.locator('header .logo');
+    const line = () => logo.locator('.logo-text').evaluate((element) => getComputedStyle(element, '::after').transform);
+    expect(await line()).toBe('matrix(0, 0, 0, 1, 0, 0)');
+    await logo.hover();
+    await expect.poll(line).toBe('matrix(1, 0, 0, 1, 0, 0)');
+    await page.mouse.move(700, 600);
+    await expect.poll(line).toBe('matrix(0, 0, 0, 1, 0, 0)');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await expect(logo).toBeFocused();
+    await expect.poll(line).toBe('matrix(1, 0, 0, 1, 0, 0)');
+  });
 });
 
 test('invalid stored theme falls back to system dark at first paint', async ({ browser }) => {
