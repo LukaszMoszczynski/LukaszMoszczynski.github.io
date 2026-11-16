@@ -1,3 +1,4 @@
+import { dccStory } from './dcc';
 import { deliveryLoopStory } from './delivery-loop';
 import { designSystemStory } from './design-system';
 import { qaAgentStory } from './qa-agent';
@@ -8,4 +9,5 @@ export const STORIES: Record<string, StoryFactory> = {
   'qa-agent': qaAgentStory,
   'delivery-loop': deliveryLoopStory,
   'design-system': designSystemStory,
+  dcc: dccStory,
 };

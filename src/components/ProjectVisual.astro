@@ -37,11 +37,12 @@ const loopNodes = FACTORY_NODES.map((stage, index) => {
         <span class="shape soft" style="inset: 7% 7% 86% 7%"></span>
         <span class="shape" style="inset: 20% 46% 66% 7%"></span>
         <span class="shape" style="inset: 37% 60% 58% 7%; opacity: .6"></span>
-        <span class="shape accent pill" style="inset: 47% 72% 45% 7%"></span>
-        <span class="shape card" style="inset: 62% 66% 8% 7%"><i></i></span>
-        <span class="shape card" style="inset: 62% 37% 8% 36%"><i></i></span>
-        <span class="shape card" style="inset: 62% 8% 8% 65%"><i></i></span>
-        <span class="ticket" style="inset: 18% 8% 54% 60%"><b>PDF</b></span>
+        <span class="shape accent pill dcc-buy" style="inset: 47% 72% 45% 7%"></span>
+        <span class="dcc-pay" style="inset: 49.5% 40% 47.5% 32%"><i class="dcc-pay-fill"></i></span>
+        <span class="shape card dcc-card" style="inset: 62% 66% 8% 7%"><i></i></span>
+        <span class="shape card dcc-card" style="inset: 62% 37% 8% 36%"><i></i></span>
+        <span class="shape card dcc-card" style="inset: 62% 8% 8% 65%"><i></i></span>
+        <span class="ticket dcc-voucher" style="inset: 18% 8% 54% 60%"><b>PDF</b></span>
       </>
     )}
     {visual === 'design-system' && (
@@ -169,6 +170,9 @@ const loopNodes = FACTORY_NODES.map((stage, index) => {
     display: grid; place-items: center;
   }
   .ticket b { font: 600 12px/1 var(--font-mono); color: var(--night); letter-spacing: .08em }
+  /* DCC: the payment bar between the buy button and the cards; full at rest (the order is paid). */
+  .dcc-pay { position: absolute; border-radius: 999px; background: rgb(255 255 255 / .22); overflow: hidden }
+  .dcc-pay-fill { position: absolute; inset: 0; border-radius: inherit; background: var(--white); transform-origin: 0 50% }
 
   .shot { background: rgb(255 255 255 / .9); overflow: hidden }
   .shot em { background: transparent; border: 2px dashed var(--orange); border-radius: 6px }
