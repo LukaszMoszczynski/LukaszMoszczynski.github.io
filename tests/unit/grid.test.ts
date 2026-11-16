@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CELL, TRACER_CELLS, TRACER_DURATION, cellOrigin, gridLines, nearestCrossing, tracerShape } from '../../src/scripts/grid';
+import { CELL, TRACER_CELLS, TRACER_DELAY, TRACER_DURATION, TRACER_EASES, TRACER_LINGER, cellOrigin, gridLines, nearestCrossing, tracerShape } from '../../src/scripts/grid';
 
 describe('gridLines', () => {
   const lines = gridLines(1000, 400);
@@ -41,24 +41,35 @@ describe('cellOrigin', () => {
 });
 
 describe('tracerShape', () => {
-  it('stays within 2–8 cells and a 0.6–1.8 duration factor', () => {
+  it('stays within every range', () => {
     for (let run = 0; run < 500; run++) {
-      const { cells, durationFactor } = tracerShape();
+      const { cells, durationFactor, ease, delay, linger } = tracerShape();
       expect(Number.isInteger(cells)).toBe(true);
       expect(cells).toBeGreaterThanOrEqual(TRACER_CELLS.min);
       expect(cells).toBeLessThanOrEqual(TRACER_CELLS.max);
       expect(durationFactor).toBeGreaterThanOrEqual(TRACER_DURATION.min);
       expect(durationFactor).toBeLessThanOrEqual(TRACER_DURATION.max);
+      expect(TRACER_EASES).toContain(ease);
+      expect(delay).toBeGreaterThanOrEqual(TRACER_DELAY.min);
+      expect(delay).toBeLessThanOrEqual(TRACER_DELAY.max);
+      expect(linger).toBeGreaterThanOrEqual(TRACER_LINGER.min);
+      expect(linger).toBeLessThanOrEqual(TRACER_LINGER.max);
     }
   });
   it('reaches both ends of the ranges', () => {
-    expect(tracerShape(() => 0)).toEqual({ cells: 2, durationFactor: 0.6 });
+    expect(tracerShape(() => 0)).toEqual({ cells: 2, durationFactor: 0.45, ease: TRACER_EASES[0], delay: 0, linger: 0.1 });
     const top = tracerShape(() => 0.999999);
     expect(top.cells).toBe(8);
-    expect(top.durationFactor).toBeCloseTo(1.8, 4);
+    expect(top.durationFactor).toBeCloseTo(2.2, 4);
+    expect(top.ease).toBe(TRACER_EASES.at(-1));
+    expect(top.delay).toBeCloseTo(0.6, 4);
+    expect(top.linger).toBeCloseTo(0.8, 4);
   });
-  it('the ranges are 2–8 cells and 0.6–1.8', () => {
-    expect(TRACER_CELLS).toEqual({ min: 2, max: 8 });
-    expect(TRACER_DURATION).toEqual({ min: 0.6, max: 1.8 });
+  it('points differ in speed, ease and timing, not only in length', () => {
+    const shapes = Array.from({ length: 200 }, () => tracerShape());
+    expect(new Set(shapes.map((shape) => shape.ease)).size).toBeGreaterThan(3);
+    const speeds = shapes.map((shape) => shape.durationFactor);
+    expect(Math.max(...speeds) / Math.min(...speeds)).toBeGreaterThan(2.5);
+    expect(new Set(shapes.map((shape) => shape.delay.toFixed(2))).size).toBeGreaterThan(20);
   });
 });

@@ -1,4 +1,4 @@
-import { CELL, cellOrigin, gridLines, nearestCrossing, tracerShape, type GridLines, type Point } from './grid';
+import { CELL, cellOrigin, gridLines, nearestCrossing, tracerShape, type GridLines, type Point, type TracerShape } from './grid';
 import { gsap, hasFinePointer, prefersReducedMotion } from './lifecycle';
 
 type Direction = 'up' | 'down' | 'left' | 'right';
@@ -113,8 +113,11 @@ export function initBackground(): () => void {
     return teardown;
   }
 
-  // a glowing point draws a stretch of grid line, then both fade
-  const trace = (origin: Point, direction: Direction, length: number, kind: Origin, onDone?: () => void, durationFactor = 1) => {
+  /** Burst tracers move together on purpose: same speed, ease and fade. */
+  const BURST_MOTION: Omit<TracerShape, 'cells'> = { durationFactor: 1, ease: 'power1.inOut', delay: 0, linger: 0.2 };
+
+  // a glowing point draws a stretch of grid line, then both fade; each ambient point has its own speed, ease, delay and linger
+  const trace = (origin: Point, direction: Direction, length: number, kind: Origin, onDone?: () => void, motion: Omit<TracerShape, 'cells'> = BURST_MOTION) => {
     const vertical = direction === 'up' || direction === 'down';
     const line = span(vertical ? 'tv' : 'th');
     const dot = span('dot');
@@ -134,8 +137,9 @@ export function initBackground(): () => void {
     gridLayer.append(line, dot);
 
     const move = { down: { y: length }, up: { y: -length }, right: { x: length }, left: { x: -length } }[direction];
-    const duration = (length / SPEED) * durationFactor;
+    const duration = (length / SPEED) * motion.durationFactor;
     const timeline = gsap.timeline({
+      delay: motion.delay,
       onComplete: () => {
         line.remove();
         dot.remove();
@@ -143,9 +147,9 @@ export function initBackground(): () => void {
       },
     });
     timeline
-      .fromTo(line, { clipPath: HIDDEN_CLIP[direction] }, { clipPath: 'inset(0% 0% 0% 0%)', duration, ease: 'power1.inOut' })
-      .fromTo(dot, { x: 0, y: 0, scale: 0 }, { ...move, scale: 1, duration, ease: 'power1.inOut' }, 0)
-      .to([line, dot], { opacity: 0, duration: 0.8 }, '+=0.2');
+      .fromTo(line, { clipPath: HIDDEN_CLIP[direction] }, { clipPath: 'inset(0% 0% 0% 0%)', duration, ease: motion.ease, immediateRender: true })
+      .fromTo(dot, { x: 0, y: 0, scale: 0 }, { ...move, scale: 1, duration, ease: motion.ease, immediateRender: true }, 0)
+      .to([line, dot], { opacity: 0, duration: 0.8 }, `+=${motion.linger}`);
     track(timeline);
   };
 
@@ -168,7 +172,7 @@ export function initBackground(): () => void {
     }
     ambient++;
     const vertical = Math.random() < 0.5;
-    const { cells, durationFactor } = tracerShape();
+    const { cells, ...motion } = tracerShape();
     // Start far enough from the bottom / right edge that most of the line stays on screen.
     const origin = vertical
       ? { x: pick(lines.columns, []), y: pick([0, ...lines.rows.slice(0, -cells)], [0]) }
@@ -176,7 +180,7 @@ export function initBackground(): () => void {
     trace(origin, vertical ? 'down' : 'right', CELL * cells, 'ambient', () => {
       ambient--;
       schedule(gsap.utils.random(0.2, 1.4));
-    }, durationFactor);
+    }, motion);
   }
   listen(document, 'visibilitychange', () => {
     if (document.hidden) return;
@@ -236,9 +240,10 @@ export function initBackground(): () => void {
     .from(horizontals, { scaleX: 0, duration: 0.8, ease: 'power3.inOut', stagger: { amount: 0.3, from: 'start' } }, 0.1)
     .from([glowA, glowB], { opacity: 0, scale: 0.6, duration: 1.2, ease: 'power2.out' }, 0)
     .add(() => {
+      // Staggered at random, so the first three never start in step.
       spawnAmbient();
-      schedule(0.7);
-      schedule(1.5);
+      schedule(gsap.utils.random(0.4, 1.1));
+      schedule(gsap.utils.random(1.2, 2.2));
     }, 1.2);
   track(intro);
 
