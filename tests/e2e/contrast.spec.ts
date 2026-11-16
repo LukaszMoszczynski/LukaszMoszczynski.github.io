@@ -29,6 +29,49 @@ const PAIRS: Array<[string, string]> = [
   ['--on-accent', '--accent'],
 ];
 
+/** `rgb(r g b / a)`, `#rrggbb` or `#rrggbbaa` → [r, g, b, a]. */
+function rgba(value: string): number[] {
+  if (value.startsWith('#')) {
+    const channels = [1, 3, 5, 7].map((index) => parseInt(value.slice(index, index + 2) || 'ff', 16));
+    return [channels[0], channels[1], channels[2], channels[3] / 255];
+  }
+  const numbers = (value.match(/[\d.]+/g) ?? []).map(Number);
+  return [numbers[0], numbers[1], numbers[2], numbers[3] ?? 1];
+}
+const over = (top: number[], alpha: number, bottom: number[]) => top.slice(0, 3).map((channel, index) => channel * alpha + bottom[index] * (1 - alpha));
+const hexToRgb = (value: string) => rgba(value).slice(0, 3);
+const rgbString = (channels: number[]) => `rgb(${channels.map((channel) => Math.round(channel)).join(', ')})`;
+
+for (const scheme of ['light', 'dark'] as const) {
+  test(`text and focus rings keep AA over the cursor glow at its peak in the ${scheme} theme (1.4.3, 1.4.11)`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    await page.goto('./');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', scheme);
+    const tokens = await page.evaluate(() => {
+      const style = getComputedStyle(document.documentElement);
+      const names = ['--bg', '--muted', '--accent-ink', '--accent-display', '--focus-ring', '--ink', '--glow-a', '--glow-b'];
+      return {
+        ...Object.fromEntries(names.map((name) => [name, style.getPropertyValue(name).trim()])),
+        strength: Number(getComputedStyle(document.querySelector('.light-layer')!).opacity),
+      };
+    }) as Record<string, string> & { strength: number };
+    const bg = hexToRgb(tokens['--bg']);
+    const glowA = rgba(tokens['--glow-a']);
+    const glowB = rgba(tokens['--glow-b']);
+    const underA = over(glowA, glowA[3] * tokens.strength, bg);
+    const underB = over(glowB, glowB[3] * tokens.strength, bg);
+    // The two glows can meet (the second one mirrors the pointer).
+    const underBoth = over(glowB, glowB[3] * tokens.strength, underA);
+    const backgrounds = [bg, underA, underB, underBoth].map(rgbString);
+    const needs: Array<[string, number]> = [['--ink', 4.5], ['--muted', 4.5], ['--accent-ink', 4.5], ['--accent-display', 3], ['--focus-ring', 3]];
+    for (const [token, minimum] of needs) {
+      for (const background of backgrounds) {
+        expect(contrast(tokens[token], background), `${token} ${tokens[token]} on ${background}`).toBeGreaterThanOrEqual(minimum);
+      }
+    }
+  });
+}
+
 for (const scheme of ['light', 'dark'] as const) {
   test(`small-text colour pairs reach AA in the ${scheme} theme`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: scheme });

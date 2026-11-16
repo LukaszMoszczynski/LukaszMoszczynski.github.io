@@ -1,24 +1,32 @@
 :root {
-  --bg: #f8f6fb; --surface: #ffffff; --card: #ffffff; --ink: #2a1d4d; --muted: #6b5f8a; --dim: #cfc7e0;
+  /* --muted, --accent-ink and --accent-display are darker than the spec palette so text keeps WCAG AA
+     contrast even where the cursor glow (Background, peak alpha ≈ 0.17) lies under it. */
+  --bg: #f8f6fb; --surface: #ffffff; --card: #ffffff; --ink: #2a1d4d; --muted: #584b78; --dim: #cfc7e0;
   --accent: #eb6126; --violet: #7b5bd6; --line: #e3deef; --grid: #e9e4f2; --select: #1269b0;
   --glow-a: rgb(235 97 38 / .30); --glow-b: rgb(123 91 214 / .28); --on-accent: #0d0a15;
-  /* Accent for small text: #eb6126 is only 3.1:1 on the light --bg, this is 4.9:1 */
-  --accent-ink: #b9480f;
+  /* Accent for small text: #eb6126 is only 3.1:1 on the light --bg; this keeps 4.5:1 over the glow too. */
+  --accent-ink: #963a0b;
+  /* Accent for large text (≥ 24px, or 18.7px bold): 3:1 over the glow. */
+  --accent-display: #c64c18;
+  /* Focus rings: 3:1 against the page and over the glow (WCAG 1.4.11). */
+  --focus-ring: #c64c18;
+  /* How strongly the glow layer shows (Background); bounded by the contrast of text over it. */
+  --glow-strength: .55;
   --font-display: "Unbounded Variable", "Unbounded", "Arial Black", system-ui, sans-serif;
   --font-body: "Manrope Variable", "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0d0a15; --surface: #1a1429; --card: #1f1832; --ink: #f4f0fb; --muted: #a99bc9; --dim: #3a3054;
+    --bg: #0d0a15; --surface: #1a1429; --card: #1f1832; --ink: #f4f0fb; --muted: #b6a9d4; --dim: #3a3054;
     --accent: #f07a3e; --violet: #8f70ea; --line: #2a2140; --grid: #1b1528; --select: #5aa7e6;
-    --glow-a: rgb(240 122 62 / .36); --glow-b: rgb(123 91 214 / .40); --on-accent: #0d0a15; --accent-ink: #f07a3e; color-scheme: dark;
+    --glow-a: rgb(240 122 62 / .36); --glow-b: rgb(123 91 214 / .40); --on-accent: #0d0a15; --accent-ink: #f58b54; --accent-display: #f07a3e; --focus-ring: #f07a3e; --glow-strength: .6; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0d0a15; --surface: #1a1429; --card: #1f1832; --ink: #f4f0fb; --muted: #a99bc9; --dim: #3a3054;
+  --bg: #0d0a15; --surface: #1a1429; --card: #1f1832; --ink: #f4f0fb; --muted: #b6a9d4; --dim: #3a3054;
   --accent: #f07a3e; --violet: #8f70ea; --line: #2a2140; --grid: #1b1528; --select: #5aa7e6;
-  --glow-a: rgb(240 122 62 / .36); --glow-b: rgb(123 91 214 / .40); --on-accent: #0d0a15; --accent-ink: #f07a3e; color-scheme: dark;
+  --glow-a: rgb(240 122 62 / .36); --glow-b: rgb(123 91 214 / .40); --on-accent: #0d0a15; --accent-ink: #f58b54; --accent-display: #f07a3e; --focus-ring: #f07a3e; --glow-strength: .6; color-scheme: dark;
 }
 
 /* Terminal surfaces stay dark in both themes */

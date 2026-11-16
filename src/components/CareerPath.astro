@@ -55,10 +55,12 @@ const key = (slug: string, part: string) => `path.${slug}.${part}` as UiKey;
   .career .tl::before { content: ""; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--line) }
   .career .tl-progress { position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(var(--violet), var(--accent)); transform-origin: 50% 0 }
   .career .tl-dot { position: absolute; left: 8px; top: 6px; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px 4px color-mix(in srgb, var(--accent) 60%, transparent) }
-  .career .tl li { display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: 16px; position: relative; transition: opacity .4s }
+  .career .tl li { display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: 16px; position: relative }
+  .career .tl :is(.yr, b) { transition: color .4s }
   .career .tl li::before { content: ""; position: absolute; left: -38px; top: 7px; width: 10px; height: 10px; border-radius: 50%; background: var(--bg); box-shadow: 0 0 0 2px var(--line); transition: box-shadow .4s, background .4s }
   .career .tl li.lit::before { background: var(--accent); box-shadow: 0 0 0 2px var(--accent) }
-  .career .tl.js li:not(.lit) { opacity: .35 }
+  /* Not yet reached: the year and title fall back to --muted (still 4.5:1+), the dot stays hollow. No opacity, so the text keeps AA contrast. */
+  .career .tl.js li:not(.lit) :is(.yr, b) { color: var(--muted) }
   .career .yr { font-family: var(--font-mono); font-size: 13px; color: var(--accent-ink); padding-top: 2px }
   .career .tl b { font-family: var(--font-display); font-weight: 600; font-size: 18px; letter-spacing: -.01em; line-height: 1.3 }
   .career .tl p { margin: 4px 0 0; color: var(--muted) }

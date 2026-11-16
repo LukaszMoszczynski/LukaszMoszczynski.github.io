@@ -16,8 +16,8 @@ const { lang } = Astro.props;
 </script>
 <style>
   .statement { padding-block: 100px }
-  /* --heat (0–1) is scrubbed by words.ts; --accent-ink is the accent that passes text contrast in each theme. */
-  .statement :global(.word) { color: color-mix(in srgb, var(--accent-ink) calc(var(--heat, 0) * 100%), var(--ink)) }
+  /* --heat (0–1) is scrubbed by words.ts; the statement is large text, so --accent-display (3:1) is the orange that passes. */
+  .statement :global(.word) { color: color-mix(in srgb, var(--accent-display) calc(var(--heat, 0) * 100%), var(--ink)) }
   .statement p { font-family: var(--font-display); font-weight: 500; font-size: clamp(24px, 3.2vw, 44px); line-height: 1.25; letter-spacing: -.02em; margin: 0; max-width: 26ch }
   @media (max-width: 860px) { .statement { padding-block: 64px } }
 </style>

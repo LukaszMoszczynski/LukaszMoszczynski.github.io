@@ -52,8 +52,9 @@ const links = [
   .contact { padding-block: 60px 40px }
   .fill {
     font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 9vw, 150px); line-height: .95; letter-spacing: -.05em;
-    margin: 0 0 36px; --p: 100%;
-    background: linear-gradient(90deg, var(--accent) 0 var(--p), var(--dim) var(--p) 100%);
+    margin: 0 0 36px; --p: 100%; overflow-wrap: break-word;
+    /* Large text: the filled part (--accent-display) and the part still to fill (ink at 65%) both keep 3:1. */
+    background: linear-gradient(90deg, var(--accent-display) 0 var(--p), color-mix(in srgb, var(--ink) 65%, var(--bg)) var(--p) 100%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
   .contact-rows { list-style: none; margin: 0 0 32px; padding: 0; display: grid; gap: 14px }

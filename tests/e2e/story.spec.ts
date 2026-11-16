@@ -105,7 +105,7 @@ test.describe('statement turns orange word by word as the reader scrolls past', 
       await page.goto('./');
       await expect(page.locator('.statement .word').first()).toBeAttached();
       const ink = await resolved(page, '--ink');
-      const accent = await resolved(page, '--accent-ink');
+      const accent = await resolved(page, '--accent-display');
 
       await placeTop(page, 0.75);
       await expect.poll(async () => (await heat(page)).first).toBe(0);

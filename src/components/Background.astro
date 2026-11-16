@@ -12,6 +12,8 @@
 </script>
 <style is:global>
   .grid-layer, .light-layer { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden }
+  /* Text crosses the glow, so its strength is capped by contrast (tokens.css). */
+  .light-layer { opacity: var(--glow-strength, .55) }
   .grid-layer > span { position: absolute }
   .grid-layer .v { top: 0; bottom: 0; width: 1px; background: var(--grid); transform-origin: 50% 0 }
   .grid-layer .h { left: 0; right: 0; height: 1px; background: var(--grid); transform-origin: 0 50% }
