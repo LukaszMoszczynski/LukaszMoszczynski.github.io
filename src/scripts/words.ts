@@ -5,6 +5,9 @@ export function splitWords(text: string): string[] {
   return text.split(' ').filter((word) => word.length > 0);
 }
 
+/** A statement whose top is above this share of the viewport height counts as visible at load (a peeking first line counts). */
+const STATEMENT_IN_VIEW = 0.98;
+
 /**
  * Word-by-word light-up of the statement. Server render is plain text; with
  * motion the words are wrapped in `.word` spans and scrubbed from dim to full.
@@ -23,11 +26,19 @@ export function initStatement(root: HTMLElement): () => void {
     paragraph.append(span);
   });
 
-  gsap.fromTo(
-    paragraph.querySelectorAll('.word'),
-    { opacity: 0.18 },
-    { opacity: 1, stagger: 0.1, ease: 'none', scrollTrigger: { trigger: paragraph, start: 'top 80%', end: 'bottom 45%', scrub: true } },
-  );
+  const words = paragraph.querySelectorAll('.word');
+  const box = paragraph.getBoundingClientRect();
+  if (box.top < innerHeight * STATEMENT_IN_VIEW && box.bottom > 0) {
+    // Already on screen at load (short hero, restored scroll): the words light up in sequence once and stay lit,
+    // instead of waiting for a scroll that may never come.
+    gsap.fromTo(words, { opacity: 0.18 }, { opacity: 1, duration: 0.5, stagger: { amount: 1.2 }, ease: 'power1.out', delay: 0.3 });
+  } else {
+    gsap.fromTo(
+      words,
+      { opacity: 0.18 },
+      { opacity: 1, stagger: 0.1, ease: 'none', scrollTrigger: { trigger: paragraph, start: 'top 80%', end: 'bottom 45%', scrub: true } },
+    );
+  }
 
   return () => {
     paragraph.textContent = original;

@@ -1,4 +1,4 @@
-import { CELL, cellOrigin, gridLines, nearestCrossing, type GridLines, type Point } from './grid';
+import { CELL, cellOrigin, gridLines, nearestCrossing, tracerShape, type GridLines, type Point } from './grid';
 import { gsap, hasFinePointer, prefersReducedMotion } from './lifecycle';
 
 type Direction = 'up' | 'down' | 'left' | 'right';
@@ -9,7 +9,7 @@ const CONTENT = 'a, button, [role=button], .stage, .project-card, .skill, .quote
 /** Clicks inside text are for selecting it, not for bursts. */
 const TEXT = 'h1, h2, h3, p, li, blockquote, figure';
 
-const SPEED = 160; // px per second
+const SPEED = 160; // px per second at duration factor 1
 const MAX_AMBIENT = 3;
 const BURST_CELLS = 3;
 const RESIZE_DEBOUNCE = 150;
@@ -114,7 +114,7 @@ export function initBackground(): () => void {
   }
 
   // a glowing point draws a stretch of grid line, then both fade
-  const trace = (origin: Point, direction: Direction, length: number, kind: Origin, onDone?: () => void) => {
+  const trace = (origin: Point, direction: Direction, length: number, kind: Origin, onDone?: () => void, durationFactor = 1) => {
     const vertical = direction === 'up' || direction === 'down';
     const line = span(vertical ? 'tv' : 'th');
     const dot = span('dot');
@@ -134,7 +134,7 @@ export function initBackground(): () => void {
     gridLayer.append(line, dot);
 
     const move = { down: { y: length }, up: { y: -length }, right: { x: length }, left: { x: -length } }[direction];
-    const duration = length / SPEED;
+    const duration = (length / SPEED) * durationFactor;
     const timeline = gsap.timeline({
       onComplete: () => {
         line.remove();
@@ -149,7 +149,7 @@ export function initBackground(): () => void {
     track(timeline);
   };
 
-  // ambient tracers: at most three at a time, forever; paused while the tab is hidden
+  // ambient tracers: at most three at a time, forever, each with its own length and speed; paused while the tab is hidden
   let ambient = 0;
   let waiting = 0;
   const schedule = (delay: number) => {
@@ -168,14 +168,15 @@ export function initBackground(): () => void {
     }
     ambient++;
     const vertical = Math.random() < 0.5;
-    const length = CELL * gsap.utils.random(2, 4, 1);
+    const { cells, durationFactor } = tracerShape();
+    // Start far enough from the bottom / right edge that most of the line stays on screen.
     const origin = vertical
-      ? { x: pick(lines.columns, []), y: pick([0, ...lines.rows.slice(0, -2)], [0]) }
-      : { x: pick(lines.columns.slice(0, -2), lines.columns), y: pick(lines.rows, []) };
-    trace(origin, vertical ? 'down' : 'right', length, 'ambient', () => {
+      ? { x: pick(lines.columns, []), y: pick([0, ...lines.rows.slice(0, -cells)], [0]) }
+      : { x: pick(lines.columns.slice(0, -cells), lines.columns.slice(0, 1)), y: pick(lines.rows, []) };
+    trace(origin, vertical ? 'down' : 'right', CELL * cells, 'ambient', () => {
       ambient--;
       schedule(gsap.utils.random(0.2, 1.4));
-    });
+    }, durationFactor);
   }
   listen(document, 'visibilitychange', () => {
     if (document.hidden) return;

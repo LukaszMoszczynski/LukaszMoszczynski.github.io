@@ -15,9 +15,24 @@ test.describe('statement and career path', () => {
       const box = document.querySelector('.statement')!.getBoundingClientRect();
       window.scrollTo(0, window.scrollY + box.bottom - window.innerHeight * 0.2);
     });
-    await page.waitForTimeout(800);
-    const opacities = await statement.locator('.word').evaluateAll((nodes) => nodes.map((node) => Number(getComputedStyle(node).opacity)));
-    expect(opacities.every((value) => value > 0.99)).toBe(true);
+    // Scrubbed by scroll, or (when it was on screen at load) lit by the load-time entrance: either way all words end lit.
+    await expect.poll(
+      () => statement.locator('.word').evaluateAll((nodes) => nodes.every((node) => Number(getComputedStyle(node).opacity) > 0.99)),
+      { timeout: 5000 },
+    ).toBe(true);
+  });
+
+  test('statement visible at load lights up without any scroll', async ({ page }) => {
+    await page.goto('./');
+    const statement = page.locator('.statement p');
+    await expect(statement.locator('.word').first()).toBeAttached();
+    const visible = await statement.evaluate((node) => node.getBoundingClientRect().top < window.innerHeight * 0.98);
+    test.skip(!visible, 'statement starts below the fold at this viewport');
+    await expect.poll(
+      () => statement.locator('.word').evaluateAll((nodes) => nodes.every((node) => Number(getComputedStyle(node).opacity) > 0.99)),
+      { timeout: 6000 },
+    ).toBe(true);
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
   });
 
   test('timeline has 8 entries that all light up at the end', async ({ page }) => {
