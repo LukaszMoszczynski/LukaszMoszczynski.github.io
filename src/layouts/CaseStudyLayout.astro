@@ -17,7 +17,7 @@ const transitionName = `visual-${project.slug}`;
   <article class="case" aria-labelledby="case-title">
     <header class:list={['case-hero', { 'is-text-only': hasLoop }]}>
       <div class="case-copy">
-        <ArrowLink class="case-back" href={`${localizePath('/', lang)}#work`} label={t(lang, 'case.back')} />
+        <ArrowLink class="case-back" href={localizePath('/work/', lang)} label={t(lang, 'case.back')} />
         <p class="case-meta">
           <span>{meta}</span>
           {origin && <span class="case-origin">{origin}</span>}

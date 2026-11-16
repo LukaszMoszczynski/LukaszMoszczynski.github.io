@@ -70,6 +70,10 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
         await page.keyboard.press('Tab');
         await expectWholeAndRinged(page, index);
       }
+      // After the cards: the "All work" link under the stack, then Contact.
+      await page.keyboard.press('Tab');
+      await expect.poll(() => page.evaluate(() => Boolean(document.activeElement?.closest('#work .work-all')))).toBe(true);
+      await expect(page.locator('#work .work-all a')).toBeInViewport();
       await page.keyboard.press('Tab');
       await expect.poll(() => page.evaluate(() => Boolean(document.activeElement?.closest('#contact')))).toBe(true);
     });
@@ -77,6 +81,9 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     test('Shift+Tab backward from Contact never lands on a covered card', async ({ page }) => {
       await page.goto('./');
       await page.locator('#contact a').first().focus();
+      await page.keyboard.press('Shift+Tab');
+      await expect(page.locator('#work .work-all a')).toBeFocused();
+      await expect(page.locator('#work .work-all a')).toBeInViewport();
       for (let index = COUNT - 1; index >= 0; index--) {
         await page.keyboard.press('Shift+Tab');
         await expectWholeAndRinged(page, index);
@@ -88,14 +95,14 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
 test('the ring uses the accent in the dark theme too', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'dark' });
   await page.goto('./');
-  await page.locator('#contact a').first().focus();
+  await page.locator('#work .work-all a').focus();
   await page.keyboard.press('Shift+Tab');
   await expectWholeAndRinged(page, COUNT - 1);
 });
 
 test('Enter on a focused card opens its case study', async ({ page }) => {
   await page.goto('./');
-  await page.locator('#contact a').first().focus();
+  await page.locator('#work .work-all a').focus();
   await page.keyboard.press('Shift+Tab');
   await page.keyboard.press('Shift+Tab');
   await expectWholeAndRinged(page, COUNT - 2);

@@ -34,13 +34,35 @@ test.describe('scroll position after navigation', () => {
     await expectAtTop(page, '#contact');
   });
 
-  test('“← All work” lands on #work', async ({ page }) => {
+  test('“← All work” opens the /work/ list', async ({ page }) => {
     await page.goto('work/dcc/');
     await settled(page);
     await page.getByRole('link', { name: '← All work' }).click();
-    await expect(page).toHaveURL(/\/#work$/);
+    await expect(page).toHaveURL(/\/portfolio-preview\/work\/$/);
     await settled(page);
-    await expectAtTop(page, '#work');
+    await expect(page.locator('#work-index-title')).toBeInViewport();
+  });
+
+  test('“← Wszystkie projekty” on a Polish case opens /pl/work/', async ({ page }) => {
+    await page.goto('pl/work/dcc/');
+    await settled(page);
+    await page.getByRole('link', { name: '← Wszystkie projekty' }).click();
+    await expect(page).toHaveURL(/\/portfolio-preview\/pl\/work\/$/);
+  });
+
+  test('home Selected work links to the full /work/ list under the stack', async ({ page }) => {
+    for (const [path, name, target] of [['./', 'All work →', /\/portfolio-preview\/work\/$/], ['pl/', 'Wszystkie projekty →', /\/portfolio-preview\/pl\/work\/$/]] as const) {
+      await page.goto(path);
+      await settled(page);
+      const link = page.locator('#work .work-all').getByRole('link', { name });
+      await link.scrollIntoViewIfNeeded();
+      await expect(link).toBeVisible();
+      const linkTop = (await link.boundingBox())!.y;
+      const lastCard = (await page.locator('#work .project-card').last().boundingBox())!;
+      expect(linkTop).toBeGreaterThan(lastCard.y);
+      await link.click();
+      await expect(page).toHaveURL(target);
+    }
   });
 
   test('a direct load of /#contact shows the contact section', async ({ page }) => {
@@ -69,13 +91,13 @@ test.describe('scroll position after navigation', () => {
 
 test.describe('scroll position after navigation, reduced motion', () => {
   test.use({ reducedMotion: 'reduce' });
-  test('“← All work” lands on #work', async ({ page }) => {
+  test('“← All work” opens the /work/ list', async ({ page }) => {
     await page.goto('work/dcc/');
     await settled(page);
     await page.getByRole('link', { name: '← All work' }).click();
-    await expect(page).toHaveURL(/\/#work$/);
+    await expect(page).toHaveURL(/\/portfolio-preview\/work\/$/);
     await settled(page);
-    await expectAtTop(page, '#work');
+    await expect(page.locator('#work-index-title')).toBeInViewport();
   });
 });
 
