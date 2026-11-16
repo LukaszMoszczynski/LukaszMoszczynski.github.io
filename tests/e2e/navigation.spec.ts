@@ -24,11 +24,11 @@ async function expectAtTop(page: Page, selector: string) {
 }
 
 test.describe('scroll position after navigation', () => {
-  test('header Contact on a case study lands on #contact', async ({ page }) => {
-    test.skip((page.viewportSize()?.width ?? 0) <= 640, 'the header hides Work/Contact on phones');
+  test('menu Contact on a case study lands on #contact', async ({ page }) => {
     await page.goto('work/dcc/');
     await settled(page);
-    await page.locator('header').getByRole('link', { name: 'Contact' }).click();
+    await page.getByRole('button', { name: 'Menu' }).click();
+    await page.locator('#site-menu').getByRole('link', { name: 'Contact', exact: true }).click();
     await expect(page).toHaveURL(/\/#contact$/);
     await settled(page);
     await expectAtTop(page, '#contact');

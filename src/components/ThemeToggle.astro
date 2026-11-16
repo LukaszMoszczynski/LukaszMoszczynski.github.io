@@ -2,10 +2,16 @@
 import { t, type Lang } from '../i18n/utils';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
-// The name starts with the visible text (WCAG 2.5.3); aria-pressed says whether dark mode is on.
+// Icon-only switch: no visible text, so the name is the label alone; aria-checked = dark mode on.
 ---
-<button type="button" class="theme-toggle" data-theme-toggle aria-label={`${t(lang, 'theme.label')}, ${t(lang, 'a11y.toggleTheme')}`}>
-  {t(lang, 'theme.label')}
+<button type="button" class="seg theme-seg" role="switch" aria-checked="false" data-theme-toggle aria-label={t(lang, 'theme.switch')}>
+  <span class="seg-thumb" aria-hidden="true"></span>
+  <span class="seg-option" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="16" height="16" focusable="false"><circle cx="12" cy="12" r="4.5" fill="currentColor" /><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></g></svg>
+  </span>
+  <span class="seg-option" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="16" height="16" focusable="false"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z" fill="currentColor" /></svg>
+  </span>
 </button>
 <script>
   import { onPage } from '../scripts/lifecycle';
@@ -15,7 +21,7 @@ const { lang } = Astro.props;
     const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
     const sync = () => {
       const dark = document.documentElement.dataset.theme === 'dark';
-      buttons.forEach((button) => button.setAttribute('aria-pressed', String(dark)));
+      buttons.forEach((button) => button.setAttribute('aria-checked', String(dark)));
     };
     const handle = () => {
       toggleTheme();

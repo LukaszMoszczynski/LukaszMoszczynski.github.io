@@ -107,8 +107,8 @@ test.describe('work index page', () => {
     });
   }
 
-  test('the header Work link still goes to the home section', async ({ page }) => {
+  test('the menu Work link still goes to the home section', async ({ page }) => {
     await page.goto('work/');
-    await expect(page.locator('header .nav-link').first()).toHaveAttribute('href', /\/portfolio-preview\/#work$/);
+    await expect(page.locator('#site-menu .menu-link').first()).toHaveAttribute('href', /\/portfolio-preview\/#work$/);
   });
 });

@@ -1,41 +1,142 @@
 ---
 import { localizePath, t, type Lang } from '../i18n/utils';
+import { getProjects } from '../content/projects';
 import LangSwitch from './LangSwitch.astro';
 import ThemeToggle from './ThemeToggle.astro';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const home = localizePath('/', lang);
+const projects = await getProjects(lang);
+const mainLinks = [
+  { href: `${home}#work`, label: t(lang, 'nav.work') },
+  { href: `${home}#contact`, label: t(lang, 'nav.contact') },
+  { href: localizePath('/work/', lang), label: t(lang, 'nav.allWork') },
+];
 ---
 <header class="bar">
   <a class="logo" href={home} aria-label={`ŁM. ${t(lang, 'nav.logoLabel')}`}>ŁM<span>.</span></a>
-  <nav aria-label={t(lang, 'nav.label')}>
-    <a class="nav-link" href={`${home}#work`}>{t(lang, 'nav.work')}</a>
-    <a class="nav-link" href={`${home}#contact`}>{t(lang, 'nav.contact')}</a>
+  <div class="bar-tools">
     <LangSwitch lang={lang} />
     <ThemeToggle lang={lang} />
-  </nav>
+    <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="site-menu">
+      <span class="menu-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+      <span class="menu-toggle-text">{t(lang, 'nav.menu')}</span>
+    </button>
+  </div>
+  <noscript>
+    <!-- Without JS the menu cannot open: the same links as a plain row. -->
+    <style>.menu-toggle { display: none !important }</style>
+    <nav class="nav-plain" aria-label={t(lang, 'nav.label')}>
+      {mainLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+    </nav>
+  </noscript>
+  <div class="site-menu" id="site-menu" role="dialog" aria-modal="true" aria-label={t(lang, 'nav.menu')} hidden>
+    <nav class="site-menu-in wrap" aria-label={t(lang, 'nav.label')}>
+      <ul class="menu-main">
+        {mainLinks.map((link) => (
+          <li><a class="menu-link" href={link.href}><span class="menu-link-text">{link.label}</span></a></li>
+        ))}
+      </ul>
+      <p class="menu-sub">{t(lang, 'nav.projects')}</p>
+      <ul class="menu-projects">
+        {projects.map((project) => (
+          <li><a href={localizePath(`/work/${project.slug}/`, lang)}>{project.data.title}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
 </header>
+<script>
+  import { onPage } from '../scripts/lifecycle';
+  import { initHeader } from '../scripts/header';
+  onPage(() => {
+    const root = document.querySelector<HTMLElement>('header.bar');
+    return root ? initHeader(root) : undefined;
+  });
+</script>
 <style is:global>
   .bar {
     position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 20;
-    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
     padding-block: 16px;
     padding-left: max(16px, env(safe-area-inset-left, 0px));
     padding-right: max(16px, env(safe-area-inset-right, 0px));
     pointer-events: none;
   }
   .bar > * { pointer-events: auto }
+  .bar > .logo, .bar > .bar-tools { position: relative; z-index: 1 }
   .logo { font-family: var(--font-display); font-weight: 800; font-size: 18px; text-decoration: none; letter-spacing: -.02em }
   .logo span { color: var(--accent) }
-  .bar nav {
-    display: flex; gap: 4px; padding: 6px; border-radius: 999px;
-    background: color-mix(in srgb, var(--surface) 70%, transparent);
-    backdrop-filter: blur(14px); box-shadow: 0 0 0 1px var(--line);
+  .bar-tools { display: flex; align-items: center; gap: 8px }
+
+  /* Segmented switches: a thumb slides under the active option (CSS transition; none with reduced motion). */
+  .seg {
+    position: relative; isolation: isolate; display: inline-grid; grid-template-columns: 1fr 1fr; align-items: center;
+    height: 48px; padding: 4px; border: 0; border-radius: 999px; cursor: pointer;
+    background: color-mix(in srgb, var(--surface) 75%, transparent); backdrop-filter: blur(14px); box-shadow: 0 0 0 1px var(--line);
+    color: var(--ink); font: 600 13px/1 var(--font-body);
   }
-  .bar nav a, .bar nav button {
-    font: 600 13px/1 var(--font-body); border: 0; background: transparent; color: var(--ink);
-    border-radius: 999px; padding: 9px 14px; cursor: pointer; text-decoration: none;
+  .seg-thumb {
+    position: absolute; z-index: -1; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px;
+    background: var(--accent); box-shadow: 0 6px 16px -6px var(--glow-a);
+    transition: transform .35s cubic-bezier(.3, .7, .2, 1.2);
   }
-  .bar nav a:hover, .bar nav button:hover { background: var(--line) }
-  @media (max-width: 640px) { .bar nav .nav-link { display: none } }
+  .seg-option { display: grid; place-items: center; min-width: 40px; height: 40px; padding-inline: 8px; border-radius: 999px; text-decoration: none; color: inherit; transition: color .3s }
+  .lang-seg { cursor: default }
+  .lang-seg .seg-option.is-current { color: var(--on-accent) }
+  .lang-seg a.seg-option:hover { color: var(--accent-ink) }
+  .lang-seg[data-current="pl"] .seg-thumb { transform: translateX(100%) }
+  /* While the thumb slides to the other language, the colours follow it. */
+  .lang-seg.is-switching .seg-option.is-current { color: var(--ink) }
+  .lang-seg.is-switching a.seg-option { color: var(--on-accent) }
+  :root[data-theme="dark"] .theme-seg .seg-thumb { transform: translateX(100%) }
+  :root:not([data-theme="dark"]) .theme-seg .seg-option:first-of-type, :root[data-theme="dark"] .theme-seg .seg-option:last-of-type { color: var(--on-accent) }
+
+  /* Hamburger: three lines turn into an X while the menu is open. */
+  .menu-toggle {
+    display: inline-grid; place-items: center; width: 48px; height: 48px; padding: 0; border: 0; border-radius: 999px; cursor: pointer;
+    background: var(--ink); color: var(--bg); box-shadow: 0 8px 24px -10px var(--glow-a);
+  }
+  .menu-lines { display: grid; gap: 4px; width: 18px }
+  .menu-lines span { display: block; height: 2px; border-radius: 2px; background: currentColor; transition: transform .35s cubic-bezier(.3, .7, .2, 1), opacity .2s }
+  .menu-toggle[aria-expanded="true"] .menu-lines span:nth-child(1) { transform: translateY(6px) rotate(45deg) }
+  .menu-toggle[aria-expanded="true"] .menu-lines span:nth-child(2) { opacity: 0; transform: scaleX(0) }
+  .menu-toggle[aria-expanded="true"] .menu-lines span:nth-child(3) { transform: translateY(-6px) rotate(-45deg) }
+  .menu-toggle-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
+
+  .nav-plain { display: flex; gap: 14px; font: 600 13px/1 var(--font-body) }
+  .nav-plain a { text-decoration: underline; text-underline-offset: 4px }
+
+  /* The open menu: a dark, blurred overlay with the orange and violet glows; header.ts wipes it in. */
+  .site-menu {
+    position: fixed; inset: 0; z-index: 0; overflow-y: auto; overscroll-behavior: contain;
+    padding-block: 104px 48px;
+    background:
+      radial-gradient(circle at 88% 8%, var(--glow-a), transparent 42%),
+      radial-gradient(circle at 8% 92%, var(--glow-b), transparent 48%),
+      color-mix(in srgb, var(--bg) 90%, transparent);
+    backdrop-filter: blur(18px);
+  }
+  .site-menu[hidden] { display: none }
+  .menu-main, .menu-projects { list-style: none; margin: 0; padding: 0 }
+  .menu-main { display: grid; gap: 4px; margin-bottom: 40px }
+  .menu-link { display: inline-block; overflow: hidden; padding-block: 2px; text-decoration: none; color: var(--ink) }
+  .menu-link-text {
+    display: inline-block; font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 8vw, 96px);
+    letter-spacing: -.045em; line-height: 1.05; transition: color .25s;
+  }
+  .menu-link:is(:hover, :focus-visible) .menu-link-text { color: var(--accent-ink) }
+  .menu-sub { margin: 0 0 12px; font: 500 13px/1 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted) }
+  .menu-projects { display: flex; flex-wrap: wrap; gap: 8px 10px }
+  .menu-projects a {
+    display: inline-flex; align-items: center; min-height: 40px; padding: 8px 14px; border-radius: 999px; text-decoration: none;
+    font: 600 14px/1.2 var(--font-body); color: var(--ink); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line);
+    transition: box-shadow .25s, color .25s;
+  }
+  .menu-projects a:is(:hover, :focus-visible) { color: var(--accent-ink); box-shadow: inset 0 0 0 1.5px var(--accent) }
+  html.menu-open { overflow: hidden }
+
+  @media (prefers-reduced-motion: reduce) {
+    .seg-thumb, .seg-option, .menu-lines span, .menu-link-text, .menu-projects a { transition: none }
+  }
 </style>

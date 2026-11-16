@@ -6,7 +6,16 @@ const target: Lang = lang === 'en' ? 'pl' : 'en';
 // The 404 page has no translated twin, so its switch goes to the other home page.
 const isNotFound = /\/404(\.html|\/)?$/.test(Astro.url.pathname);
 const href = isNotFound ? localizePath('/', target) : switchLangPath(Astro.url, target);
+const options: Lang[] = ['en', 'pl'];
 ---
-<a class="lang-switch" href={href} hreflang={target} lang={target} aria-label={`${t(lang, 'lang.label')} – ${t(lang, 'a11y.switchLang')}`}>
-  {t(lang, 'lang.label')}
-</a>
+<!-- Segmented EN | PL: the current language is plain text, the other a real link (works without JS). -->
+<div class="seg lang-seg" data-current={lang}>
+  <span class="seg-thumb" aria-hidden="true"></span>
+  {options.map((option) => option === lang ? (
+    <span class="seg-option is-current" lang={option}>{option.toUpperCase()}</span>
+  ) : (
+    <a class="seg-option" href={href} hreflang={target} lang={target} data-lang-switch aria-label={`${t(lang, 'lang.label')} – ${t(lang, 'a11y.switchLang')}`}>
+      {t(lang, 'lang.label')}
+    </a>
+  ))}
+</div>

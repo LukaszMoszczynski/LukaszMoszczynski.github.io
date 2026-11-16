@@ -149,7 +149,7 @@ test('unknown paths get the styled 404 with links home', async ({ page }) => {
   await expect(page.locator('#not-found-title')).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
   await expect(page.locator('link[rel="canonical"], link[hreflang], meta[property="og:url"]')).toHaveCount(0);
-  await expect(page.locator('.lang-switch')).toHaveAttribute('href', '/portfolio-preview/pl/');
+  await expect(page.locator('[data-lang-switch]')).toHaveAttribute('href', '/portfolio-preview/pl/');
   const links = page.locator('.not-found-links a');
   await expect(links).toHaveCount(2);
   await expect(links.nth(0)).toHaveAttribute('href', '/portfolio-preview/');
