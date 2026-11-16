@@ -76,6 +76,8 @@ for (const scheme of ['light', 'dark'] as const) {
     test.skip(testInfo.project.name === 'phone', 'the spotlight follows a fine pointer');
     test.setTimeout(60_000);
     await page.addInitScript((theme) => localStorage.setItem('theme', theme), scheme);
+    // Loops at rest (the agent log could be caught mid-fade); the pointer light still follows the cursor.
+    await page.addInitScript(() => localStorage.setItem('motion-paused', '1'));
     await page.goto('./');
     await expect(page.locator('html')).not.toHaveClass(/init-pending/);
     for (const selector of ['.hero .sub', '#stack .skill p', '#contact .contact-label']) {

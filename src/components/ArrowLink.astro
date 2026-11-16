@@ -20,9 +20,9 @@ const [before, joined, after] = leading
   ? ['', firstSpace < 0 ? text : text.slice(0, firstSpace), firstSpace < 0 ? '' : text.slice(firstSpace)]
   : trailing
     ? [lastSpace < 0 ? '' : text.slice(0, lastSpace + 1), lastSpace < 0 ? text : text.slice(lastSpace + 1), '']
-    : ['', text, ''];
+    : [text, '', ''];
 ---
-<a class:list={['text-link', className]} {...attributes}>{before}<span class="link-keep">{leading && <><span class:list={arrowClass(leading[1])}>{leading[1]}</span>{' '}</>}{joined}{trailing && <><slot />{' '}<span class:list={arrowClass(trailing[1])}>{trailing[1]}</span></>}</span>{after}{!trailing && <slot />}</a>
+<a class:list={['text-link', className]} {...attributes}>{before}{(leading || trailing) && <span class="link-keep">{leading && <><span class:list={arrowClass(leading[1])}>{leading[1]}</span>{' '}</>}{joined}{trailing && <><slot />{' '}<span class:list={arrowClass(trailing[1])}>{trailing[1]}</span></>}</span>}{after}{!trailing && <slot />}</a>
 <style is:global>
   .link-keep { white-space: nowrap }
 </style>
