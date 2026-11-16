@@ -14,7 +14,7 @@ test('every internal link and asset resolves under the base path', async ({ page
   test.skip(testInfo.project.name === 'phone', 'same markup as desktop; crawl runs once');
   test.setTimeout(120_000);
   const checked = new Set<string>();
-  for (const path of pages) {
+  for (const path of [...pages, 'missing/']) {
     await page.goto(path);
     const urls = await page.evaluate(() => {
       const values: string[] = [];
@@ -82,7 +82,7 @@ test('sitemap index lists URLs under the base path', async ({ request }) => {
   expect(sitemapUrl).toContain('/portfolio-preview/');
   const sitemap = await request.get(new URL(sitemapUrl).pathname);
   const locs = [...(await sitemap.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
-  expect(locs.length).toBeGreaterThanOrEqual(pages.length);
+  expect(locs.length).toBe(pages.length);
   for (const loc of locs) expect(loc).toContain('/portfolio-preview/');
 });
 
@@ -141,6 +141,9 @@ test('unknown paths get the styled 404 with links home', async ({ page }) => {
   const response = await page.goto('missing/');
   expect(response?.status()).toBe(404);
   await expect(page.locator('#not-found-title')).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
+  await expect(page.locator('link[rel="canonical"], link[hreflang], meta[property="og:url"]')).toHaveCount(0);
+  await expect(page.locator('.lang-switch')).toHaveAttribute('href', '/portfolio-preview/pl/');
   const links = page.locator('.not-found-links a');
   await expect(links).toHaveCount(2);
   await expect(links.nth(0)).toHaveAttribute('href', '/portfolio-preview/');

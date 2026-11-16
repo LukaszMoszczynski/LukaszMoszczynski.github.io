@@ -238,7 +238,7 @@ export const ui = {
     'factory.stage.fix': 'Poprawki · fabryka pobiera komentarze',
     'factory.stage.clean': 'review czyste · gotowe dla człowieka',
     'footer.copyright': '© 2026 Łukasz Moszczyński',
-    'meta.homeTitle': 'Łukasz Moszczyński · Technical Leader, Frontend, AI (PL)',
+    'meta.homeTitle': 'Łukasz Moszczyński · Technical Leader, Frontend i AI',
     'meta.caseSuffix': 'Studium przypadku',
     'notFound.title': 'Nie znaleziono strony',
     'notFound.text': 'Ta strona nie istnieje albo została przeniesiona.',

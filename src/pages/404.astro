@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { localizePath, t } from '../i18n/utils';
 ---
-<BaseLayout lang="en" title={`${t('en', 'notFound.title')} · ${t('pl', 'notFound.title')}`} description={t('en', 'notFound.text')} path="/">
+<BaseLayout lang="en" title={`${t('en', 'notFound.title')} · ${t('pl', 'notFound.title')}`} description={t('en', 'notFound.text')} path="/" noindex>
   <section class="not-found" aria-labelledby="not-found-title">
     <p class="not-found-code">404</p>
     <h1 id="not-found-title">{t('en', 'notFound.title')} · {t('pl', 'notFound.title')}</h1>

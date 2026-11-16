@@ -1,9 +1,12 @@
 ---
-import { switchLangPath, t, type Lang } from '../i18n/utils';
+import { localizePath, switchLangPath, t, type Lang } from '../i18n/utils';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const target: Lang = lang === 'en' ? 'pl' : 'en';
+// The 404 page has no translated twin, so its switch goes to the other home page.
+const isNotFound = /\/404(\.html|\/)?$/.test(Astro.url.pathname);
+const href = isNotFound ? localizePath('/', target) : switchLangPath(Astro.url, target);
 ---
-<a class="lang-switch" href={switchLangPath(Astro.url, target)} hreflang={target} lang={target} aria-label={t(lang, 'a11y.switchLang')}>
+<a class="lang-switch" href={href} hreflang={target} lang={target} aria-label={t(lang, 'a11y.switchLang')}>
   {t(lang, 'lang.label')}
 </a>
