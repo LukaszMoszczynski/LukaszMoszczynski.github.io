@@ -1,4 +1,4 @@
-import { gsap } from './lifecycle';
+import { gsap, quietArrival } from './lifecycle';
 
 /** Splits `text` into words; joined by a single space they give back the original. */
 export function splitWords(text: string): string[] {
@@ -28,7 +28,9 @@ export function initStatement(root: HTMLElement): () => void {
 
   const words = paragraph.querySelectorAll('.word');
   const box = paragraph.getBoundingClientRect();
-  if (box.top < innerHeight * STATEMENT_IN_VIEW && box.bottom > 0) {
+  if (quietArrival() && box.top < innerHeight * STATEMENT_IN_VIEW) {
+    // After a language switch the reader has seen it already: on screen or above, it stays lit.
+  } else if (box.top < innerHeight * STATEMENT_IN_VIEW && box.bottom > 0) {
     // Already on screen at load (short hero, restored scroll): the words light up in sequence once and stay lit,
     // instead of waiting for a scroll that may never come.
     gsap.fromTo(words, { opacity: 0.18 }, { opacity: 1, duration: 0.5, stagger: { amount: 1.2 }, ease: 'power1.out', delay: 0.3 });

@@ -322,3 +322,40 @@ test.describe('inline text link underline', () => {
     expect((await look()).decoration).toBe('none');
   });
 });
+
+test.describe('language switch looks like the same page, not a reload', () => {
+  test('the hero does not replay its rise-in', async ({ page }) => {
+    await page.goto('./');
+    await expect(page.locator('html')).not.toHaveClass(/\binit-pending\b/);
+    // Let the first-load entrance finish.
+    await expect.poll(() => page.locator('.hero .eyebrow').evaluate((element) => getComputedStyle(element).opacity)).toBe('1');
+    await page.evaluate(() => ((window as Window & { stayMarker?: number }).stayMarker = 1));
+    await page.locator('header [data-lang-switch]').click();
+    await expect(page.locator('html')).toHaveAttribute('lang', 'pl');
+    // Sampled every frame from the swap until the transition ends: the name never drops out of place.
+    const worst = await page.evaluate(() => new Promise<{ shift: number; opacity: number }>((resolve) => {
+      let shift = 0;
+      let opacity = 1;
+      const sample = () => {
+        for (const char of document.querySelectorAll<HTMLElement>('.hero .char')) {
+          shift = Math.max(shift, Math.abs(new DOMMatrix(getComputedStyle(char).transform).m42));
+        }
+        opacity = Math.min(opacity, Number(getComputedStyle(document.querySelector('.hero .eyebrow')!).opacity));
+        if (document.documentElement.hasAttribute('data-astro-transition') || document.documentElement.classList.contains('init-pending')) requestAnimationFrame(sample);
+        else setTimeout(() => resolve({ shift, opacity }), 0);
+      };
+      sample();
+    }));
+    expect(worst.shift).toBeLessThan(1);
+    expect(worst.opacity).toBe(1);
+    expect(await page.evaluate(() => (window as Window & { stayMarker?: number }).stayMarker)).toBe(1);
+    await expect(page.locator('html')).not.toHaveClass(/\bquiet-arrival\b/);
+  });
+
+  test('a plain link to the home page still plays the entrance', async ({ page }) => {
+    await page.goto('work/');
+    await page.locator('header .logo').click();
+    await expect(page).toHaveURL(/\/portfolio-preview\/$/);
+    await expect.poll(() => page.locator('.hero .char').first().evaluate((element) => Math.abs(new DOMMatrix(getComputedStyle(element).transform).m42))).toBeGreaterThan(1);
+  });
+});

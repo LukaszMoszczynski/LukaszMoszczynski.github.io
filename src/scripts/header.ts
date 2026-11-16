@@ -1,5 +1,5 @@
 import { navigate } from 'astro:transitions/client';
-import { gsap, motionEnabled } from './lifecycle';
+import { expectLanguageSwitch, gsap, motionEnabled } from './lifecycle';
 import { samePageHash, trapIndex } from './header-model';
 import { rememberPlace } from './reading-place';
 
@@ -41,6 +41,7 @@ export function initHeader(root: HTMLElement): () => void {
         return;
       }
       rememberPlace(new URL(langLink.href).pathname);
+      expectLanguageSwitch(langLink.href);
       if (!motion) return;
       event.preventDefault();
       langSeg.dataset.current = langLink.hreflang;

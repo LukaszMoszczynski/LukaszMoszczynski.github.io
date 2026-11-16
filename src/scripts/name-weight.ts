@@ -1,4 +1,4 @@
-import { gsap, hasFinePointer, motionEnabled } from './lifecycle';
+import { gsap, hasFinePointer, motionEnabled, quietArrival } from './lifecycle';
 
 /** Variable-font weight for a letter at `distance` px from the pointer. */
 export function weightForDistance(distance: number, radius = 260, min = 300, max = 900): number {
@@ -30,12 +30,15 @@ export function initHero(root: HTMLElement): () => void {
   };
 
   if (motionEnabled()) {
-    gsap.fromTo(
-      chars,
-      { y: 0, yPercent: 120, rotate: 10 },
-      { yPercent: 0, rotate: 0, duration: 1.2, ease: 'expo.out', stagger: 0.035, delay: 0.4, onComplete: markStale },
-    );
-    gsap.fromTo(reveal, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'expo.out', stagger: 0.08, delay: 0.8 });
+    // After a language switch the name is already there: no second rise-in.
+    if (!quietArrival()) {
+      gsap.fromTo(
+        chars,
+        { y: 0, yPercent: 120, rotate: 10 },
+        { yPercent: 0, rotate: 0, duration: 1.2, ease: 'expo.out', stagger: 0.035, delay: 0.4, onComplete: markStale },
+      );
+      gsap.fromTo(reveal, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'expo.out', stagger: 0.08, delay: 0.8 });
+    }
     const scrub = { trigger: root, start: 'top top', end: 'bottom top', scrub: true };
     gsap.to(lines[0], { xPercent: -8, ease: 'none', scrollTrigger: scrub });
     gsap.to(lines[1], { xPercent: 6, ease: 'none', scrollTrigger: { ...scrub } });

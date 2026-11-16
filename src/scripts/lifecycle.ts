@@ -29,6 +29,25 @@ interface Registered {
 }
 
 const registry: Registered[] = [];
+
+/**
+ * A language switch shows the same page in the other language, so it must not look like a
+ * fresh load: no hero rise-in, no statement light-up. header.ts announces the target URL;
+ * the page that arrives from it gets QUIET_CLASS on <html> until its setups ran, and
+ * `quietArrival()` is true during those setups.
+ */
+export const QUIET_CLASS = 'quiet-arrival';
+let languageTarget: string | null = null;
+let quiet = false;
+
+export function expectLanguageSwitch(href: string): void {
+  languageTarget = new URL(href, location.href).href;
+}
+
+export function quietArrival(): boolean {
+  return quiet;
+}
+
 let navigationType: 'push' | 'replace' | 'traverse' | 'initial' = 'initial';
 
 /** Class the head script puts on <html> until every section has set itself up (see BaseLayout). */
@@ -88,7 +107,8 @@ function runAll(): void {
     }
   }
   restoreScroll();
-  document.documentElement.classList.remove(INIT_PENDING_CLASS);
+  quiet = false;
+  document.documentElement.classList.remove(INIT_PENDING_CLASS, QUIET_CLASS);
 }
 
 if (typeof document !== 'undefined') {
@@ -97,7 +117,13 @@ if (typeof document !== 'undefined') {
     navigationType = (event as Event & { navigationType: typeof navigationType }).navigationType;
   });
   document.addEventListener('astro:page-load', runAll);
-  document.addEventListener('astro:before-swap', () => registry.forEach(teardown));
+  document.addEventListener('astro:before-swap', (event) => {
+    registry.forEach(teardown);
+    const swap = event as Event & { to: URL; newDocument: Document };
+    quiet = languageTarget !== null && swap.to.href === languageTarget;
+    languageTarget = null;
+    if (quiet) swap.newDocument.documentElement.classList.add(QUIET_CLASS);
+  });
 }
 
 /**

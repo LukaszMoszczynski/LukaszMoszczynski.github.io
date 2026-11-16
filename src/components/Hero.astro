@@ -38,8 +38,8 @@ const lines = ['Łukasz', 'Moszczyński'].map((line) => [...line]);
   .name .line + .line { color: var(--accent) }
   .char { display: inline-block }
   /* Start of the rise-in (name-weight.ts), shown from the first paint so the name never flashes in full. */
-  html.motion.init-pending .hero .char { transform: translateY(120%) rotate(10deg) }
-  html.motion.init-pending .hero :is(.eyebrow, .claim, .sub, .grid-hint) { opacity: 0; transform: translateY(18px) }
+  html.motion.init-pending:not(.quiet-arrival) .hero .char { transform: translateY(120%) rotate(10deg) }
+  html.motion.init-pending:not(.quiet-arrival) .hero :is(.eyebrow, .claim, .sub, .grid-hint) { opacity: 0; transform: translateY(18px) }
   .hero-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 24px; margin-top: 32px }
   .claim { font-family: var(--font-display); font-weight: 600; font-size: clamp(20px, 2.4vw, 30px); line-height: 1.2; letter-spacing: -.02em; margin: 0; max-width: 20ch }
   .claim em { font-style: normal; color: var(--accent-ink) }
