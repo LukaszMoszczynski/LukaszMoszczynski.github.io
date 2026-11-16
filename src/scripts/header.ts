@@ -27,11 +27,17 @@ export function initHeader(root: HTMLElement): () => void {
   const motion = motionEnabled();
   let langTimer: number | undefined;
 
-  // Language: remember the reader's place for the other page, let the thumb slide, then go.
-  // Without motion the link just works (the place is still remembered).
-  const langLink = root.querySelector<HTMLAnchorElement>('[data-lang-switch]');
-  const langSeg = langLink?.closest<HTMLElement>('.lang-seg');
-  if (langLink && langSeg) {
+  // Once the page is scrolled the bar gets its surface (CSS), so content never shows through behind it.
+  const markScrolled = () => root.classList.toggle('is-scrolled', window.scrollY > 4);
+  markScrolled();
+  listen(window, 'scroll', markScrolled);
+
+  // Language (the header pill and its copy in the menu): remember the reader's place for the other
+  // page, let the thumb slide, then go. Without motion the link just works (the place is still remembered).
+  const langLinks = [...root.querySelectorAll<HTMLAnchorElement>('[data-lang-switch]')];
+  const switchingSegs: HTMLElement[] = [];
+  for (const langLink of langLinks) {
+    const langSeg = langLink.closest<HTMLElement>('.lang-seg') ?? langLink;
     listen(langLink, 'click', (event) => {
       const click = event as MouseEvent;
       if (click.metaKey || click.ctrlKey || click.shiftKey || click.altKey || click.button !== 0) return;
@@ -46,13 +52,15 @@ export function initHeader(root: HTMLElement): () => void {
       event.preventDefault();
       langSeg.dataset.current = langLink.hreflang;
       langSeg.classList.add('is-switching');
+      switchingSegs.push(langSeg);
       langTimer = window.setTimeout(() => navigate(langLink.href), LANG_SLIDE_MS);
     });
   }
 
   if (!toggle || !panel) return () => removers.forEach((remove) => remove());
 
-  const links = [...panel.querySelectorAll<HTMLAnchorElement>('a[href]')];
+  // Menu links close the menu; the language copy does not (the page swap closes it after the thumb slides).
+  const links = [...panel.querySelectorAll<HTMLAnchorElement>('a[href]:not([data-lang-switch])')];
   const bigLinks = [...panel.querySelectorAll<HTMLElement>('.menu-link-text')];
   const smallItems = [...panel.querySelectorAll<HTMLElement>('.menu-sub, .menu-projects li')];
   let open = false;
@@ -148,7 +156,8 @@ export function initHeader(root: HTMLElement): () => void {
     removers.forEach((remove) => remove());
     clearTimeout(langTimer);
     langTimer = undefined;
-    langSeg?.classList.remove('is-switching');
+    switchingSegs.forEach((seg) => seg.classList.remove('is-switching'));
+    root.classList.remove('is-scrolled');
     timeline?.kill();
     timeline = undefined;
     if (open) setOpen(false);

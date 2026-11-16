@@ -73,7 +73,7 @@ test.describe('structure on every page', () => {
     // English originals on the Polish page.
     await expect(page.locator('.quote blockquote').first()).toHaveAttribute('lang', 'en');
     await expect(page.locator('.term-sr')).toHaveAttribute('lang', 'en');
-    await expect(page.locator('header .lang-seg')).toHaveAttribute('lang', 'en');
+    await expect(page.locator('.bar-tools .lang-seg')).toHaveAttribute('lang', 'en');
     await ready(page, 'missing/');
     await expect(page.locator('#not-found-title [lang="pl"]')).toHaveCount(1);
     await expect(page.locator('.not-found-links a').nth(1)).toHaveAttribute('lang', 'pl');

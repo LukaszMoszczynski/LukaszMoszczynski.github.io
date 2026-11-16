@@ -46,7 +46,12 @@ const mainLinks = [
           <li><a href={localizePath(`/work/${project.slug}/`, lang)}>{project.data.short ?? project.data.title}</a></li>
         ))}
       </ul>
-      <div class="menu-motion"><MotionToggle lang={lang} place="menu" /></div>
+      <!-- The header's language and theme switches live here too: the header copies hide while the menu is open and on phones. -->
+      <div class="menu-tools" role="group" aria-label={t(lang, 'nav.settings')}>
+        <LangSwitch lang={lang} />
+        <ThemeToggle lang={lang} />
+        <MotionToggle lang={lang} place="menu" />
+      </div>
     </nav>
   </div>
 </header>
@@ -153,7 +158,22 @@ const mainLinks = [
   }
   .menu-projects a:is(:hover, :focus-visible) { color: var(--accent-ink); box-shadow: inset 0 0 0 1.5px var(--accent) }
   html.menu-open { overflow: hidden }
-  .menu-motion { margin-top: 32px }
+  .menu-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 32px }
+
+  /* The header's own switches: hidden while the menu (which holds copies) is open, and on phones with JS,
+     where the header keeps only the wordmark and the menu button. Without JS the menu cannot open, so they stay. */
+  html.menu-open .bar-tools > .seg { display: none }
+  @media (max-width: 560px) { html.js .bar-tools > .seg { display: none } }
+
+  /* Once the page is scrolled, the bar gets a surface so content never shows through behind its controls.
+     On a pseudo-element: a backdrop-filter on .bar itself would trap the fixed menu inside the bar. */
+  .bar::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0;
+    background: color-mix(in srgb, var(--surface) 82%, transparent); backdrop-filter: blur(14px);
+    box-shadow: 0 1px 0 var(--line); transition: opacity .25s;
+  }
+  .bar.is-scrolled::before { opacity: 1 }
+  html.menu-open .bar::before { opacity: 0 }
 
   /* Narrow phones: the pills are one target each, so their halves can be a little narrower to leave room for the name. */
   @media (max-width: 400px) {
@@ -163,6 +183,6 @@ const mainLinks = [
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .logo, .seg-thumb, .seg-option, .menu-lines span, .menu-link-text, .menu-projects a { transition: none }
+    .logo, .seg-thumb, .seg-option, .menu-lines span, .menu-link-text, .menu-projects a, .bar::before { transition: none }
   }
 </style>

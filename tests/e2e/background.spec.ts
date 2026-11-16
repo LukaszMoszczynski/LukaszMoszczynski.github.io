@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { showSwitches } from './helpers';
 
 const EXCLUDED = 'a, button, [role=button], .stage, .project-card, .skill, .quote, header, h1, h2, h3, p, li, blockquote, figure';
 
@@ -75,6 +76,7 @@ test('background persists across client navigation without redrawing', async ({ 
   await page.goto('./');
   await page.waitForTimeout(1500);
   await page.evaluate(() => { (document.querySelector('.grid-layer') as HTMLElement & { marker?: boolean }).marker = true; });
+  await showSwitches(page);
   await page.getByRole('link', { name: 'Zmień język na polski' }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'pl');
   const state = await page.evaluate(() => {

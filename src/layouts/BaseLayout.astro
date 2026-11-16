@@ -33,6 +33,8 @@ const { lang, title, description, path, noindex } = Astro.props;
           var paused = false;
           try { paused = localStorage.getItem('motion-paused') === '1'; } catch (error) {}
           target.classList.toggle('motion-paused', paused);
+          // `js`: scripts run, so CSS may hide controls that only JS can reach elsewhere (the menu).
+          target.classList.add('js');
         };
         // `motion`: animations may run, so CSS shows their start states from the first paint.
         // `init-pending`: removed by lifecycle.ts once every section has set itself up.

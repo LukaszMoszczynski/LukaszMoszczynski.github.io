@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { langSwitch } from './helpers';
 
 /** Where `selector` sits relative to the viewport top, as a fraction of its own height (0 = its top at the viewport top). */
 const offsetInto = (page: Page, selector: string) =>
@@ -18,7 +19,7 @@ async function scrollInto(page: Page, selector: string, fraction: number) {
 }
 
 async function switchLanguage(page: Page) {
-  await page.locator('header [data-lang-switch]').click();
+  await (await langSwitch(page)).click();
 }
 
 test.describe('language switch keeps the reader’s place', () => {

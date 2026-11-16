@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { showSwitches } from './helpers';
 
 /** Waits until the ClientRouter has finished its view transition. */
 const settled = (page: Page) => expect(page.locator('html')).not.toHaveAttribute('data-astro-transition', /.*/);
@@ -32,6 +33,7 @@ test.describe('case study pages', () => {
 
   test('language switch keeps the case study', async ({ page }) => {
     await page.goto('work/dcc/');
+    await showSwitches(page);
     await page.getByRole('link', { name: 'Zmień język na polski' }).click();
     await expect(page).toHaveURL(/\/portfolio-preview\/pl\/work\/dcc\/$/);
     await expect(page.locator('html')).toHaveAttribute('lang', 'pl');
