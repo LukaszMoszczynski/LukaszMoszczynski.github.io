@@ -95,9 +95,9 @@ const loopNodes = FACTORY_NODES.map((stage, index) => {
     )}
     {visual === 'wp-starter' && (
       <>
-        <span class="frame" style="inset: 12% 58% 12% 7%"><i style="inset: 6% 8% 70% 8%"></i><i class="accent" style="inset: 36% 8% 40% 8%"></i><i style="inset: 66% 8% 6% 8%"></i></span>
+        <span class="frame" style="inset: 12% 58% 12% 7%"><i class="wp-source" style="inset: 6% 8% 70% 8%"></i><i class="wp-source accent" style="inset: 36% 8% 40% 8%"></i><i class="wp-source" style="inset: 66% 8% 6% 8%"></i></span>
         <svg class="arrow" viewBox="0 0 400 300" preserveAspectRatio="none"><path d="M176 150 H222" /><path d="M212 140 L224 150 L212 160" /></svg>
-        <span class="shape page" style="inset: 12% 7% 12% 58%"><i style="inset: 6% 8% 70% 8%"></i><i class="accent" style="inset: 36% 8% 40% 8%"></i><i style="inset: 66% 8% 6% 8%"></i></span>
+        <span class="shape page" style="inset: 12% 7% 12% 58%"><i class="wp-block" style="inset: 6% 8% 70% 8%"><b class="wp-skin"></b></i><i class="wp-block accent" style="inset: 36% 8% 40% 8%"><b class="wp-skin"></b></i><i class="wp-block" style="inset: 66% 8% 6% 8%"><b class="wp-skin"></b></i></span>
         {!compact && (
           <>
             <span class="label" style="left: 7%; top: 3%">Figma</span>
@@ -195,6 +195,8 @@ const loopNodes = FACTORY_NODES.map((stage, index) => {
   .frame { background: transparent; border: 2px dashed #5aa7e6; border-radius: 6px }
   .frame i { background: rgb(255 255 255 / .22) }
   .page { background: var(--white) }
+  /* WP Starter: a block keeps its Figma look (light fill, dashed outline) while it travels; it fades at rest. */
+  .wp-skin { position: absolute; inset: 0; border-radius: inherit; background: rgb(255 255 255 / .22); border: 1.5px dashed #5aa7e6; opacity: 0 }
 
   .domain { display: grid; place-items: center }
   .domain b { font: 600 11px/1 var(--font-mono); color: var(--brand) }
