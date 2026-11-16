@@ -86,7 +86,7 @@ Sections in order. "Liked" = owner explicitly approved in the spike.
 9. **Selected work (liked "depth stack" feel):** sticky stacked cards; each card shrinks/dims as the next slides over; the project visual tilts in 3D under the pointer. Each card links to its case study.
 10. **Contact:** huge line "Let's build something." that fills with orange on scroll; email `moszczynski.luk@gmail.com` and phone `+48 880 944 496` shown as selectable text with copy buttons (and `mailto:`/`tel:` links); buttons LinkedIn and GitHub; footer. Owner decided: email and phone both public, no form.
 
-**Rejected in the spikes — do not use:** horizontal pinned project rail, velocity skill marquee, magnetic buttons, custom cursor dot, the "kinetic" concept as a whole (only its name-hover survived), counters.
+**Rejected in the spikes — do not use:** horizontal pinned project rail, velocity skill marquee, the "kinetic" concept as a whole (only its name-hover survived), counters. Magnetic buttons and a custom cursor were rejected here too (owner reversed 2026-11-16).
 
 ## 6. Projects and case studies
 

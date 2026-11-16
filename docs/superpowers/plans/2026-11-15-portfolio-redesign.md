@@ -21,7 +21,7 @@
 - home.pl work: descriptions and illustrative visuals only — no screenshots, code, internal names.
 - Readable names in new code (`element`, `index`, `project`, `event` — never `e`, `i`, `p`).
 - Commits: no `Co-Authored-By` or model trailers.
-- Rejected, never add: horizontal project rail, skill marquee, magnetic buttons, custom cursor dot, counters.
+- Rejected, never add: horizontal project rail, skill marquee, counters. (Magnetic buttons and a custom cursor: owner reversed 2026-11-16.)
 - Work on branch `redesign`; never push to `master` before the owner says "go" (Task 14).
 
 ## Review Focus
