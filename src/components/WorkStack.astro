@@ -15,7 +15,7 @@ const projects = await getProjects(lang);
         <div class="project-copy">
           <p class="project-meta">
             <span>{project.data.meta}</span>
-            {project.data.origin && <span class="project-origin">{project.data.origin}</span>}
+            {project.data.client && <span class="project-client">{project.data.client}</span>}
           </p>
           <h3 id={`work-${project.slug}`}>{project.data.title}</h3>
           <p class="project-summary">{project.data.summary}</p>
@@ -55,7 +55,7 @@ const projects = await getProjects(lang);
     box-shadow: 0 0 0 1px var(--line), 0 40px 80px -40px rgb(20 10 40 / .45); transform-origin: 50% 0;
   }
   .project-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; font-weight: 600; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink) }
-  .project-origin {
+  .project-client {
     font: 500 12px/1 var(--font-mono); letter-spacing: 0; text-transform: none; color: var(--ink);
     padding: 5px 9px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); background: var(--bg);
   }

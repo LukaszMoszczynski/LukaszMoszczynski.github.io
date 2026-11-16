@@ -15,12 +15,36 @@ test.describe('selected work', () => {
     });
   }
 
-  test('home.pl cards carry the origin badge and the others do not', async ({ page }) => {
-    await page.goto('./');
-    const cards = page.locator('#work article.project-card');
-    await expect(cards.nth(0).locator('.project-origin')).toHaveText('home.pl');
-    await expect(cards.nth(1).locator('.project-origin')).toHaveText('home.pl');
-    await expect(cards.locator('.project-origin')).toHaveCount(2);
+  for (const [path, titles] of [
+    ['./', ['AI QA agent for merge requests', 'Human-in-the-loop delivery', 'Multi-brand design system synced with Figma', 'WordPress shop with online payments', 'Figma to WordPress starter', 'Fast static company website']],
+    ['pl/', ['Agent AI do testów merge requestów', 'Automatyczny proces z człowiekiem w pętli', 'Wielomarkowy design system zsynchronizowany z Figmą', 'Sklep WordPress z płatnościami online', 'Starter Figma → WordPress', 'Szybka statyczna strona firmowa']],
+  ] as const) {
+    test(`cards are titled by what was delivered, the client is a small chip (${path})`, async ({ page }) => {
+      await page.goto(path);
+      const cards = page.locator('#work article.project-card');
+      await expect(cards.locator('h3')).toHaveText([...titles]);
+      const clients = ['home.pl', 'home.pl', null, 'DCC Grygorcewicz', null, 'Omelański'];
+      for (const [index, client] of clients.entries()) {
+        const chip = cards.nth(index).locator('.project-client');
+        if (client) await expect(chip).toHaveText(client);
+        else await expect(chip).toHaveCount(0);
+      }
+      // The /work/ list uses the same titles and chips.
+      await page.goto(`${path}work/`);
+      await expect(page.locator('.work-index-card h2')).toHaveText([...titles]);
+      await expect(page.locator('.work-index-client')).toHaveText(['home.pl', 'home.pl', 'DCC Grygorcewicz', 'Omelański']);
+    });
+  }
+
+  test('case pages, their titles and next links name the delivery; the menu keeps short names', async ({ page }) => {
+    await page.goto('work/omelanski/');
+    await expect(page.locator('h1')).toHaveText('Fast static company website');
+    await expect(page).toHaveTitle(/^Fast static company website · /);
+    await expect(page.locator('.case-client')).toHaveText('Omelański');
+    await page.goto('pl/work/wp-starter/');
+    await expect(page.locator('.case-next-title')).toHaveText('Szybka statyczna strona firmowa');
+    await expect(page.locator('.case-client')).toHaveCount(0);
+    await expect(page.locator('.menu-projects a')).toHaveText(['Agent QA', 'Automatyczny proces z człowiekiem w pętli', 'Design System', 'DCC Grygorcewicz', 'WP Starter', 'Omelański']);
   });
 
   test('section has no horizontal overflow', async ({ page }) => {

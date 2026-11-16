@@ -1,5 +1,6 @@
 ---
-title: Design System
+title: Wielomarkowy design system zsynchronizowany z Figmą
+short: Design System
 summary: Design system dla wielu marek, w którym źródłem prawdy są zmienne w Figmie, a z nich powstają tokeny CSS, komponenty HTML/CSS/JS i Storybook na GitHub Pages.
 meta: Tokeny · komponenty · Storybook
 tags: [Design tokens, Figma, Style Dictionary, Storybook, CSS, JavaScript, GSAP]

@@ -16,7 +16,7 @@ const projects = await getProjects(lang);
         <div class="work-index-copy">
           <p class="work-index-meta">
             <span>{project.data.meta}</span>
-            {project.data.origin && <span class="work-index-origin">{project.data.origin}</span>}
+            {project.data.client && <span class="work-index-client">{project.data.client}</span>}
           </p>
           <h2><a href={localizePath(`/work/${project.slug}/`, lang)}>{project.data.title}</a></h2>
           <p class="work-index-summary">{project.data.summary}</p>
@@ -44,7 +44,7 @@ const projects = await getProjects(lang);
   /* The title link's own ring is off: the whole card is the target, so the card gets the ring (like the home stack). */
   .work-index-card:has(:focus-visible) { outline: 3px solid var(--focus-ring); outline-offset: 3px }
   .work-index-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; font-weight: 600; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink) }
-  .work-index-origin {
+  .work-index-client {
     font: 500 12px/1 var(--font-mono); letter-spacing: 0; text-transform: none; color: var(--ink);
     padding: 5px 9px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); background: var(--bg);
   }

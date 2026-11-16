@@ -1,5 +1,6 @@
 ---
-title: Design System
+title: Multi-brand design system synced with Figma
+short: Design System
 summary: A multi-brand design system where Figma variables are the source of truth, built into CSS tokens, HTML/CSS/JS components and a Storybook on GitHub Pages.
 meta: Tokens · components · Storybook
 tags: [Design tokens, Figma, Style Dictionary, Storybook, CSS, JavaScript, GSAP]

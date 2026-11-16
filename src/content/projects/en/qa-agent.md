@@ -1,5 +1,7 @@
 ---
-title: QA agent
+title: AI QA agent for merge requests
+short: QA agent
+client: home.pl
 summary: An AI agent that writes test scenarios and Playwright specs for a new feature, compares the branch with master and reports back on the merge request.
 meta: AI · testing · automation
 tags: [Claude, Playwright, GitLab, Visual testing]

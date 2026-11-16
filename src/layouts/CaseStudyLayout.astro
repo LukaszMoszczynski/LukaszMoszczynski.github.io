@@ -8,7 +8,7 @@ import { localizePath, t, type Lang } from '../i18n/utils';
 import type { ProjectEntry } from '../content/projects';
 interface Props { lang: Lang; project: ProjectEntry; next: ProjectEntry }
 const { lang, project, next } = Astro.props;
-const { title, summary, meta, tags, links, origin, visual } = project.data;
+const { title, summary, meta, tags, links, origin, client, visual } = project.data;
 /** The delivery loop shows only its interactive diagram, which takes over the shared visual name. */
 const hasLoop = visual === 'delivery-loop';
 const transitionName = `visual-${project.slug}`;
@@ -20,7 +20,7 @@ const transitionName = `visual-${project.slug}`;
         <ArrowLink class="case-back" href={localizePath('/work/', lang)} label={t(lang, 'case.back')} />
         <p class="case-meta">
           <span>{meta}</span>
-          {origin && <span class="case-origin">{origin}</span>}
+          {client && <span class="case-client">{client}</span>}
         </p>
         <h1 id="case-title">{title}</h1>
         <p class="case-summary">{summary}</p>
@@ -69,7 +69,7 @@ const transitionName = `visual-${project.slug}`;
     background-position: 0 calc(100% - 5px), 0 calc(100% - 5px);
   }
   .case-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; font-weight: 600; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink) }
-  .case-origin {
+  .case-client {
     font: 500 12px/1 var(--font-mono); letter-spacing: 0; text-transform: none; color: var(--ink);
     padding: 5px 9px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); background: var(--bg);
   }

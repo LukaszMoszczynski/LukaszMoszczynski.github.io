@@ -25,6 +25,13 @@ describe('getProjects', () => {
       const withOrigin = projects.filter((project) => project.data.origin).map((project) => project.slug);
       expect(withOrigin).toEqual(['qa-agent', 'delivery-loop']);
     });
+
+    it(`gives client work a client chip and every project a title (${lang})`, async () => {
+      const projects = await getProjects(lang);
+      const clients = Object.fromEntries(projects.map((project) => [project.slug, project.data.client ?? null]));
+      expect(clients).toEqual({ 'qa-agent': 'home.pl', 'delivery-loop': 'home.pl', 'design-system': null, dcc: 'DCC Grygorcewicz', 'wp-starter': null, omelanski: 'Omelański' });
+      for (const project of projects) expect(project.data.title).not.toBe(project.data.client);
+    });
   }
 
   it('uses the same visual, order and links in both languages', async () => {

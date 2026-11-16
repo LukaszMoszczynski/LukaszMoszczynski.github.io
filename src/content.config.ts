@@ -7,7 +7,12 @@ const VISUALS = ['dcc', 'design-system', 'wp-starter', 'omelanski', 'qa-agent', 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
   schema: z.object({
+    /** What was delivered: the big title on cards, the case page and in SEO. */
     title: z.string(),
+    /** Short name for tight spots (the menu pills); falls back to the title. */
+    short: z.string().optional(),
+    /** Who it was for, shown as a small chip; own projects have none. */
+    client: z.string().optional(),
     summary: z.string(),
     meta: z.string(),
     tags: z.array(z.string()),

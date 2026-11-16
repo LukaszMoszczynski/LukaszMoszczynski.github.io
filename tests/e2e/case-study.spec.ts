@@ -43,7 +43,7 @@ test.describe('case study pages', () => {
       for (const copy of Object.values(SECTIONS)) {
         await page.goto(`${copy.prefix}work/${slug}/`);
         await expect(page.locator('.case-note')).toContainText(copy.note);
-        await expect(page.locator('.case-origin')).toHaveText('home.pl');
+        await expect(page.locator('.case-client')).toHaveText('home.pl');
         await expect(page.locator('img')).toHaveCount(0);
       }
     });

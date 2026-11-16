@@ -43,7 +43,7 @@ const mainLinks = [
       <p class="menu-sub">{t(lang, 'nav.projects')}</p>
       <ul class="menu-projects">
         {projects.map((project) => (
-          <li><a href={localizePath(`/work/${project.slug}/`, lang)}>{project.data.title}</a></li>
+          <li><a href={localizePath(`/work/${project.slug}/`, lang)}>{project.data.short ?? project.data.title}</a></li>
         ))}
       </ul>
       <div class="menu-motion"><MotionToggle lang={lang} place="menu" /></div>

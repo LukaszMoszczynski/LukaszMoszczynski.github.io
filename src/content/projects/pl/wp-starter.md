@@ -1,5 +1,6 @@
 ---
-title: WP Starter
+title: Starter Figma → WordPress
+short: WP Starter
 summary: Narzędzie, które czyta plik strony w Figmie zbudowany z mojej biblioteki komponentów i zamienia go w działającą lokalną stronę WordPress z komponentami i tokenami marki z design systemu.
 meta: WordPress · Figma · automatyzacja
 tags: [WordPress, Figma, Claude Code, Docker, Node.js, Playwright]
