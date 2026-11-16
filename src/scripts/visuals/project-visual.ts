@@ -75,13 +75,15 @@ export function initProjectVisual(root: HTMLElement): ProjectVisual | null {
  * The cleanup disconnects everything and reverts every story, so no timeline outlives the page.
  */
 export function initProjectVisuals(scope: ParentNode): () => void {
-  const visuals = [...scope.querySelectorAll<HTMLElement>('.project-visual[data-visual]')]
-    .map((root) => initProjectVisual(root))
-    .filter((visual): visual is ProjectVisual => visual !== null);
+  // Every visual takes part in the schedule (a card without a story still covers the ones
+  // behind it in the stack); only those with a story get a controller.
+  const roots = [...scope.querySelectorAll<HTMLElement>('.project-visual[data-visual]')];
+  const controllers = roots.map((root) => initProjectVisual(root));
+  const visuals = controllers.filter((visual): visual is ProjectVisual => visual !== null);
   if (!visuals.length) return () => {};
 
-  const inView = new Map<HTMLElement, boolean>(visuals.map((visual) => [visual.root, false]));
-  const stackCards = visuals.map((visual) => visual.root.closest<HTMLElement>('.work-stack .project-card'));
+  const inView = new Map<Element, boolean>(roots.map((root) => [root, false]));
+  const stackCards = roots.map((root) => root.closest<HTMLElement>('.work-stack .project-card'));
   const stackMedia = matchMedia(STACK_MEDIA);
   let frame = 0;
 
@@ -89,13 +91,14 @@ export function initProjectVisuals(scope: ParentNode): () => void {
     frame = 0;
     const stacked = stackMedia.matches;
     // Reads first (card tops), then the writes in play/hold/rest.
-    const slots = visuals.map((visual, index) => {
+    const slots = roots.map((root, index) => {
       const card = stackCards[index];
-      return { inView: inView.get(visual.root) ?? false, stackTop: stacked && card ? card.getBoundingClientRect().top : null };
+      return { inView: inView.get(root) ?? false, stackTop: stacked && card ? card.getBoundingClientRect().top : null };
     });
     const paused = motionPaused();
     const playing = playingVisuals(slots, { blocked: paused || document.hidden, viewportHeight: window.innerHeight });
-    visuals.forEach((visual, index) => {
+    controllers.forEach((visual, index) => {
+      if (!visual) return;
       if (playing[index]) visual.play();
       else if (paused) visual.rest();
       else visual.hold();
@@ -107,12 +110,12 @@ export function initProjectVisuals(scope: ParentNode): () => void {
 
   const observer = new IntersectionObserver(
     (entries) => {
-      for (const entry of entries) inView.set(entry.target as HTMLElement, entry.isIntersecting);
+      for (const entry of entries) inView.set(entry.target, entry.isIntersecting);
       schedule();
     },
     { threshold: 0.2 },
   );
-  visuals.forEach((visual) => observer.observe(visual.root));
+  roots.forEach((root) => observer.observe(root));
 
   // Only the sticky stack needs scroll positions: its cards stay in view under each other.
   const watchScroll = stackCards.some((card) => card !== null);
