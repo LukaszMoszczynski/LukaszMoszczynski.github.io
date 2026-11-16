@@ -52,7 +52,7 @@ test.describe('scroll position after navigation', () => {
   test('Back from a case study returns to the card', async ({ page }) => {
     await page.goto('./');
     await settled(page);
-    const card = page.locator('#work .project-card').nth(1);
+    const card = page.locator('#work .project-card').nth(2);
     await card.evaluate((element) => element.scrollIntoView({ block: 'center', behavior: 'instant' }));
     // Astro saves the position on scrollend; give it that event before leaving.
     await page.evaluate(() => new Promise((resolve) => setTimeout(resolve, 300)));

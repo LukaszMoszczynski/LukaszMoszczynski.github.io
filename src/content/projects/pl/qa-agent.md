@@ -3,7 +3,7 @@ title: Agent QA
 summary: Agent AI, który do nowej funkcji pisze scenariusze testów i specy Playwright, porównuje gałąź z masterem i zostawia wynik w merge requeście.
 meta: AI · testy · automatyzacja
 tags: [Claude, Playwright, GitLab, Testy wizualne]
-order: 3
+order: 1
 visual: qa-agent
 links: []
 origin: home.pl

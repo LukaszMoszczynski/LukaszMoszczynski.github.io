@@ -3,7 +3,7 @@ title: Human-in-the-loop delivery
 summary: A Jira label hands a task to agents in local Docker. They solve it and fix review comments in a loop until the review is clean; then a person reviews the work and merges it.
 meta: AI · agents · workflow
 tags: [Claude, Skills, Agents, Docker, GitLab, Jira, Code review]
-order: 4
+order: 2
 visual: delivery-loop
 links: []
 origin: home.pl

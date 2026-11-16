@@ -3,7 +3,7 @@ title: DCC Grygorcewicz
 summary: A WordPress block theme built from Figma for a training company, with a WooCommerce shop, my own Przelewy24 payment plugin and PDF e-vouchers.
 meta: WordPress · shop · payments
 tags: [WordPress, WooCommerce, PHP, Przelewy24, GSAP, Swup, Playwright]
-order: 1
+order: 4
 visual: dcc
 links:
   - label: Test version

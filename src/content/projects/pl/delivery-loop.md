@@ -3,7 +3,7 @@ title: Automatyczny proces z człowiekiem w pętli
 summary: Etykieta w Jirze przekazuje zadanie agentom w lokalnym Dockerze. Rozwiązują je i w pętli poprawiają uwagi z review, aż będzie czyste, a potem człowiek przegląda pracę i ją merguje.
 meta: AI · agenci · proces
 tags: [Claude, Skille, Agenci, Docker, GitLab, Jira, Code review]
-order: 4
+order: 2
 visual: delivery-loop
 links: []
 origin: home.pl

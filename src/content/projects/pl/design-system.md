@@ -3,7 +3,7 @@ title: Design System
 summary: Design system dla wielu marek, w którym źródłem prawdy są zmienne w Figmie, a z nich powstają tokeny CSS, komponenty HTML/CSS/JS i Storybook na GitHub Pages.
 meta: Tokeny · komponenty · Storybook
 tags: [Design tokens, Figma, Style Dictionary, Storybook, CSS, JavaScript, GSAP]
-order: 2
+order: 3
 visual: design-system
 links:
   - label: Repozytorium na GitHubie

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getProjects } from '../../src/content/projects';
 
-const ORDER = ['dcc', 'design-system', 'qa-agent', 'delivery-loop', 'wp-starter', 'omelanski'];
+const ORDER = ['qa-agent', 'delivery-loop', 'design-system', 'dcc', 'wp-starter', 'omelanski'];
 
 describe('getProjects', () => {
   for (const lang of ['en', 'pl'] as const) {

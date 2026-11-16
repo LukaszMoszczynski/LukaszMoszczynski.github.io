@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 /** Waits until the ClientRouter has finished its view transition. */
 const settled = (page: Page) => expect(page.locator('html')).not.toHaveAttribute('data-astro-transition', /.*/);
 
-const SLUGS = ['dcc', 'design-system', 'qa-agent', 'delivery-loop', 'wp-starter', 'omelanski'];
+const SLUGS = ['qa-agent', 'delivery-loop', 'design-system', 'dcc', 'wp-starter', 'omelanski'];
 const HOME_PL = ['qa-agent', 'delivery-loop'];
 const SECTIONS = {
   en: { prefix: '', headings: ['Problem', 'What I built', 'Highlights'], next: 'Next project', note: 'Built at home.pl' },
@@ -73,11 +73,11 @@ test.describe('case study pages', () => {
     await page.goto('./');
     const card = page.locator('#work .project-card').first();
     const name = await card.locator('.project-visual').evaluate((element) => getComputedStyle(element).viewTransitionName);
-    expect(name).toBe('visual-dcc');
+    expect(name).toBe('visual-qa-agent');
     await card.locator('a.project-link').click();
-    await expect(page).toHaveURL(/\/work\/dcc\/$/);
+    await expect(page).toHaveURL(/\/work\/qa-agent\/$/);
     const caseName = await page.locator('.case-hero .project-visual').evaluate((element) => getComputedStyle(element).viewTransitionName);
-    expect(caseName).toBe('visual-dcc');
+    expect(caseName).toBe('visual-qa-agent');
   });
 
   test('the delivery loop page has no static hero visual; its interactive loop takes the shared name', async ({ page }) => {
@@ -134,7 +134,7 @@ test.describe('delivery loop', () => {
     await page.locator('.factory-loop').getByRole('button', { name: 'Run' }).click();
     await expect(page.locator('.factory-status')).toHaveText(/Agents in local Docker/);
     await page.getByRole('navigation', { name: 'Next project' }).getByRole('link').click();
-    await expect(page).toHaveURL(/\/work\/wp-starter\/$/);
+    await expect(page).toHaveURL(/\/work\/design-system\/$/);
     await page.waitForTimeout(1500);
     expect(errors).toEqual([]);
   });
