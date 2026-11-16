@@ -11,6 +11,7 @@ import Seo from '../components/Seo.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Background from '../components/Background.astro';
+import Cursor from '../components/Cursor.astro';
 
 interface Props { lang: Lang; title: string; description: string; path: string; noindex?: boolean }
 const { lang, title, description, path, noindex } = Astro.props;
@@ -51,8 +52,9 @@ const { lang, title, description, path, noindex } = Astro.props;
     </script>
     <ClientRouter />
   </head>
-  <body>
+  <body data-cursor-open={t(lang, 'cursor.open')} data-cursor-drag={t(lang, 'cursor.drag')}>
     <Background />
+    <Cursor />
     <a class="skip-link" href="#main">{t(lang, 'a11y.skipToContent')}</a>
     <Header lang={lang} />
     <main id="main" class="wrap">
@@ -64,7 +66,9 @@ const { lang, title, description, path, noindex } = Astro.props;
 <script>
   import { onPage } from '../scripts/lifecycle';
   import { initHoverFx } from '../scripts/hover-fx';
+  import { initCardLinks } from '../scripts/card-links';
   onPage(initHoverFx);
+  onPage(initCardLinks);
 </script>
 <style is:global>
   .skip-link {

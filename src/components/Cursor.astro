@@ -1,0 +1,66 @@
+---
+// Blueprint cursor (src/scripts/cursor.ts). Persisted across view transitions; hidden until the
+// script runs (fine pointer and motion allowed), so without JS the native cursor stays.
+---
+<div class="cursor" transition:persist="cursor" aria-hidden="true">
+  <div class="cursor-ring">
+    <span class="cursor-shape"></span>
+    <span class="cursor-ticks"><i></i><i></i><i></i><i></i></span>
+    <span class="cursor-label"></span>
+  </div>
+  <div class="cursor-dot"></div>
+</div>
+<script>
+  import { initCursor } from '../scripts/cursor';
+  initCursor();
+</script>
+<style is:global>
+  .cursor { display: none }
+  html.has-cursor .cursor {
+    display: block; position: fixed; left: 0; top: 0; z-index: 2147483000; pointer-events: none;
+    opacity: 0; transition: opacity .2s;
+  }
+  html.has-cursor .cursor.is-visible { opacity: 1 }
+  html.has-cursor .cursor[data-state="text"] { opacity: 0 }
+  /* Only while the custom cursor runs; text inputs keep the native text cursor. */
+  html.has-cursor, html.has-cursor *:not(input, textarea, select, [contenteditable]:not([contenteditable="false"])) { cursor: none !important }
+
+  .cursor-ring, .cursor-dot { position: absolute; left: 0; top: 0; will-change: transform }
+  .cursor-dot {
+    width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: var(--accent);
+    /* A halo in the page colour keeps the dot visible over orange buttons. */
+    box-shadow: 0 0 0 1.5px var(--bg), 0 0 8px 1px color-mix(in srgb, var(--accent) 60%, transparent);
+    transition: opacity .2s;
+  }
+  .cursor-shape {
+    position: absolute; left: 0; top: 0; width: 34px; height: 34px; border-radius: 999px;
+    border: 1px solid var(--accent); background: color-mix(in srgb, var(--accent) 0%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--bg) 55%, transparent);
+    transform: translate(-50%, -50%) scale(1);
+    transition: transform .3s cubic-bezier(.2, .7, .2, 1), width .3s cubic-bezier(.2, .7, .2, 1), height .3s cubic-bezier(.2, .7, .2, 1), background-color .3s;
+  }
+  .cursor-ticks { position: absolute; left: 0; top: 0; transition: transform .35s cubic-bezier(.2, .7, .2, 1), opacity .2s }
+  .cursor-ticks i { position: absolute; left: -.5px; top: -24px; width: 1px; height: 5px; background: var(--accent); opacity: .7 }
+  .cursor-ticks i:nth-child(2) { transform: rotate(90deg); transform-origin: .5px 24px }
+  .cursor-ticks i:nth-child(3) { transform: rotate(180deg); transform-origin: .5px 24px }
+  .cursor-ticks i:nth-child(4) { transform: rotate(270deg); transform-origin: .5px 24px }
+  .cursor-label {
+    position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); white-space: nowrap;
+    font: 600 11px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--on-accent);
+    opacity: 0; transition: opacity .2s;
+  }
+
+  /* Links and buttons: the ring grows, fills faintly, the ticks turn 45°. */
+  .cursor[data-state="link"] .cursor-shape { transform: translate(-50%, -50%) scale(2); background-color: color-mix(in srgb, var(--accent) 18%, transparent) }
+  .cursor[data-state="link"] .cursor-ticks { transform: rotate(45deg) scale(1.6) }
+  /* Cards and the deck: a filled pill with a label. */
+  .cursor:is([data-state="open"], [data-state="drag"]) .cursor-shape { width: 96px; height: 34px; background-color: var(--accent) }
+  .cursor[data-state="drag"] .cursor-shape { width: 124px }
+  .cursor:is([data-state="open"], [data-state="drag"]) .cursor-ticks { opacity: 0 }
+  .cursor:is([data-state="open"], [data-state="drag"]) .cursor-label { opacity: 1; transition-delay: .1s }
+  .cursor:is([data-state="open"], [data-state="drag"]) .cursor-dot { opacity: 0 }
+  /* Pressing shrinks the ring. */
+  .cursor.is-pressed .cursor-shape { transform: translate(-50%, -50%) scale(.7) }
+  .cursor.is-pressed[data-state="link"] .cursor-shape { transform: translate(-50%, -50%) scale(1.6) }
+  .cursor.is-pressed:is([data-state="open"], [data-state="drag"]) .cursor-shape { transform: translate(-50%, -50%) scale(.92) }
+</style>
