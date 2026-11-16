@@ -133,7 +133,8 @@ const styleFor = (index: number) =>
   :global(html.motion.init-pending) .aa { opacity: 1 }
 
   @media (max-width: 860px) {
-    .build { padding-block: 64px 12px }
+    /* Not pinned here (PIN_MEDIA in token-build.ts): the section is as tall as its content. */
+    .build { min-height: 0; padding-block: 48px 24px }
     .build-in { grid-template-columns: minmax(0, 1fr); gap: 40px }
     .stage { width: 100%; justify-self: stretch }
     /* Two lines kept for the active text on phones, so switching steps does not move the frame. */

@@ -29,7 +29,9 @@ export function renderLines(container: HTMLElement, key: RunKey): HTMLElement[] 
 
 /**
  * Agent log: chips pick a run, lines replay in a loop (0.45 s per line, 2.5 s
- * hold) and pause while the terminal is off-screen. Screen readers get the
+ * hold) and pause while the terminal is off-screen. The run's first line (its
+ * comment) never fades, so the log is never an empty box: not before the first
+ * line appears, not between runs and not after a chip switch. Screen readers get the
  * whole run once per chip change through a visually hidden live region; the
  * animated lines are aria-hidden so the replay is never announced. With reduced motion
  * or "Pause animations" the whole run is shown at rest, without the loop.
@@ -64,10 +66,13 @@ export function initAgentLog(root: HTMLElement): () => void {
     const elements = renderLines(lines, key);
     if (announce && announcer) announcer.textContent = AGENT_RUNS[key].map((line) => line.text).join('. ');
     if (reduced || motionPaused()) return;
+    const replayed = elements.slice(1);
+    if (!replayed.length) return;
+    // The next line follows almost at once; after the hold the rest fade and the loop starts over right away.
     timeline = gsap
-      .timeline({ repeat: -1, repeatDelay: HOLD_SECONDS, paused: !onScreen })
-      .from(elements, { opacity: 0, x: -8, duration: 0.3, stagger: SECONDS_PER_LINE, ease: 'power2.out' })
-      .to(elements, { opacity: 0, duration: 0.4 }, `+=${HOLD_SECONDS}`);
+      .timeline({ repeat: -1, paused: !onScreen })
+      .fromTo(replayed, { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.3, stagger: SECONDS_PER_LINE, ease: 'power2.out' }, 0.1)
+      .to(replayed, { opacity: 0, duration: 0.4 }, `+=${HOLD_SECONDS}`);
   };
 
   const handlers = chips.map((chip) => {
@@ -75,6 +80,26 @@ export function initAgentLog(root: HTMLElement): () => void {
     chip.addEventListener('click', handler);
     return handler;
   });
+  // Phones wrap the lines, so runs differ in height: the box keeps the tallest one, and a tab switch never moves the page.
+  let measuredWidth = 0;
+  const measure = () => {
+    measuredWidth = lines.clientWidth;
+    lines.style.removeProperty('--term-height');
+    let tallest = 0;
+    for (const key of Object.keys(AGENT_RUNS) as RunKey[]) {
+      renderLines(lines, key);
+      tallest = Math.max(tallest, lines.offsetHeight);
+    }
+    lines.style.setProperty('--term-height', `${tallest}px`);
+  };
+  measure();
+  const onResize = () => {
+    if (lines.clientWidth === measuredWidth) return;
+    measure();
+    show(current, false);
+  };
+  window.addEventListener('resize', onResize);
+
   const initial = (chips.find((chip) => chip.getAttribute('aria-pressed') === 'true')?.dataset.run ?? 'qa') as RunKey;
   show(initial, false);
   const stopListening = onMotionPauseChange(() => show(current, false));
@@ -82,6 +107,8 @@ export function initAgentLog(root: HTMLElement): () => void {
   return () => {
     chips.forEach((chip, index) => chip.removeEventListener('click', handlers[index]));
     stopListening();
+    window.removeEventListener('resize', onResize);
+    lines.style.removeProperty('--term-height');
     timeline?.kill();
     trigger.kill();
     gsap.set(lines.children, { clearProps: 'opacity,transform' });

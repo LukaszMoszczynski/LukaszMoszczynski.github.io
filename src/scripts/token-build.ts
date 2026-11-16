@@ -43,12 +43,22 @@ export function stepScrollTop(start: number, end: number, index: number, count: 
   return start + ((end - start) * index) / (count - 1);
 }
 
+/**
+ * Where the section pins: only where the steps and the frame sit side by side and fit under the
+ * fixed header. On phones and tablets they stack, so the build plays while the frame scrolls by.
+ */
+export const PIN_MEDIA = '(min-width: 861px) and (min-height: 600px)';
+/** Height of the fixed header (16 + 48 + 16) plus a little air: the frame never plays under it. */
+const HEADER_CLEARANCE = 96;
+
 /** How long a click keeps its step active while the smooth scroll travels past the others. */
 const CLICK_LOCK_MS = 1600;
 
 /**
  * Pinned "token to page" build: scrubbed timeline through the five states with
- * label snapping, steps as buttons that jump to their state. Without motion the
+ * label snapping, steps as buttons that jump to their state. Where the layout stacks
+ * (PIN_MEDIA does not match) nothing pins: the timeline scrubs while the whole frame
+ * is on screen below the header. Without motion the
  * frame keeps its server-rendered page state and steps set states directly.
  */
 export function initTokenBuild(root: HTMLElement): () => void {
@@ -141,14 +151,20 @@ export function initTokenBuild(root: HTMLElement): () => void {
 
   let lockedStep = -1;
   let lockUntil = 0;
+  const pinned = window.matchMedia(PIN_MEDIA).matches;
+  const placement: ScrollTrigger.StaticVars = pinned
+    ? { trigger: root, start: 'top top', end: '+=140%', pin: true, snap: { snapTo: 'labels', duration: { min: 0.2, max: 0.5 }, ease: 'power1.inOut' } }
+    : {
+      // From the frame's bottom reaching the bottom of the screen to its top reaching the header.
+      trigger: stage,
+      start: () => `top ${Math.max(HEADER_CLEARANCE + 200, window.innerHeight - stage.offsetHeight - 24)}px`,
+      end: `top ${HEADER_CLEARANCE}px`,
+      invalidateOnRefresh: true,
+    };
   const trigger = ScrollTrigger.create({
-    trigger: root,
-    start: 'top top',
-    end: '+=140%',
-    pin: true,
+    ...placement,
     scrub: 0.35,
     animation: build,
-    snap: { snapTo: 'labels', duration: { min: 0.2, max: 0.5 }, ease: 'power1.inOut' },
     onUpdate: (self) => {
       const index = Math.round(self.progress * last);
       if (lockedStep >= 0) {

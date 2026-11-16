@@ -45,6 +45,37 @@ test.describe('stack and agent log', () => {
     await expect(lines).toHaveCount(6);
   });
 
+  test('the log shows text within 500 ms of coming into view and of a tab switch, and is never empty between runs', async ({ page }) => {
+    test.setTimeout(60_000);
+    await page.goto('./');
+    await expect(page.locator('html')).not.toHaveClass(/init-pending/);
+    const visibleText = () => page.locator('#stack .term-lines').evaluate((element) =>
+      [...element.children].filter((line) => Number(getComputedStyle(line).opacity) > 0.5 && (line.textContent ?? '').trim()).length);
+    await page.locator('#stack .term').evaluate((element) => element.scrollIntoView({ behavior: 'instant', block: 'center' }));
+    await page.waitForTimeout(500);
+    expect(await visibleText()).toBeGreaterThan(0);
+    for (const run of ['factory', 'figma', 'qa']) {
+      await page.locator(`#stack .chip[data-run="${run}"]`).click();
+      await page.waitForTimeout(500);
+      expect(await visibleText(), run).toBeGreaterThan(0);
+    }
+    // A whole loop (8 lines × 0.45 s + 2.5 s hold + fade) and into the next one: never an empty box.
+    for (let sample = 0; sample < 40; sample++) {
+      expect(await visibleText(), `sample ${sample}`).toBeGreaterThan(0);
+      await page.waitForTimeout(200);
+    }
+  });
+
+  test('"Pause animations" shows the complete run at rest', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('motion-paused', '1'));
+    await page.goto('./');
+    await page.locator('#stack .term').scrollIntoViewIfNeeded();
+    const lines = page.locator('#stack .term-lines > div');
+    await expect(lines).toHaveCount(8);
+    const opacities = await lines.evaluateAll((nodes) => nodes.map((node) => Number(getComputedStyle(node).opacity)));
+    expect(opacities.every((value) => value === 1)).toBe(true);
+  });
+
   test('no horizontal page scroll', async ({ page }) => {
     await page.goto('./');
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);

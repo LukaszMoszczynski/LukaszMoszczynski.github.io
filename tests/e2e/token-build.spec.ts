@@ -100,6 +100,37 @@ test.describe('token build', () => {
     await expect(steps(page).nth(0)).toHaveAttribute('aria-current', 'step');
   });
 
+  for (const width of [360, 390]) {
+    test(`phone ${width}px: not pinned, nothing under the header, the build plays while the whole frame is on screen`, async ({ page }, testInfo) => {
+      test.skip(testInfo.project.name !== 'phone', 'phone layout');
+      await page.setViewportSize({ width, height: 740 });
+      await page.goto(CASE);
+      await expect(page.locator('html')).not.toHaveClass(/init-pending/);
+      await expect(page.locator('.pin-spacer')).toHaveCount(0);
+      // Scrolled to the section the way a hash or focus would: the kicker sits below the header.
+      await page.locator('#build').evaluate((element) => element.scrollIntoView({ behavior: 'instant', block: 'start' }));
+      const kicker = await page.locator('.build-kicker').boundingBox();
+      const header = await page.locator('header.bar').boundingBox();
+      expect(kicker!.y).toBeGreaterThanOrEqual(header!.y + header!.height);
+      // Scroll in small steps through the section: whenever the step changes, the whole frame is on screen.
+      const seen = new Set<string>();
+      const top = await page.locator('#build').evaluate((element) => element.getBoundingClientRect().top + window.scrollY);
+      const bottom = await page.locator('#build').evaluate((element) => element.getBoundingClientRect().bottom + window.scrollY);
+      for (let y = top - 740; y < bottom; y += 40) {
+        await page.evaluate((scroll) => window.scrollTo(0, scroll), y);
+        await page.waitForTimeout(60);
+        const state = await page.evaluate(() => {
+          const stage = document.querySelector('.build .stage')!.getBoundingClientRect();
+          const bar = document.querySelector('header.bar')!.getBoundingClientRect();
+          return { step: document.querySelector('.build .steps button.on .step-number')?.textContent ?? '', whole: stage.top >= bar.bottom - 1 && stage.bottom <= window.innerHeight + 1 };
+        });
+        if (!seen.has(state.step) && state.step !== '01') expect(state.whole, `step ${state.step} at ${y}`).toBe(true);
+        seen.add(state.step);
+      }
+      expect([...seen]).toEqual(expect.arrayContaining(['01', '02', '03', '04', '05']));
+    });
+  }
+
   test('no horizontal overflow', async ({ page }) => {
     await page.goto(CASE);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);

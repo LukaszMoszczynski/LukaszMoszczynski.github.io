@@ -42,7 +42,7 @@ test.describe('selected work', () => {
     await expect(page).toHaveTitle(/^Fast static company website · /);
     await expect(page.locator('.case-client')).toHaveText('Omelański');
     await page.goto('pl/work/wp-starter/');
-    await expect(page.locator('.case-next-title')).toHaveText('Szybka statyczna strona firmowa');
+    await expect(page.locator('.case-next-name')).toHaveText('Szybka statyczna strona firmowa');
     await expect(page.locator('.case-client')).toHaveCount(0);
     await expect(page.locator('.menu-projects a')).toHaveText(['Agent QA', 'Automatyczny proces z człowiekiem w pętli', 'Design System', 'DCC Grygorcewicz', 'WP Starter', 'Omelański']);
   });

@@ -63,6 +63,8 @@ const links = [
   .contact-value { font: 600 clamp(18px, 2.4vw, 28px)/1.2 var(--font-display); color: var(--ink); text-decoration: none; overflow-wrap: anywhere }
   .contact-text { user-select: all }
   .contact-value:hover { color: var(--accent-ink) }
+  /* The e-mail address fits on one line on 360px phones instead of breaking before its last letters. */
+  @media (max-width: 420px) { .contact-value { font-size: max(15px, 4.4vw) } }
   .copy-btn {
     min-height: 40px; min-width: 96px; padding: 8px 18px; border-radius: 999px; cursor: pointer;
     font: 500 13px/1 var(--font-mono); color: var(--ink); background: transparent; border: 0; box-shadow: inset 0 0 0 1.5px var(--control-line);

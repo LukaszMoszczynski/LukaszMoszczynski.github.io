@@ -53,7 +53,7 @@ const transitionName = `visual-${project.slug}`;
     <nav class="case-next section-rule" aria-label={t(lang, 'case.next')}>
       <a href={localizePath(`/work/${next.slug}/`, lang)} rel="next">
         <span class="case-next-label">{t(lang, 'case.next')}</span>
-        <span class="case-next-title"><span class="fx-underline">{next.data.title}</span></span>
+        <span class="case-next-title"><span class="fx-underline"><span class="case-next-name">{next.data.title}</span>{' '}<span class="case-next-arrow" aria-hidden="true">→</span></span></span>
       </a>
     </nav>
   </article>
@@ -98,8 +98,9 @@ const transitionName = `visual-${project.slug}`;
   .case-next a { display: inline-grid; gap: 6px; text-decoration: none; min-height: 44px }
   .case-next-label { font: 500 13px/1 var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em }
   .case-next-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 4vw, 48px); letter-spacing: -.035em; line-height: 1.1; overflow-wrap: break-word; hyphens: auto }
-  .case-next-title::after { content: " →"; color: var(--accent-ink); display: inline-block; transition: transform .3s }
-  .case-next a:hover .case-next-title::after { transform: translateX(6px) }
+  /* The arrow follows a no-break space inside the underlined title, so it never wraps onto a line of its own. */
+  .case-next-arrow { display: inline-block; color: var(--accent-display); transition: transform .3s }
+  .case-next a:is(:hover, :focus-visible) .case-next-arrow { transform: translateX(6px) }
 
   @media (max-width: 860px) {
     .case { padding-block: 88px 64px }
@@ -107,5 +108,5 @@ const transitionName = `visual-${project.slug}`;
     .case-prose { margin-top: 48px }
     .case-next { margin-top: 56px }
   }
-  @media (prefers-reduced-motion: reduce) { .case-next-title::after { transition: none } }
+  @media (prefers-reduced-motion: reduce) { .case-next-arrow { transition: none } }
 </style>

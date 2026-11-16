@@ -35,6 +35,12 @@ const chips = [
   .agent .term { position: relative; background: var(--term-bg); color: var(--term-ink); border-radius: 16px; padding: 18px; font: 13px/1.7 var(--font-mono); min-height: 220px; overflow-x: auto; box-shadow: 0 0 0 1px var(--term-line) }
   .agent .term:focus-visible { border-radius: 16px }
   .agent .term-lines > div { white-space: nowrap }
+  /* Phones: lines wrap with a hanging indent instead of running off the box; the box keeps the height of the longest run. */
+  @media (max-width: 560px) {
+    .agent .term { padding: 14px; font-size: 12px; min-height: 0 }
+    .agent .term-lines { min-height: var(--term-height, 0px) }
+    .agent .term-lines > div { white-space: normal; padding-left: 1.4em; text-indent: -1.4em }
+  }
   .agent .term .comment { color: var(--term-comment) }
   .agent .term .ok { color: var(--term-ok) }
   .agent .term .prompt { color: var(--term-prompt) }

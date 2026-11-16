@@ -164,7 +164,7 @@ test.describe('delivery loop, reduced motion', () => {
   });
 });
 
-test('home ↔ case study navigation keeps the token-build pin on the design-system page only, and the tracer limit', async ({ page }) => {
+test('home ↔ case study navigation keeps the token-build pin on the design-system page only, and the tracer limit', async ({ page }, testInfo) => {
   test.setTimeout(90_000);
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
@@ -176,7 +176,8 @@ test('home ↔ case study navigation keeps the token-build pin on the design-sys
     await expect(page).toHaveURL(new RegExp(`/work/${slug}/$`));
     await expect(page.locator('h1')).toBeVisible();
     await settled(page);
-    await expect(page.locator('.pin-spacer')).toHaveCount(slug === 'design-system' ? 1 : 0);
+    // Pinned only where steps and frame sit side by side; phones scrub it unpinned.
+    await expect(page.locator('.pin-spacer')).toHaveCount(slug === 'design-system' && testInfo.project.name === 'desktop' ? 1 : 0);
     if (slug === 'design-system') await expect(page.locator('.build.is-animated')).toHaveCount(1);
     await page.goBack();
     await expect(page.locator('#work')).toHaveCount(1);

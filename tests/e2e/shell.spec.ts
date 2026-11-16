@@ -430,3 +430,50 @@ test.describe('language switch looks like the same page, not a reload', () => {
     await expect.poll(() => page.locator('.hero .char').first().evaluate((element) => Math.abs(new DOMMatrix(getComputedStyle(element).transform).m42))).toBeGreaterThan(1);
   });
 });
+
+test.describe('arrow links', () => {
+  for (const path of ['./', 'pl/', 'work/design-system/', 'pl/work/qa-agent/']) {
+    test(`the arrow never wraps onto a line of its own at 360px (${path})`, async ({ page }) => {
+      await page.setViewportSize({ width: 360, height: 740 });
+      await page.goto(path);
+      const alone = await page.locator('.text-link').evaluateAll((links) => links.flatMap((link) => {
+        const arrow = link.querySelector('.link-arrow');
+        if (!arrow) return [];
+        // The character right next to the arrow (before a trailing one, after a leading one).
+        const range = document.createRange();
+        const textNodes: Text[] = [];
+        const walker = document.createTreeWalker(link, NodeFilter.SHOW_TEXT);
+        for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+          if (!arrow.contains(node) && !(node.parentElement?.closest('.work-hidden')) && (node.textContent ?? '').trim()) textNodes.push(node as Text);
+        }
+        const leading = arrow.classList.contains('is-back');
+        const neighbour = leading ? textNodes[0] : textNodes[textNodes.length - 1];
+        const text = neighbour.textContent ?? '';
+        const index = leading ? text.search(/\S/) : text.trimEnd().length - 1;
+        range.setStart(neighbour, index);
+        range.setEnd(neighbour, index + 1);
+        const word = range.getBoundingClientRect();
+        const mark = arrow.getBoundingClientRect();
+        return Math.abs(word.top + word.height / 2 - (mark.top + mark.height / 2)) > 4 ? [link.textContent?.trim() ?? ''] : [];
+      }));
+      expect(alone).toEqual([]);
+    });
+  }
+
+  test('the next-project arrow stays with the last word of a long title at 360px', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 740 });
+    for (const path of ['work/design-system/', 'pl/work/design-system/', 'work/qa-agent/']) {
+      await page.goto(path);
+      const gap = await page.locator('.case-next-title').evaluate((title) => {
+        const name = title.querySelector('.case-next-name')!;
+        const range = document.createRange();
+        range.selectNodeContents(name);
+        const rects = range.getClientRects();
+        const lastLine = rects[rects.length - 1];
+        const arrow = title.querySelector('.case-next-arrow')!.getBoundingClientRect();
+        return Math.abs(lastLine.top + lastLine.height / 2 - (arrow.top + arrow.height / 2));
+      });
+      expect(gap, path).toBeLessThan(8);
+    }
+  });
+});
