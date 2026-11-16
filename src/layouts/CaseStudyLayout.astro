@@ -73,7 +73,7 @@ const transitionName = `visual-${project.slug}`;
     font: 500 12px/1 var(--font-mono); letter-spacing: 0; text-transform: none; color: var(--ink);
     padding: 5px 9px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); background: var(--bg);
   }
-  h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 3.9vw, 56px); letter-spacing: -.045em; line-height: 1.02; margin: 12px 0 20px; overflow-wrap: break-word }
+  h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 3.9vw, 56px); letter-spacing: -.045em; line-height: 1.05; margin: 12px 0 20px; overflow-wrap: break-word; hyphens: auto; text-wrap: balance }
   .case-summary { margin: 0 0 18px; font-size: clamp(17px, 1.6vw, 20px); color: var(--muted); max-width: 46ch }
   .case-note { margin: 0 0 18px; font-size: 14px; color: var(--muted); font-style: italic }
   .case-tags, .case-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px }
@@ -97,7 +97,7 @@ const transitionName = `visual-${project.slug}`;
   .case-next { margin-top: 88px; padding-top: 32px }
   .case-next a { display: inline-grid; gap: 6px; text-decoration: none; min-height: 44px }
   .case-next-label { font: 500 13px/1 var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em }
-  .case-next-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(26px, 4vw, 48px); letter-spacing: -.035em; line-height: 1.05 }
+  .case-next-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 4vw, 48px); letter-spacing: -.035em; line-height: 1.1; overflow-wrap: break-word; hyphens: auto }
   .case-next-title::after { content: " →"; color: var(--accent-ink); display: inline-block; transition: transform .3s }
   .case-next a:hover .case-next-title::after { transform: translateX(6px) }
 
