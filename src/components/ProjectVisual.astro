@@ -1,16 +1,34 @@
 ---
 import type { Project } from '../content/projects';
 import { t, type Lang } from '../i18n/utils';
+import { DEGREES_PER_NODE, FACTORY_NODES } from '../scripts/factory-sequence';
 interface Props { visual: Project['visual']; compact?: boolean; lang?: Lang; transitionName?: string }
 const { visual, compact = false, lang = 'en', transitionName } = Astro.props;
 
-/** Delivery loop: five stations on a ring, ticket between the agents and GitLab. */
-const LOOP = [t(lang, 'visual.jira'), t(lang, 'visual.factory'), t(lang, 'visual.gitlab'), t(lang, 'visual.review'), t(lang, 'visual.fix')];
-const loopNodes = LOOP.map((label, index) => {
-  const angle = -Math.PI / 2 + (index * 2 * Math.PI) / LOOP.length;
-  return { label, x: 200 + Math.cos(angle) * 100, y: 150 + Math.sin(angle) * 100, anchor: Math.cos(angle) > 0.3 ? 'start' : Math.cos(angle) < -0.3 ? 'end' : 'middle' };
-});
+/** Delivery loop: the six stations of the interactive board on a ring, the human in the hub. */
+const LOOP_LABELS: Record<(typeof FACTORY_NODES)[number], string> = {
+  label: t(lang, 'visual.jira'),
+  factory: t(lang, 'visual.factory'),
+  push: t(lang, 'visual.gitlab'),
+  review: t(lang, 'visual.review'),
+  comments: t(lang, 'visual.comments'),
+  fix: t(lang, 'visual.fix'),
+};
 const round = (value: number) => Math.round(value * 10) / 10;
+const loopNodes = FACTORY_NODES.map((stage, index) => {
+  const angle = (index * DEGREES_PER_NODE * Math.PI) / 180;
+  const x = round(200 + Math.sin(angle) * 100);
+  const y = round(150 - Math.cos(angle) * 100);
+  const anchor = Math.sin(angle) > 0.3 ? 'start' : Math.sin(angle) < -0.3 ? 'end' : 'middle';
+  const below = anchor === 'middle' && Math.cos(angle) < 0;
+  return {
+    stage, x, y, anchor,
+    radius: stage === 'factory' ? 17 : 12,
+    label: LOOP_LABELS[stage],
+    labelX: round(x + (anchor === 'start' ? 24 : anchor === 'end' ? -24 : 0)),
+    labelY: round(y + (anchor === 'middle' ? (below ? 32 : -22) : 4)),
+  };
+});
 ---
 <div class:list={['project-visual', { 'is-compact': compact }]} data-visual={visual} aria-hidden="true" transition:name={transitionName}>
   <div class={`project-screen v-${visual}`}>
@@ -58,16 +76,17 @@ const round = (value: number) => Math.round(value * 10) / 10;
       <svg class="loop" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet">
         <circle cx="200" cy="150" r="100" class="ring" />
         <circle cx="200" cy="150" r="100" class="ring-run" pathLength="100" />
-        {loopNodes.map((node, index) => (
+        {loopNodes.map((node) => (
           <g>
-            <circle cx={round(node.x)} cy={round(node.y)} r={index === 1 ? 17 : 12} class:list={['node', { factory: index === 1 }]} />
-            {!compact && (
-              <text x={round(node.x + (node.anchor === 'start' ? 24 : node.anchor === 'end' ? -24 : 0))} y={round(node.y + (node.anchor === 'middle' ? -24 : 4))} text-anchor={node.anchor}>{node.label}</text>
-            )}
+            <circle cx={node.x} cy={node.y} r={node.radius} class:list={['node', { factory: node.stage === 'factory' }]} />
+            <circle cx={node.x} cy={node.y} r={node.radius + 5} class="node-lit" />
+            {!compact && <text x={node.labelX} y={node.labelY} text-anchor={node.anchor}>{node.label}</text>}
           </g>
         ))}
-        <rect x="270" y="168" width="26" height="18" rx="4" class="ticket-chip" transform="rotate(-20 283 177)" />
-        {!compact && <text x="200" y="154" text-anchor="middle" class="center">{t(lang, 'visual.human')}</text>}
+        <circle cx="200" cy="150" r="22" class="hub" />
+        <circle cx="200" cy="150" r="22" class="hub-lit" />
+        <g class="loop-arm"><rect x="187" y="141" width="26" height="18" rx="4" class="ticket-chip" /></g>
+        {!compact && <text x="200" y="194" text-anchor="middle" class="center">{t(lang, 'visual.human')}</text>}
       </svg>
     )}
     {visual === 'wp-starter' && (
@@ -172,9 +191,14 @@ const round = (value: number) => Math.round(value * 10) / 10;
   .arrow path, .lines path { fill: none; stroke: rgb(255 255 255 / .7); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke }
   .lines path { stroke-dasharray: 4 6 }
   .ring { fill: none; stroke: rgb(255 255 255 / .2); stroke-width: 2 }
-  .ring-run { fill: none; stroke: var(--orange); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 22 78; transform: rotate(-90deg); transform-origin: 200px 150px }
+  /* Full ring at rest (the finished run); the story draws it from the top with the dash offset. */
+  .ring-run { fill: none; stroke: var(--orange); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 100 100; stroke-dashoffset: 0; transform: rotate(-90deg); transform-origin: 200px 150px }
   .node { fill: #f4f0fb }
   .node.factory { fill: var(--orange) }
+  .node-lit { fill: none; stroke: var(--orange); stroke-width: 2.5 }
+  .hub { fill: rgb(255 255 255 / .1); stroke: rgb(255 255 255 / .35); stroke-width: 2 }
+  .hub-lit { fill: var(--orange) }
+  .node-lit, .hub-lit { transform-box: fill-box; transform-origin: center }
   .ticket-chip { fill: #fff; stroke: var(--orange); stroke-width: 2 }
   .loop text { font: 500 13px var(--font-mono); fill: rgb(255 255 255 / .8) }
   .loop .center { font-size: 12px; fill: rgb(255 255 255 / .8) }

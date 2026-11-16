@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
 /** Projects whose visual tells an animated story (all six once every story is in). */
-const STORY_SLUGS: string[] = ['qa-agent'];
+const STORY_SLUGS: string[] = ['qa-agent', 'delivery-loop'];
 
 const settled = (page: Page) => expect(page.locator('html')).not.toHaveAttribute('data-astro-transition', /.*/);
 
@@ -11,7 +11,9 @@ function frame(visual: Locator): Promise<string> {
     [...root.querySelectorAll('.project-screen *')]
       .map((element) => {
         const style = getComputedStyle(element);
-        return [style.transform, style.opacity, style.clipPath, style.strokeDashoffset, element.getAttribute('transform') ?? ''].join('|');
+        // GSAP leaves an identity matrix on SVG parts it reverts: the same picture as no transform.
+        const identity = (value: string) => (/^matrix\(1, ?0, ?0, ?1, ?0, ?0\)$/.test(value) ? 'none' : value);
+        return [identity(style.transform), style.opacity, style.clipPath, style.strokeDashoffset, identity(element.getAttribute('transform') ?? 'none')].join('|');
       })
       .join(';'),
   );

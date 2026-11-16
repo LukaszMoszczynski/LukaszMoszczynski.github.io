@@ -32,3 +32,26 @@ export function nextRotation(current: number, stage: FactoryStage): number {
   const delta = (((nodeAngle(stage) - current) % 360) + 360) % 360;
   return current + delta;
 }
+
+export interface RingStop {
+  stage: FactoryStage;
+  /** Cumulative clockwise rotation of the ticket, in degrees, when it reaches the stage. */
+  rotation: number;
+}
+
+/** The ticket's stops round the ring for one run (the hub, `clean`, is not on the ring). */
+export function ringStops(reviewCycles: number): RingStop[] {
+  const stops: RingStop[] = [];
+  let rotation = 0;
+  for (const stage of factorySequence(reviewCycles)) {
+    if (stage === 'clean') break;
+    rotation = nextRotation(rotation, stage);
+    stops.push({ stage, rotation });
+  }
+  return stops;
+}
+
+/** Share of the ring (0–1) the orange arc covers once the ticket has turned `rotation` degrees. */
+export function arcShare(rotation: number): number {
+  return Math.min(Math.max(rotation / 360, 0), 1);
+}
