@@ -1,0 +1,31 @@
+name: Preview
+
+on:
+  push:
+    branches: [redesign]
+  workflow_dispatch:
+
+concurrency:
+  group: preview
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          BASE_PATH: /portfolio-preview/
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          deploy_key: ${{ secrets.PREVIEW_DEPLOY_KEY }}
+          external_repository: LukaszMoszczynski/portfolio-preview
+          publish_branch: gh-pages
+          publish_dir: ./dist
+          force_orphan: true
