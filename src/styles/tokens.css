@@ -12,8 +12,12 @@
   --control-line: #6f638c;
   /* Focus rings: 3:1 against the page and over the glow (WCAG 1.4.11). */
   --focus-ring: #c64c18;
-  /* How strongly the glow layer shows (Background); bounded by the contrast of text over it. */
+  /* How strongly the menu's glows show. */
   --glow-strength: .55;
+  /* Cursor spotlights (Background). Light theme: saturated but very light peach and lilac, so they read
+     clearly on the pale page while the page under text stays light enough for AA (contrast.spec). */
+  --spot-a: rgb(255 194 158 / .9); --spot-b: rgb(214 201 255 / .9); --spot-strength: 1; --spot-size: 60vmax;
+  --spot-cell: rgb(255 186 146 / .55); --spot-cell-edge: rgb(235 97 38 / .75); --spot-dot: rgb(235 97 38 / .8);
   --font-display: "Unbounded Variable", "Unbounded", "Arial Black", system-ui, sans-serif;
   --font-body: "Manrope Variable", "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
@@ -23,12 +27,16 @@
     --bg: #0d0a15; --surface: #1a1429; --card: #1f1832; --ink: #f4f0fb; --muted: #b6a9d4; --dim: #3a3054;
     --accent: #f07a3e; --violet: #8f70ea; --line: #2a2140; --grid: #1b1528; --select: #5aa7e6;
     --glow-a: rgb(240 122 62 / .36); --glow-b: rgb(123 91 214 / .40); --on-accent: #0d0a15; --accent-ink: #f58b54; --accent-display: #f07a3e; --focus-ring: #f07a3e; --control-line: #9a8dbd; --glow-strength: .6; color-scheme: dark;
+    --spot-a: rgb(240 122 62 / .36); --spot-b: rgb(123 91 214 / .40); --spot-strength: .6; --spot-size: 46vmax;
+    --spot-cell: rgb(240 122 62 / .04); --spot-cell-edge: rgb(240 122 62 / .35); --spot-dot: rgb(240 122 62 / .7);
   }
 }
 :root[data-theme="dark"] {
   --bg: #0d0a15; --surface: #1a1429; --card: #1f1832; --ink: #f4f0fb; --muted: #b6a9d4; --dim: #3a3054;
   --accent: #f07a3e; --violet: #8f70ea; --line: #2a2140; --grid: #1b1528; --select: #5aa7e6;
   --glow-a: rgb(240 122 62 / .36); --glow-b: rgb(123 91 214 / .40); --on-accent: #0d0a15; --accent-ink: #f58b54; --accent-display: #f07a3e; --focus-ring: #f07a3e; --control-line: #9a8dbd; --glow-strength: .6; color-scheme: dark;
+    --spot-a: rgb(240 122 62 / .36); --spot-b: rgb(123 91 214 / .40); --spot-strength: .6; --spot-size: 46vmax;
+    --spot-cell: rgb(240 122 62 / .04); --spot-cell-edge: rgb(240 122 62 / .35); --spot-dot: rgb(240 122 62 / .7);
 }
 
 /* Terminal surfaces stay dark in both themes */

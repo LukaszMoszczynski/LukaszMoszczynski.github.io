@@ -69,3 +69,21 @@ test('axe: reduced motion pages have no violations either', async ({ page }) => 
     expect(await audit(page), path).toEqual([]);
   }
 });
+
+for (const scheme of ['light', 'dark'] as const) {
+  test(`axe: no violations with the cursor spotlight over text (${scheme})`, async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === 'phone', 'the spotlight follows a fine pointer');
+    test.setTimeout(60_000);
+    await page.addInitScript((theme) => localStorage.setItem('theme', theme), scheme);
+    await page.goto('./');
+    await expect(page.locator('html')).not.toHaveClass(/init-pending/);
+    for (const selector of ['.hero .sub', '#stack .skill p', '#contact .contact-label']) {
+      const target = page.locator(selector).first();
+      await target.scrollIntoViewIfNeeded();
+      const box = (await target.boundingBox())!;
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 6 });
+      await page.waitForTimeout(2200);
+      expect(await audit(page), `${selector} under the spotlight`).toEqual([]);
+    }
+  });
+}

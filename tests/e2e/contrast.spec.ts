@@ -49,20 +49,24 @@ for (const scheme of ['light', 'dark'] as const) {
     await expect(page.locator('html')).toHaveAttribute('data-theme', scheme);
     const tokens = await page.evaluate(() => {
       const style = getComputedStyle(document.documentElement);
-      const names = ['--bg', '--muted', '--accent-ink', '--accent-display', '--focus-ring', '--control-line', '--ink', '--glow-a', '--glow-b'];
+      const names = ['--bg', '--muted', '--accent-ink', '--accent-display', '--focus-ring', '--control-line', '--ink', '--spot-a', '--spot-b', '--spot-cell'];
       return {
         ...Object.fromEntries(names.map((name) => [name, style.getPropertyValue(name).trim()])),
         strength: Number(getComputedStyle(document.querySelector('.light-layer')!).opacity),
       };
     }) as Record<string, string> & { strength: number };
     const bg = hexToRgb(tokens['--bg']);
-    const glowA = rgba(tokens['--glow-a']);
-    const glowB = rgba(tokens['--glow-b']);
+    const glowA = rgba(tokens['--spot-a']);
+    const glowB = rgba(tokens['--spot-b']);
     const underA = over(glowA, glowA[3] * tokens.strength, bg);
     const underB = over(glowB, glowB[3] * tokens.strength, bg);
     // The two glows can meet (the second one mirrors the pointer).
     const underBoth = over(glowB, glowB[3] * tokens.strength, underA);
-    const backgrounds = [bg, underA, underB, underBoth].map(rgbString);
+    // The hover cell (grid layer) lies under the pointer, below both spotlights (the light layer paints over the grid).
+    const cell = rgba(tokens['--spot-cell']);
+    const onCell = over(cell, cell[3], bg);
+    const underCell = over(glowB, glowB[3] * tokens.strength, over(glowA, glowA[3] * tokens.strength, onCell));
+    const backgrounds = [bg, underA, underB, underBoth, underCell].map(rgbString);
     const needs: Array<[string, number]> = [['--ink', 4.5], ['--muted', 4.5], ['--accent-ink', 4.5], ['--accent-display', 3], ['--focus-ring', 3], ['--control-line', 3]];
     for (const [token, minimum] of needs) {
       for (const background of backgrounds) {
@@ -128,5 +132,53 @@ for (const scheme of ['light', 'dark'] as const) {
       }));
       expect(contrast(text, fill), `${selector} hovered: ${text} on ${fill}`).toBeGreaterThanOrEqual(4.5);
     }
+  });
+}
+
+/** Pixels of a PNG screenshot, decoded by the browser itself (no image library needed). */
+async function pixels(page: import('@playwright/test').Page, png: Buffer): Promise<number[][]> {
+  return page.evaluate(async (data) => {
+    const image = new Image();
+    image.src = `data:image/png;base64,${data}`;
+    await image.decode();
+    const canvas = document.createElement('canvas');
+    canvas.width = image.width;
+    canvas.height = image.height;
+    const context = canvas.getContext('2d')!;
+    context.drawImage(image, 0, 0);
+    const raw = context.getImageData(0, 0, image.width, image.height).data;
+    const result: number[][] = [];
+    for (let index = 0; index < raw.length; index += 4 * 7) result.push([raw[index], raw[index + 1], raw[index + 2]]);
+    return result;
+  }, png.toString('base64'));
+}
+
+for (const scheme of ['light', 'dark'] as const) {
+  test(`the cursor spotlight is clearly visible yet text over it keeps AA, as rendered (${scheme})`, async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === 'phone', 'the spotlight follows a fine pointer');
+    await page.addInitScript((theme) => localStorage.setItem('theme', theme), scheme);
+    await page.goto('./');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', scheme);
+    await expect(page.locator('html')).not.toHaveClass(/init-pending/);
+    const sub = page.locator('.hero .sub');
+    await expect(sub).toHaveCSS('opacity', '1');
+    const box = (await sub.boundingBox())!;
+    const textColor = await sub.evaluate((element) => getComputedStyle(element).color);
+    const pageColor = await page.evaluate(() => getComputedStyle(document.documentElement).backgroundColor);
+    // Pointer on the text; let the light (1.6 s ease) arrive.
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 8 });
+    await page.waitForTimeout(2600);
+    // Measure what is really painted behind the text: hide the text, keep everything else.
+    // The custom cursor and passing tracers are thin marks, not the background, so they are hidden too.
+    await page.addStyleTag({ content: '.hero .sub, .hero .sub * { color: transparent !important } .cursor, .grid-layer .tv, .grid-layer .th, .grid-layer .dot, .grid-layer .ring { visibility: hidden !important }' });
+    const shot = await page.screenshot({ clip: box });
+    const behind = await pixels(page, shot);
+    const worst = Math.min(...behind.map((pixel) => contrast(textColor, `rgb(${pixel.join(', ')})`)));
+    expect(worst, `${textColor} over the spotlight`).toBeGreaterThanOrEqual(4.5);
+    // Clearly visible: the light visibly changes the page colour under the pointer.
+    const base = rgba(pageColor.startsWith('#') ? pageColor : `#${(pageColor.match(/\d+/g) ?? []).slice(0, 3).map((channel) => Number(channel).toString(16).padStart(2, '0')).join('')}`);
+    const shift = Math.max(...behind.map((pixel) => pixel.reduce((sum, channel, index) => sum + Math.abs(channel - base[index]), 0)));
+    expect(shift, 'colour shift under the pointer').toBeGreaterThanOrEqual(scheme === 'light' ? 60 : 40);
+    await testInfo.attach(`spotlight-${scheme}`, { body: await page.screenshot(), contentType: 'image/png' });
   });
 }

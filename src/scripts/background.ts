@@ -5,7 +5,7 @@ import { motionPaused, onMotionPauseChange } from './motion-pause';
 type Direction = 'up' | 'down' | 'left' | 'right';
 type Origin = 'ambient' | 'burst';
 
-/** Pointer over these hides the hover cell; clicks on them never burst. */
+/** Pointer over these (or over text) hides the hover cell; clicks on them never burst. */
 const CONTENT = 'a, button, [role=button], .stage, .project-card, .skill, .quote, header';
 /** Clicks inside text are for selecting it, not for bursts. */
 const TEXT = 'h1, h2, h3, p, li, blockquote, figure';
@@ -223,7 +223,8 @@ export function initBackground(): () => void {
     const lightBx = gsap.quickTo(glowB, 'x', { duration: 2.6, ease: 'power3' });
     const lightBy = gsap.quickTo(glowB, 'y', { duration: 2.6, ease: 'power3' });
     listen(window, 'pointermove', (event: PointerEvent) => {
-      const overContent = event.target instanceof Element && event.target.closest(CONTENT);
+      // The cell marks empty grid you can click; over text it would only cross the letters.
+      const overContent = event.target instanceof Element && event.target.closest(`${CONTENT}, ${TEXT}`);
       hoverCell.style.opacity = overContent ? '0' : '1';
       const corner = cellOrigin(event.clientX, event.clientY, lines);
       gsap.set(hoverCell, { x: corner.x, y: corner.y });
