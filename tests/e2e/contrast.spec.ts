@@ -182,3 +182,26 @@ for (const scheme of ['light', 'dark'] as const) {
     await testInfo.attach(`spotlight-${scheme}`, { body: await page.screenshot(), contentType: 'image/png' });
   });
 }
+
+test('large orange text in the light theme uses the display orange, also on menu hover and focus', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('theme', 'light'));
+  await page.goto('./');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  const display = await page.evaluate(() => {
+    const probe = document.createElement('i');
+    probe.style.color = 'var(--accent-display)';
+    document.body.append(probe);
+    const color = getComputedStyle(probe).color;
+    probe.remove();
+    return color;
+  });
+  for (const selector of ['.hero .claim em', '#stack .skill.ai h3 em']) {
+    await expect(page.locator(selector).first()).toHaveCSS('color', display);
+  }
+  // Opened from the keyboard, so the first link gets visible focus.
+  await page.locator('header .menu-toggle').focus();
+  await page.keyboard.press('Enter');
+  const link = page.locator('#site-menu .menu-link').first();
+  await expect(link).toBeFocused();
+  await expect(link.locator('.menu-link-text')).toHaveCSS('color', display);
+});

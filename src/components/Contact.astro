@@ -63,6 +63,8 @@ const links = [
   .contact-value { font: 600 clamp(18px, 2.4vw, 28px)/1.2 var(--font-display); color: var(--ink); text-decoration: none; overflow-wrap: anywhere }
   .contact-text { user-select: all }
   .contact-value:hover { color: var(--accent-ink) }
+  /* From 1000px the value is 24px or more: large text, so the display orange. */
+  @media (min-width: 1000px) { .contact-value:hover { color: var(--accent-display) } }
   /* The e-mail address fits on one line on 360px phones instead of breaking before its last letters. */
   @media (max-width: 420px) { .contact-value { font-size: max(15px, 4.4vw) } }
   .copy-btn {

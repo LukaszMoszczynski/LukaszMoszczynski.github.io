@@ -148,7 +148,8 @@ const mainLinks = [
     display: inline-block; font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 8vw, 96px);
     letter-spacing: -.045em; line-height: 1.05; transition: color .25s;
   }
-  .menu-link:is(:hover, :focus-visible) .menu-link-text { color: var(--accent-ink) }
+  /* Large text: the display orange (3:1 is enough), so it matches the site orange in the light theme. */
+  .menu-link:is(:hover, :focus-visible) .menu-link-text { color: var(--accent-display) }
   .menu-sub { margin: 0 0 12px; font: 500 13px/1 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted) }
   .menu-projects { display: flex; flex-wrap: wrap; gap: 8px 10px }
   .menu-projects a {
