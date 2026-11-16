@@ -13,6 +13,16 @@ export function rotateDeck<T>(order: T[]): T[] {
   return order.length ? [...order.slice(1), order[0]] : [];
 }
 
+/** Last card comes back to the front (the opposite of rotateDeck); returns a new array. */
+export function unrotateDeck<T>(order: T[]): T[] {
+  return order.length ? [order[order.length - 1], ...order.slice(0, -1)] : [];
+}
+
+/** "Recommendation {current} of {total}" with the numbers filled in. */
+export function positionLabel(template: string, current: number, total: number): string {
+  return template.replace('{current}', String(current)).replace('{total}', String(total));
+}
+
 /** Resting pose of the card at `index` in a deck of `count` cards. */
 export function cardPose(index: number, count: number): CardPose {
   return {

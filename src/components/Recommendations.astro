@@ -15,10 +15,13 @@ const quotes = [
     <p class="reco-kicker">{t(lang, 'reco.kicker')}</p>
     <h2 id="reco-heading">{t(lang, 'reco.heading')}</h2>
     <p class="reco-hint" data-reduced={t(lang, 'reco.hintReduced')}>{t(lang, 'reco.hint')}</p>
-    <button type="button" class="next-quote fx-pill">{t(lang, 'reco.next')}</button>
-    <p class="deck-announce" aria-live="polite" aria-atomic="true"></p>
+    <div class="deck-controls">
+      <button type="button" class="deck-btn prev-quote fx-pill" aria-controls="reco-deck">{t(lang, 'reco.prev')}</button>
+      <button type="button" class="deck-btn next-quote fx-pill" aria-controls="reco-deck">{t(lang, 'reco.next')}</button>
+    </div>
+    <p class="deck-announce" aria-live="polite" aria-atomic="true" data-template={t(lang, 'reco.position')}></p>
   </div>
-  <div class="deck" role="region" aria-label={t(lang, 'reco.kicker')}>
+  <div class="deck" id="reco-deck" role="region" aria-label={t(lang, 'reco.kicker')}>
     {quotes.map((quote) => (
       <figure class="quote">
         <blockquote lang="en">{quote.text}</blockquote>
@@ -40,11 +43,16 @@ const quotes = [
   .reco-kicker { font-family: var(--font-mono); font-size: 13px; color: var(--accent-ink); margin: 0 0 12px }
   .reco h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(28px, 4vw, 54px); letter-spacing: -.035em; line-height: 1.05; margin: 0 0 16px; text-wrap: balance }
   .reco-hint { color: var(--muted); margin: 0 }
-  .reco .next-quote { display: none }
+  .reco .deck-controls { display: none }
   .reco .deck-announce { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; margin: 0 }
   /* html.init-pending: the deck is drawn collapsed before deck.ts runs, so init does not shift the page. */
-  .reco.deck-on .next-quote, html.init-pending .reco .next-quote { display: inline-flex; align-items: center; margin-top: 22px; min-height: 48px; font: 600 14px/1 var(--font-body); padding: 0 24px; border-radius: 999px; border: 0; background: var(--accent); color: var(--on-accent); cursor: pointer; --fx-fill: var(--ink); --fx-ink: var(--bg) }
-  .reco.deck-on .next-quote:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px }
+  .reco.deck-on .deck-controls, html.init-pending .reco .deck-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px }
+  .reco .deck-btn { display: inline-flex; align-items: center; min-height: 48px; font: 600 14px/1 var(--font-body); padding: 0 24px; border-radius: 999px; border: 0; cursor: pointer }
+  .reco .next-quote { background: var(--accent); color: var(--on-accent); --fx-fill: var(--ink); --fx-ink: var(--bg) }
+  .reco .prev-quote { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line) }
+  /* Focus: the site's accent ring, kept round; on the deck it frames the visible card. */
+  .reco .deck-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 999px }
+  .reco.deck-on .deck:focus-visible { outline: 2px solid var(--accent); outline-offset: 8px; border-radius: 32px }
   html:not(.init-pending) .reco:not(.deck-on) .reco-hint { display: none }
   .reco .deck { display: grid; gap: 20px; width: 100%; max-width: 560px; min-width: 0 }
   .reco.deck-on .deck, html.init-pending .reco .deck { gap: 0; padding-bottom: 40px; touch-action: pan-y }

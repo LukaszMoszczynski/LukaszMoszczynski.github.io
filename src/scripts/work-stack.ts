@@ -1,12 +1,7 @@
 import { gsap, hasFinePointer } from './lifecycle';
+import { STACK_MEDIA, stickyTop } from './work-focus';
 
-/** Sticky top of card `index`, in px: 88, 104, 120… (must match WorkStack.astro). */
-export function stickyTop(index: number): number {
-  return 88 + index * 16;
-}
-
-/** Same media query as the sticky rule in WorkStack.astro. */
-export const STACK_MEDIA = '(min-width: 861px) and (min-height: 640px)';
+export { STACK_MEDIA, stickyTop } from './work-focus';
 const MAX_TILT = 14;
 
 /**

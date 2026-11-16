@@ -68,9 +68,85 @@ test.describe('recommendations deck', () => {
     await page.goto('./');
     await page.getByRole('button', { name: /next/i }).click();
     await expect.poll(() => topName(page)).toBe(names[1]);
+    await page.getByRole('button', { name: /previous/i }).click();
+    await expect.poll(() => topName(page)).toBe(names[0]);
+    await page.locator('.deck').focus();
+    await page.keyboard.press('ArrowLeft');
+    await expect.poll(() => topName(page)).toBe(names[2]);
+    await expect(page.locator('.deck-announce')).toContainText('Recommendation 3 of 3');
     await expect(page.locator('.reco-hint')).not.toContainText(/drag/i);
     await expect(page.locator('.quote').first()).toHaveCSS('cursor', 'default');
   });
+
+  test('Previous goes back and announces the position', async ({ page }) => {
+    await page.goto('./');
+    const previous = page.getByRole('button', { name: /previous/i });
+    await previous.click();
+    await expect.poll(() => topName(page)).toBe(names[2]);
+    await expect(page.locator('.deck-announce')).toContainText('Recommendation 3 of 3');
+    await expect(page.locator('.deck-announce')).toContainText(names[2]);
+    await page.getByRole('button', { name: /next/i }).click();
+    await expect.poll(() => topName(page)).toBe(names[0]);
+    await expect(page.locator('.deck-announce')).toContainText('Recommendation 1 of 3');
+    expect((await previous.boundingBox())!.height).toBeGreaterThanOrEqual(40);
+  });
+
+  test('keyboard: Tab reaches Previous, Next and the deck; arrows switch cards; only the top card is exposed', async ({ page }) => {
+    await page.goto('./');
+    const previous = page.getByRole('button', { name: /previous/i });
+    const next = page.getByRole('button', { name: /next/i });
+    const deck = page.getByRole('region', { name: 'LinkedIn recommendations' });
+    await previous.focus();
+    await page.keyboard.press('Tab');
+    await expect(next).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(deck).toBeFocused();
+
+    await page.keyboard.press('ArrowRight');
+    await expect.poll(() => topName(page)).toBe(names[1]);
+    await expect(page.locator('.deck-announce')).toHaveText(/^Recommendation 2 of 3: Szymon Papis/);
+    await expect(deck).toBeFocused();
+    await page.keyboard.press('ArrowLeft');
+    await expect.poll(() => topName(page)).toBe(names[0]);
+    await page.keyboard.press('ArrowLeft');
+    await expect.poll(() => topName(page)).toBe(names[2]);
+
+    // Arrows work on the buttons too, and focus stays put.
+    await next.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect.poll(() => topName(page)).toBe(names[0]);
+    await expect(next).toBeFocused();
+
+    // Hidden cards are out of the tab order and the accessibility tree.
+    await expect(page.locator('.quote[inert]')).toHaveCount(2);
+    await expect(page.locator('.quote[aria-hidden="true"]')).toHaveCount(2);
+    await expect(deck.getByRole('figure')).toHaveCount(1);
+    await expect(deck).toContainText(names[0]);
+    await expect(deck.getByRole('figure')).not.toContainText(names[1]);
+  });
+
+  for (const scheme of ['light', 'dark'] as const) {
+    test(`focus rings on the buttons and the deck use the accent (${scheme})`, async ({ page }) => {
+      await page.emulateMedia({ colorScheme: scheme });
+      await page.goto('./');
+      const accent = await page.evaluate(() => {
+        const probe = document.createElement('i');
+        probe.style.color = 'var(--accent)';
+        document.body.append(probe);
+        const color = getComputedStyle(probe).color;
+        probe.remove();
+        return color;
+      });
+      await page.getByRole('button', { name: /previous/i }).focus();
+      for (const target of [page.getByRole('button', { name: /previous/i }), page.getByRole('button', { name: /next/i }), page.locator('.deck')]) {
+        if (!(await target.evaluate((element) => element === document.activeElement))) await page.keyboard.press('Tab');
+        await expect(target).toBeFocused();
+        await expect(target).toHaveCSS('outline-style', 'solid');
+        await expect(target).toHaveCSS('outline-width', '2px');
+        await expect(target).toHaveCSS('outline-color', accent);
+      }
+    });
+  }
 
   test('Dawid role matches the spec', async ({ page }) => {
     await page.goto('./');
@@ -106,6 +182,7 @@ test.describe('recommendations deck', () => {
       await page.goto('./');
       for (const name of names) await expect(page.getByText(name)).toBeVisible();
       await expect(page.getByRole('button', { name: /next/i })).toBeHidden();
+      await expect(page.getByRole('button', { name: /previous/i })).toBeHidden();
     });
   });
 });

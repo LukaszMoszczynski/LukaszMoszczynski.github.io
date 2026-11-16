@@ -32,9 +32,15 @@ const projects = await getProjects(lang);
 <script>
   import { motionEnabled, onPage } from '../scripts/lifecycle';
   import { initWorkStack } from '../scripts/work-stack';
+  import { initWorkFocus } from '../scripts/work-focus';
   onPage(() => {
     const root = document.querySelector<HTMLElement>('.work');
     return root && motionEnabled() ? initWorkStack(root) : undefined;
+  });
+  // Keyboard focus keeps the focused card whole and uncovered, with or without motion.
+  onPage(() => {
+    const root = document.querySelector<HTMLElement>('.work');
+    return root ? initWorkFocus(root) : undefined;
   });
 </script>
 <style>
@@ -54,11 +60,15 @@ const projects = await getProjects(lang);
   .project-card h3 { font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 2.8vw, 38px); letter-spacing: -.03em; line-height: 1.05; margin: 8px 0 12px }
   .project-summary { margin: 0 0 18px; color: var(--muted) }
   .project-note { margin: -8px 0 18px; font-size: 14px; color: var(--muted); font-style: italic }
+  /* Keyboard focus: a ring around the whole card, and its content back at full strength even
+     while the next card starts to slide over (the scrubbed dim sets an inline opacity). */
+  .project-card:has(:focus-visible) { outline: 3px solid var(--accent); outline-offset: 4px }
+  .project-card:has(:focus-visible) > * { opacity: 1 !important }
   .work-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
   /* Keep a whole card on screen below its sticky top. */
   .project-card :global(.project-visual) { width: min(100%, calc((100svh - 260px) * 4 / 3)); justify-self: center }
 
-  /* Stacking only where a whole card fits below its sticky top; must match STACK_MEDIA in work-stack.ts. */
+  /* Stacking only where a whole card fits below its sticky top; must match STACK_MEDIA in work-focus.ts. */
   @media (min-width: 861px) and (min-height: 640px) {
     .project-card { position: sticky; top: calc(88px + var(--index) * 16px) }
   }
