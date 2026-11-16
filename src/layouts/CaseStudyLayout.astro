@@ -65,6 +65,8 @@ const transitionName = `visual-${project.slug}`;
   .case-hero.is-text-only .case-summary { max-width: 62ch }
   .case-back {
     display: inline-block; padding-block: 8px; line-height: 24px; margin-bottom: 8px; font-size: 15px;
+    /* The tall tap target would push the underline 8px down: keep it 3px under the text like other links. */
+    background-position: 0 calc(100% - 5px), 0 calc(100% - 5px);
   }
   .case-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; font-weight: 600; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink) }
   .case-origin {

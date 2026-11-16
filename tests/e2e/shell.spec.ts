@@ -301,3 +301,24 @@ test.describe('theme switch after many language switches', () => {
     expect(await page.evaluate(() => (window as Window & { stayMarker?: number }).stayMarker)).toBe(1);
   });
 });
+
+test.describe('inline text link underline', () => {
+  test('one line: the hover line takes the resting line’s place instead of appearing below it', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'hover needs a fine pointer');
+    await page.goto('./');
+    const link = page.locator('#stack .text-link').first();
+    await link.scrollIntoViewIfNeeded();
+    const look = () => link.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return { decoration: style.textDecorationLine, size: style.backgroundSize, position: style.backgroundPosition };
+    });
+    const rest = await look();
+    expect(rest.decoration).toBe('none');
+    expect(rest.size).toBe('0% 2px, 100% 2px');
+    // Both layers sit at the same spot (bottom of the link).
+    expect(rest.position).toBe('0px 100%, 0px 100%');
+    await link.hover();
+    await expect.poll(async () => (await look()).size).toBe('100% 2px, 100% 2px');
+    expect((await look()).decoration).toBe('none');
+  });
+});

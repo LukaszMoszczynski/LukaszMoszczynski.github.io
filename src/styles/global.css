@@ -13,16 +13,20 @@ a { color: inherit }
 }
 
 /*
- * Inline text links (ArrowLink): ink text on an accent underline; on hover and focus an
- * orange-to-violet line sweeps in over it, the text turns accent and the arrow nudges.
+ * Inline text links (ArrowLink): ink text on an accent underline. Both lines are background
+ * layers in the same spot: on hover and focus the orange-to-violet line (it starts orange)
+ * wipes in from the left right over the resting one, so there is only ever one line.
+ * The text turns accent and the arrow nudges.
  */
 .text-link {
-  color: var(--ink); font-weight: 600; text-decoration: underline; text-decoration-color: var(--accent);
-  text-decoration-thickness: 1.5px; text-underline-offset: 4px;
-  background: linear-gradient(90deg, var(--accent), var(--violet)) 0 100% / 0 2px no-repeat; padding-bottom: 3px;
-  transition: color .25s, text-decoration-color .25s, background-size .4s cubic-bezier(.2, .7, .2, 1);
+  color: var(--ink); font-weight: 600; text-decoration: none;
+  background:
+    linear-gradient(90deg, var(--accent), var(--violet)) 0 100% / 0% 2px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 0 100% / 100% 2px no-repeat;
+  padding-bottom: 3px;
+  transition: color .25s, background-size .4s cubic-bezier(.2, .7, .2, 1);
 }
-.text-link:hover, .text-link:focus-visible { color: var(--accent-ink); text-decoration-color: transparent; background-size: 100% 2px }
+.text-link:hover, .text-link:focus-visible { color: var(--accent-ink); background-size: 100% 2px, 100% 2px }
 .link-arrow { display: inline-block; text-decoration: none; transition: transform .25s }
 :is(.text-link, .arrow-hover):is(:hover, :focus-visible) .link-arrow { transform: translateX(4px) }
 :is(.text-link, .arrow-hover):is(:hover, :focus-visible) .link-arrow.is-back { transform: translateX(-4px) }
