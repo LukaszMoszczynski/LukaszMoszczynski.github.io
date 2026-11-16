@@ -1,9 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
 
+/** The section lives on the design-system case study only. */
+const CASE = 'work/design-system/';
+
 const steps = (page: Page) => page.locator('.build .steps button');
 
 async function reachBuild(page: Page) {
-  await page.goto('./');
+  await page.goto(CASE);
   await page.waitForTimeout(800);
   await page.locator('.build').scrollIntoViewIfNeeded();
   await page.waitForTimeout(600);
@@ -11,13 +14,30 @@ async function reachBuild(page: Page) {
 
 test.describe('token build', () => {
   test('section, heading and four step buttons are there in both languages', async ({ page }) => {
-    await page.goto('./');
+    await page.goto(CASE);
     await expect(page.getByRole('heading', { level: 2, name: 'From token to page.' })).toBeAttached();
     await expect(steps(page)).toHaveCount(4);
     await expect(page.locator('.build .stage')).toHaveCount(1);
-    await page.goto('pl/');
+    await expect(page.locator('.build-kicker')).toHaveText("how it's built");
+    await page.goto(`pl/${CASE}`);
     await expect(page.getByRole('heading', { level: 2, name: 'Od tokenu do strony.' })).toBeAttached();
+    await expect(page.locator('.build-kicker')).toHaveText('jak to jest zbudowane');
     await expect(page.locator('.build .p-accent .label')).toHaveText('Kup teraz');
+  });
+
+  test('sits between the case-study hero and the prose, not on the home page or other cases', async ({ page }) => {
+    await page.goto(CASE);
+    const order = await page.evaluate(() => {
+      const build = document.querySelector('.build')!;
+      const follows = (selector: string) => Boolean(document.querySelector(selector)!.compareDocumentPosition(build) & Node.DOCUMENT_POSITION_FOLLOWING);
+      return { afterHero: follows('.case-hero'), beforeProse: !follows('.case-prose') };
+    });
+    expect(order).toEqual({ afterHero: true, beforeProse: true });
+    for (const path of ['./', 'pl/', 'work/dcc/']) {
+      await page.goto(path);
+      await expect(page.locator('.build')).toHaveCount(0);
+      await expect(page.locator('.pin-spacer')).toHaveCount(0);
+    }
   });
 
   test('clicking 03 jumps to that step', async ({ page }) => {
@@ -64,7 +84,7 @@ test.describe('token build', () => {
 
   test('reduced motion: not pinned, shows the page, all steps readable', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto('./');
+    await page.goto(CASE);
     await page.locator('.build').scrollIntoViewIfNeeded();
     await expect(page.locator('.pin-spacer')).toHaveCount(0);
     await expect(page.locator('.build .p-page')).toHaveAttribute('style', /left: 2%; top: 2%; width: 96%; height: 96%/);
@@ -79,7 +99,7 @@ test.describe('token build', () => {
   });
 
   test('no horizontal overflow', async ({ page }) => {
-    await page.goto('./');
+    await page.goto(CASE);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(0);
   });

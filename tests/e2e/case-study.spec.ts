@@ -135,23 +135,25 @@ test.describe('factory loop, reduced motion', () => {
   });
 });
 
-test('home ↔ case study navigation keeps one pin and the tracer limit', async ({ page }) => {
+test('home ↔ case study navigation keeps the token-build pin on the design-system page only, and the tracer limit', async ({ page }) => {
   test.setTimeout(90_000);
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
   await page.goto('./');
-  await expect(page.locator('.pin-spacer')).toHaveCount(1);
-  for (const slug of ['dcc', 'omelanski', 'dcc']) {
+  await expect(page.locator('.pin-spacer')).toHaveCount(0);
+  for (const slug of ['design-system', 'dcc', 'design-system', 'omelanski', 'design-system']) {
     await page.locator(`#work a.project-link[href$="/work/${slug}/"]`).click();
     await expect(page).toHaveURL(new RegExp(`/work/${slug}/$`));
     await expect(page.locator('h1')).toBeVisible();
     await settled(page);
+    await expect(page.locator('.pin-spacer')).toHaveCount(slug === 'design-system' ? 1 : 0);
+    if (slug === 'design-system') await expect(page.locator('.build.is-animated')).toHaveCount(1);
     await page.goBack();
     await expect(page.locator('#work')).toHaveCount(1);
     await settled(page);
+    await expect(page.locator('.pin-spacer')).toHaveCount(0);
   }
-  await expect(page.locator('.pin-spacer')).toHaveCount(1);
   for (let sample = 0; sample < 4; sample++) {
     expect(await page.locator('.grid-layer .tv, .grid-layer .th').count()).toBeLessThanOrEqual(4);
     await page.waitForTimeout(300);

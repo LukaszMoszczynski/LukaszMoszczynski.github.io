@@ -1,6 +1,5 @@
 ---
 import Hero from '../components/Hero.astro';
-import TokenBuild from '../components/TokenBuild.astro';
 import Statement from '../components/Statement.astro';
 import CareerPath from '../components/CareerPath.astro';
 import Stack from '../components/Stack.astro';
@@ -13,7 +12,6 @@ const lang = 'en';
 ---
 <BaseLayout lang={lang} title={t(lang, 'meta.homeTitle')} description={t(lang, 'hero.sub')} path="/">
   <Hero lang={lang} />
-  <TokenBuild lang={lang} />
   <Statement lang={lang} />
   <CareerPath lang={lang} />
   <Stack lang={lang} />

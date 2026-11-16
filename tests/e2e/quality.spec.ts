@@ -130,7 +130,13 @@ test('without JavaScript every section is readable', async ({ browser }, testInf
   for (const path of ['./', 'pl/']) {
     await page.goto(path);
     const sections = await page.locator('main section').count();
-    expect(sections, path).toBeGreaterThanOrEqual(8);
+    expect(sections, path).toBeGreaterThanOrEqual(7);
+    expect(await hiddenText(page), path).toEqual([]);
+  }
+  // The token-build section moved to the design-system case study.
+  for (const path of ['work/design-system/', 'pl/work/design-system/']) {
+    await page.goto(path);
+    await expect(page.locator('main section.build'), path).toHaveCount(1);
     expect(await hiddenText(page), path).toEqual([]);
   }
   await context.close();

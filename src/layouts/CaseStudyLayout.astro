@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import ProjectVisual from '../components/ProjectVisual.astro';
 import FactoryLoop from '../components/FactoryLoop.astro';
+import TokenBuild from '../components/TokenBuild.astro';
 import { localizePath, t, type Lang } from '../i18n/utils';
 import type { ProjectEntry } from '../content/projects';
 interface Props { lang: Lang; project: ProjectEntry; next: ProjectEntry }
@@ -39,6 +40,7 @@ const { title, summary, meta, tags, links, origin, visual } = project.data;
     </header>
 
     {visual === 'dark-factory' && <FactoryLoop lang={lang} />}
+    {project.slug === 'design-system' && <TokenBuild lang={lang} />}
 
     <div class="case-prose">
       <slot />

@@ -43,9 +43,13 @@ for (const scheme of ['light', 'dark'] as const) {
       expect(ratio, `${text} (${tokens[text]}) on ${background} (${tokens[background]})`).toBeGreaterThanOrEqual(4.5);
     }
     // Small accent text actually uses the text accent.
-    for (const selector of ['.build-kicker', '.grid-hint', '.career-kicker', '.project-meta']) {
+    const smallAccent = async (selector: string) => {
       const color = await page.locator(selector).first().evaluate((element) => getComputedStyle(element).color);
       expect(contrast(color, tokens['--bg']), selector).toBeGreaterThanOrEqual(4.5);
-    }
+    };
+    for (const selector of ['.grid-hint', '.career-kicker', '.project-meta']) await smallAccent(selector);
+    // The token-build section lives on the design-system case study.
+    await page.goto('work/design-system/');
+    await smallAccent('.build-kicker');
   });
 }
