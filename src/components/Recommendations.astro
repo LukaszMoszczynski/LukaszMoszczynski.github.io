@@ -51,8 +51,8 @@ const quotes = [
   .reco .next-quote { background: var(--accent); color: var(--on-accent); --fx-fill: var(--ink); --fx-ink: var(--bg) }
   .reco .prev-quote { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line) }
   /* Focus: the site's accent ring, kept round; on the deck it frames the visible card. */
-  .reco .deck-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 999px }
-  .reco.deck-on .deck:focus-visible { outline: 2px solid var(--accent); outline-offset: 8px; border-radius: 32px }
+  .reco .deck-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; border-radius: 999px }
+  .reco.deck-on .deck:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 8px; border-radius: 32px }
   html:not(.init-pending) .reco:not(.deck-on) .reco-hint { display: none }
   .reco .deck { display: grid; gap: 20px; width: 100%; max-width: 560px; min-width: 0 }
   .reco.deck-on .deck, html.init-pending .reco .deck { gap: 0; padding-bottom: 40px; touch-action: pan-y }

@@ -31,7 +31,8 @@ const mainLinks = [
       {mainLinks.map((link) => <a href={link.href}>{link.label}</a>)}
     </nav>
   </noscript>
-  <div class="site-menu" id="site-menu" role="dialog" aria-modal="true" aria-label={t(lang, 'nav.menu')} hidden>
+  <!-- Not aria-modal: the close button lives in the header bar, outside the panel. header.ts makes the page behind inert instead. -->
+  <div class="site-menu" id="site-menu" role="dialog" aria-label={t(lang, 'nav.menu')} hidden>
     <nav class="site-menu-in wrap" aria-label={t(lang, 'nav.label')}>
       <ul class="menu-main">
         {mainLinks.map((link) => (

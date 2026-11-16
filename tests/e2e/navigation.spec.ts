@@ -17,10 +17,10 @@ const topOf = (page: Page, selector: string) =>
     return atBottom && top > 0 && top < window.innerHeight ? 0 : top;
   });
 
-/** The section starts at the top of the viewport (its scroll margin included). */
+/** The section starts at the top of the viewport, below the fixed header (html scroll-padding-top: 88px). */
 async function expectAtTop(page: Page, selector: string) {
   await expect.poll(() => topOf(page, selector), { message: `${selector} at the top` }).toBeGreaterThanOrEqual(-8);
-  await expect.poll(() => topOf(page, selector), { message: `${selector} at the top` }).toBeLessThanOrEqual(80);
+  await expect.poll(() => topOf(page, selector), { message: `${selector} at the top` }).toBeLessThanOrEqual(96);
 }
 
 test.describe('scroll position after navigation', () => {

@@ -57,11 +57,14 @@ export function initHeader(root: HTMLElement): () => void {
   const smallItems = [...panel.querySelectorAll<HTMLElement>('.menu-sub, .menu-projects li')];
   let open = false;
   let timeline: gsap.core.Timeline | undefined;
+  const behind = () => [...document.querySelectorAll<HTMLElement>('body > main, body > footer, body > .skip-link')];
 
   const setOpen = (value: boolean) => {
     open = value;
     toggle.setAttribute('aria-expanded', String(value));
     document.documentElement.classList.toggle('menu-open', value);
+    // While the menu covers the page, the page behind it is out of reach for keyboard and screen readers.
+    behind().forEach((element) => element.toggleAttribute('inert', value));
   };
 
   const show = () => {
@@ -150,6 +153,7 @@ export function initHeader(root: HTMLElement): () => void {
     timeline = undefined;
     if (open) setOpen(false);
     document.documentElement.classList.remove('menu-open');
+    behind().forEach((element) => element.removeAttribute('inert'));
     finishHide();
   };
 }

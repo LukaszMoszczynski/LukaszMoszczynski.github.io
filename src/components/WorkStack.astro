@@ -64,7 +64,7 @@ const projects = await getProjects(lang);
   .project-note { margin: -8px 0 18px; font-size: 14px; color: var(--muted); font-style: italic }
   /* Keyboard focus: a ring around the whole card, and its content back at full strength even
      while the next card starts to slide over (the scrubbed dim sets an inline opacity). */
-  .project-card:has(:focus-visible) { outline: 3px solid var(--accent); outline-offset: 4px }
+  .project-card:has(:focus-visible) { outline: 3px solid var(--focus-ring); outline-offset: 4px }
   .project-card:has(:focus-visible) > * { opacity: 1 !important }
   .work-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
   /* Keep a whole card on screen below its sticky top. */

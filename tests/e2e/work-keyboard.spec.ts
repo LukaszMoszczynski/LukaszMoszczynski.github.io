@@ -38,7 +38,7 @@ const focusedCard = (page: Page) =>
 const accentColor = (page: Page) =>
   page.evaluate(() => {
     const probe = document.createElement('i');
-    probe.style.color = 'var(--accent)';
+    probe.style.color = 'var(--focus-ring)';
     document.body.append(probe);
     const color = getComputedStyle(probe).color;
     probe.remove();

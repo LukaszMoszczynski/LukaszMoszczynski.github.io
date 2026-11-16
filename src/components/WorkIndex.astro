@@ -41,7 +41,8 @@ const projects = await getProjects(lang);
     transition: box-shadow .3s, transform .3s;
   }
   .work-index-card:hover { box-shadow: 0 0 0 1px var(--accent), 0 40px 80px -40px rgb(20 10 40 / .45); transform: translateY(-3px) }
-  .work-index-card:focus-within { box-shadow: 0 0 0 2px var(--accent), 0 40px 80px -40px rgb(20 10 40 / .45) }
+  /* The title link's own ring is off: the whole card is the target, so the card gets the ring (like the home stack). */
+  .work-index-card:has(:focus-visible) { outline: 3px solid var(--focus-ring); outline-offset: 3px }
   .work-index-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; font-weight: 600; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink) }
   .work-index-origin {
     font: 500 12px/1 var(--font-mono); letter-spacing: 0; text-transform: none; color: var(--ink);
