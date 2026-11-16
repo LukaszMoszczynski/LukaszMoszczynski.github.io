@@ -61,6 +61,11 @@ const { lang, title, description, path, noindex } = Astro.props;
     <Footer lang={lang} />
   </body>
 </html>
+<script>
+  import { onPage } from '../scripts/lifecycle';
+  import { initHoverFx } from '../scripts/hover-fx';
+  onPage(initHoverFx);
+</script>
 <style is:global>
   .skip-link {
     position: fixed; top: 8px; left: 8px; z-index: 30; padding: 10px 16px; border-radius: 999px;

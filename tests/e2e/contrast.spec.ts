@@ -52,4 +52,23 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.goto('work/design-system/');
     await smallAccent('.build-kicker');
   });
+
+  test(`hovered pills keep AA text in the ${scheme} theme`, async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === 'phone', 'hover needs a fine pointer');
+    await page.emulateMedia({ colorScheme: scheme });
+    await page.goto('./');
+    for (const selector of ['#contact .contact-btn:not(.ghost)', '#contact .contact-btn.ghost', '#contact .copy-btn']) {
+      const pill = page.locator(selector).first();
+      await pill.scrollIntoViewIfNeeded();
+      await pill.hover();
+      // The wipe and the colour flip take about half a second.
+      await expect.poll(() => pill.evaluate((element) => getComputedStyle(element, '::before').clipPath), { timeout: 3000 }).toContain('150%');
+      await page.waitForTimeout(500);
+      const { text, fill } = await pill.evaluate((element) => ({
+        text: getComputedStyle(element).color,
+        fill: getComputedStyle(element, '::before').backgroundColor,
+      }));
+      expect(contrast(text, fill), `${selector} hovered: ${text} on ${fill}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
 }

@@ -15,7 +15,7 @@ const quotes = [
     <p class="reco-kicker">{t(lang, 'reco.kicker')}</p>
     <h2 id="reco-heading">{t(lang, 'reco.heading')}</h2>
     <p class="reco-hint" data-reduced={t(lang, 'reco.hintReduced')}>{t(lang, 'reco.hint')}</p>
-    <button type="button" class="next-quote">{t(lang, 'reco.next')}</button>
+    <button type="button" class="next-quote fx-pill">{t(lang, 'reco.next')}</button>
     <p class="deck-announce" aria-live="polite" aria-atomic="true"></p>
   </div>
   <div class="deck" role="region" aria-label={t(lang, 'reco.kicker')}>
@@ -43,7 +43,7 @@ const quotes = [
   .reco .next-quote { display: none }
   .reco .deck-announce { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; margin: 0 }
   /* html.init-pending: the deck is drawn collapsed before deck.ts runs, so init does not shift the page. */
-  .reco.deck-on .next-quote, html.init-pending .reco .next-quote { display: inline-flex; align-items: center; margin-top: 22px; min-height: 48px; font: 600 14px/1 var(--font-body); padding: 0 24px; border-radius: 999px; border: 0; background: var(--accent); color: var(--on-accent); cursor: pointer }
+  .reco.deck-on .next-quote, html.init-pending .reco .next-quote { display: inline-flex; align-items: center; margin-top: 22px; min-height: 48px; font: 600 14px/1 var(--font-body); padding: 0 24px; border-radius: 999px; border: 0; background: var(--accent); color: var(--on-accent); cursor: pointer; --fx-fill: var(--ink); --fx-ink: var(--bg) }
   .reco.deck-on .next-quote:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px }
   html:not(.init-pending) .reco:not(.deck-on) .reco-hint { display: none }
   .reco .deck { display: grid; gap: 20px; width: 100%; max-width: 560px; min-width: 0 }
