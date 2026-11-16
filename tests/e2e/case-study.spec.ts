@@ -82,16 +82,17 @@ test.describe('case study pages', () => {
     expect(caseName).toBe('visual-qa-agent');
   });
 
-  test('the delivery loop page has no static hero visual; its interactive loop takes the shared name', async ({ page }) => {
+  test('the delivery loop hero shows the shared visual; the interactive board stays below it', async ({ page }) => {
     await page.goto('./');
     const card = page.locator('#work .project-card', { has: page.locator('a.project-link[href$="/work/delivery-loop/"]') });
     expect(await card.locator('.project-visual').evaluate((element) => getComputedStyle(element).viewTransitionName)).toBe('visual-delivery-loop');
     await card.locator('a.project-link').click();
     await expect(page).toHaveURL(/\/work\/delivery-loop\/$/);
-    await expect(page.locator('.case-hero .project-visual')).toHaveCount(0);
-    await expect(page.locator('.project-visual')).toHaveCount(0);
-    const loopName = await page.locator('.factory-loop .factory-board').evaluate((element) => getComputedStyle(element).viewTransitionName);
-    expect(loopName).toBe('visual-delivery-loop');
+    const hero = page.locator('.case-hero .project-visual');
+    await expect(hero).toHaveCount(1);
+    expect(await hero.evaluate((element) => getComputedStyle(element).viewTransitionName)).toBe('visual-delivery-loop');
+    await expect(page.locator('.factory-loop .factory-board')).toBeVisible();
+    expect(await page.locator('.factory-loop .factory-board').evaluate((element) => getComputedStyle(element).viewTransitionName)).toBe('none');
   });
 });
 

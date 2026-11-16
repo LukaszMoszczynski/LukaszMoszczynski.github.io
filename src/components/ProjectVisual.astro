@@ -12,7 +12,7 @@ const loopNodes = LOOP.map((label, index) => {
 });
 const round = (value: number) => Math.round(value * 10) / 10;
 ---
-<div class:list={['project-visual', { 'is-compact': compact }]} aria-hidden="true" transition:name={transitionName}>
+<div class:list={['project-visual', { 'is-compact': compact }]} data-visual={visual} aria-hidden="true" transition:name={transitionName}>
   <div class={`project-screen v-${visual}`}>
     {visual === 'dcc' && (
       <>
@@ -98,6 +98,12 @@ const round = (value: number) => Math.round(value * 10) / 10;
     )}
   </div>
 </div>
+<script>
+  import { motionEnabled, onPage } from '../scripts/lifecycle';
+  import { initProjectVisuals } from '../scripts/visuals/project-visual';
+  // One story per project, the same on the home card, the /work/ card and the case hero.
+  onPage(() => (motionEnabled() ? initProjectVisuals(document) : undefined));
+</script>
 <style>
   .project-visual { perspective: 900px }
   .project-screen {

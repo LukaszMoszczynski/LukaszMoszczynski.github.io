@@ -2,8 +2,8 @@
 import { t, type Lang } from '../i18n/utils';
 import type { UiKey } from '../i18n/ui';
 import { DEGREES_PER_NODE, FACTORY_NODES, FACTORY_STAGES } from '../scripts/factory-sequence';
-interface Props { lang: Lang; transitionName?: string }
-const { lang, transitionName } = Astro.props;
+interface Props { lang: Lang }
+const { lang } = Astro.props;
 
 // Diagram geometry, in viewBox units. Kept in sync with factory-loop.ts through data attributes.
 const WIDTH = 560;
@@ -46,7 +46,7 @@ const messages = Object.fromEntries(FACTORY_STAGES.map((stage) => [stage, t(lang
   <h2 id="factory-heading">{t(lang, 'factory.heading')}</h2>
   <p class="factory-intro factory-static-only">{t(lang, 'factory.introStatic')}</p>
   <p class="factory-intro factory-live-only">{t(lang, 'factory.intro')}</p>
-  <div class="factory-board" transition:name={transitionName}>
+  <div class="factory-board">
     <div class="factory-diagram">
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} aria-hidden="true" focusable="false">
         <circle class="factory-ring" cx={CENTER.x} cy={CENTER.y} r={RADIUS} />
