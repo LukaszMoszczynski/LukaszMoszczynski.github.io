@@ -59,8 +59,8 @@ const { title, summary, meta, tags, links, origin, visual } = project.data;
     display: inline-flex; align-items: center; min-height: 40px; margin-bottom: 16px;
     font-weight: 600; font-size: 15px; text-decoration: none; color: var(--muted);
   }
-  .case-back:hover { color: var(--accent) }
-  .case-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; font-weight: 600; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent) }
+  .case-back:hover { color: var(--accent-ink) }
+  .case-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; font-weight: 600; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink) }
   .case-origin {
     font: 500 12px/1 var(--font-mono); letter-spacing: 0; text-transform: none; color: var(--ink);
     padding: 5px 9px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); background: var(--bg);
@@ -83,14 +83,14 @@ const { title, summary, meta, tags, links, origin, visual } = project.data;
   .case-prose :global(h2:first-child) { margin-top: 0 }
   .case-prose :global(p), .case-prose :global(ul), .case-prose :global(ol) { margin: 0 0 16px }
   .case-prose :global(ul), .case-prose :global(ol) { padding-left: 1.4em; display: grid; gap: 8px }
-  .case-prose :global(li::marker) { color: var(--accent) }
+  .case-prose :global(li::marker) { color: var(--accent-ink) }
   .case-prose :global(code) { font: .9em var(--font-mono); padding: 1px 6px; border-radius: 6px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line) }
 
   .case-next { margin-top: 88px; border-top: 1px solid var(--line); padding-top: 32px }
   .case-next a { display: inline-grid; gap: 6px; text-decoration: none; min-height: 44px }
   .case-next-label { font: 500 13px/1 var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em }
   .case-next-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(26px, 4vw, 48px); letter-spacing: -.035em; line-height: 1.05 }
-  .case-next-title::after { content: " →"; color: var(--accent); display: inline-block; transition: transform .3s }
+  .case-next-title::after { content: " →"; color: var(--accent-ink); display: inline-block; transition: transform .3s }
   .case-next a:hover .case-next-title::after { transform: translateX(6px) }
 
   @media (max-width: 860px) {

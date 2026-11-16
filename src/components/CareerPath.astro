@@ -48,7 +48,7 @@ const key = (slug: string, part: string) => `path.${slug}.${part}` as UiKey;
 </script>
 <style is:global>
   .career { padding-block: 20px 120px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 40px; align-items: start }
-  .career-kicker { font-family: var(--font-mono); font-size: 13px; color: var(--accent); margin: 0 0 12px }
+  .career-kicker { font-family: var(--font-mono); font-size: 13px; color: var(--accent-ink); margin: 0 0 12px }
   .career h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(28px, 4vw, 54px); letter-spacing: -.035em; line-height: 1.05; margin: 0; text-wrap: balance }
   .career .tl { list-style: none; margin: 0; padding: 0 0 0 40px; position: relative; display: grid; gap: 34px }
   .career .tl::before { content: ""; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--line) }
@@ -58,7 +58,7 @@ const key = (slug: string, part: string) => `path.${slug}.${part}` as UiKey;
   .career .tl li::before { content: ""; position: absolute; left: -38px; top: 7px; width: 10px; height: 10px; border-radius: 50%; background: var(--bg); box-shadow: 0 0 0 2px var(--line); transition: box-shadow .4s, background .4s }
   .career .tl li.lit::before { background: var(--accent); box-shadow: 0 0 0 2px var(--accent) }
   .career .tl.js li:not(.lit) { opacity: .35 }
-  .career .yr { font-family: var(--font-mono); font-size: 13px; color: var(--accent); padding-top: 2px }
+  .career .yr { font-family: var(--font-mono); font-size: 13px; color: var(--accent-ink); padding-top: 2px }
   .career .tl b { font-family: var(--font-display); font-weight: 600; font-size: 18px; letter-spacing: -.01em; line-height: 1.3 }
   .career .tl p { margin: 4px 0 0; color: var(--muted) }
   .career .tl a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px }

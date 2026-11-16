@@ -1,7 +1,9 @@
 :root {
   --bg: #f8f6fb; --surface: #ffffff; --card: #ffffff; --ink: #2a1d4d; --muted: #6b5f8a; --dim: #cfc7e0;
   --accent: #eb6126; --violet: #7b5bd6; --line: #e3deef; --grid: #e9e4f2; --select: #1269b0;
-  --glow-a: rgb(235 97 38 / .30); --glow-b: rgb(123 91 214 / .28); --on-accent: #ffffff;
+  --glow-a: rgb(235 97 38 / .30); --glow-b: rgb(123 91 214 / .28); --on-accent: #0d0a15;
+  /* Accent for small text: #eb6126 is only 3.1:1 on the light --bg, this is 4.9:1 */
+  --accent-ink: #b9480f;
   --font-display: "Unbounded Variable", "Unbounded", "Arial Black", system-ui, sans-serif;
   --font-body: "Manrope Variable", "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
@@ -10,13 +12,13 @@
   :root:not([data-theme="light"]) {
     --bg: #0d0a15; --surface: #1a1429; --card: #1f1832; --ink: #f4f0fb; --muted: #a99bc9; --dim: #3a3054;
     --accent: #f07a3e; --violet: #8f70ea; --line: #2a2140; --grid: #1b1528; --select: #5aa7e6;
-    --glow-a: rgb(240 122 62 / .36); --glow-b: rgb(123 91 214 / .40); --on-accent: #0d0a15; color-scheme: dark;
+    --glow-a: rgb(240 122 62 / .36); --glow-b: rgb(123 91 214 / .40); --on-accent: #0d0a15; --accent-ink: #f07a3e; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0d0a15; --surface: #1a1429; --card: #1f1832; --ink: #f4f0fb; --muted: #a99bc9; --dim: #3a3054;
   --accent: #f07a3e; --violet: #8f70ea; --line: #2a2140; --grid: #1b1528; --select: #5aa7e6;
-  --glow-a: rgb(240 122 62 / .36); --glow-b: rgb(123 91 214 / .40); --on-accent: #0d0a15; color-scheme: dark;
+  --glow-a: rgb(240 122 62 / .36); --glow-b: rgb(123 91 214 / .40); --on-accent: #0d0a15; --accent-ink: #f07a3e; color-scheme: dark;
 }
 
 /* Terminal surfaces stay dark in both themes */
