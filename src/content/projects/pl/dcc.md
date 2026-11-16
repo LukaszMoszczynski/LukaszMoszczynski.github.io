@@ -5,7 +5,9 @@ meta: WordPress · sklep · płatności
 tags: [WordPress, WooCommerce, PHP, Przelewy24, GSAP, Swup, Playwright]
 order: 1
 visual: dcc
-links: []
+links:
+  - label: Wersja testowa
+    href: http://test.lotusblanc.eu/
 ---
 
 ## Problem

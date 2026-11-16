@@ -49,6 +49,21 @@ test.describe('case study pages', () => {
     });
   }
 
+  test('DCC and Omelański link to their live versions in both languages', async ({ page }) => {
+    const expected = [
+      { path: 'work/dcc/', name: 'Test version', href: 'http://test.lotusblanc.eu/' },
+      { path: 'pl/work/dcc/', name: 'Wersja testowa', href: 'http://test.lotusblanc.eu/' },
+      { path: 'work/omelanski/', name: 'GitHub Pages preview', href: 'https://lukaszmoszczynski.github.io/omelanski-site/' },
+      { path: 'pl/work/omelanski/', name: 'Podgląd na GitHub Pages', href: 'https://lukaszmoszczynski.github.io/omelanski-site/' },
+    ];
+    for (const { path, name, href } of expected) {
+      await page.goto(path);
+      const link = page.locator('.case-links a', { hasText: name });
+      await expect(link, path).toHaveAttribute('href', href);
+      await expect(link, path).toHaveAttribute('target', '_blank');
+    }
+  });
+
   test('other projects carry no home.pl note', async ({ page }) => {
     await page.goto('work/dcc/');
     await expect(page.locator('.case-note')).toHaveCount(0);

@@ -8,6 +8,8 @@ visual: omelanski
 links:
   - label: omelanski.pl
     href: https://omelanski.pl
+  - label: GitHub Pages preview
+    href: https://lukaszmoszczynski.github.io/omelanski-site/
 ---
 
 ## Problem
