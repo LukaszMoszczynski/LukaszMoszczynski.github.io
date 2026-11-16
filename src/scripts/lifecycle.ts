@@ -47,7 +47,12 @@ function teardown(entry: Registered): void {
  */
 function restoreScroll(): void {
   ScrollTrigger.refresh();
-  const hash = location.hash ? decodeURIComponent(location.hash.slice(1)) : '';
+  let hash = location.hash.slice(1);
+  try {
+    hash = decodeURIComponent(hash);
+  } catch {
+    // Malformed escape such as "#%": keep the raw value instead of throwing.
+  }
   const target = hash ? document.getElementById(hash) : null;
   if (target) {
     target.scrollIntoView({ behavior: 'instant', block: 'start' });
