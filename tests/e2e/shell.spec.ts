@@ -478,30 +478,32 @@ test.describe('language switch looks like the same page, not a reload', () => {
 
 test.describe('arrow links', () => {
   for (const path of ['./', 'pl/', 'work/design-system/', 'pl/work/qa-agent/']) {
-    test(`the arrow never wraps onto a line of its own at 360px (${path})`, async ({ page }) => {
-      await page.setViewportSize({ width: 360, height: 740 });
+    test(`the arrow never wraps onto a line of its own at any phone width (320–430px) (${path})`, async ({ page }) => {
       await page.goto(path);
-      const alone = await page.locator('.text-link').evaluateAll((links) => links.flatMap((link) => {
-        const arrow = link.querySelector('.link-arrow');
-        if (!arrow) return [];
-        // The character right next to the arrow (before a trailing one, after a leading one).
-        const range = document.createRange();
-        const textNodes: Text[] = [];
-        const walker = document.createTreeWalker(link, NodeFilter.SHOW_TEXT);
-        for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-          if (!arrow.contains(node) && !(node.parentElement?.closest('.work-hidden')) && (node.textContent ?? '').trim()) textNodes.push(node as Text);
-        }
-        const leading = arrow.classList.contains('is-back');
-        const neighbour = leading ? textNodes[0] : textNodes[textNodes.length - 1];
-        const text = neighbour.textContent ?? '';
-        const index = leading ? text.search(/\S/) : text.trimEnd().length - 1;
-        range.setStart(neighbour, index);
-        range.setEnd(neighbour, index + 1);
-        const word = range.getBoundingClientRect();
-        const mark = arrow.getBoundingClientRect();
-        return Math.abs(word.top + word.height / 2 - (mark.top + mark.height / 2)) > 4 ? [link.textContent?.trim() ?? ''] : [];
-      }));
-      expect(alone).toEqual([]);
+      for (let width = 320; width <= 430; width += 5) {
+        await page.setViewportSize({ width, height: 740 });
+        const alone = await page.locator('.text-link').evaluateAll((links) => links.flatMap((link) => {
+          const arrow = link.querySelector('.link-arrow');
+          if (!arrow) return [];
+          // The character right next to the arrow (before a trailing one, after a leading one).
+          const range = document.createRange();
+          const textNodes: Text[] = [];
+          const walker = document.createTreeWalker(link, NodeFilter.SHOW_TEXT);
+          for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+            if (!arrow.contains(node) && !(node.parentElement?.closest('.work-hidden')) && (node.textContent ?? '').trim()) textNodes.push(node as Text);
+          }
+          const leading = arrow.classList.contains('is-back');
+          const neighbour = leading ? textNodes[0] : textNodes[textNodes.length - 1];
+          const text = neighbour.textContent ?? '';
+          const index = leading ? text.search(/\S/) : text.trimEnd().length - 1;
+          range.setStart(neighbour, index);
+          range.setEnd(neighbour, index + 1);
+          const word = range.getBoundingClientRect();
+          const mark = arrow.getBoundingClientRect();
+          return Math.abs(word.top + word.height / 2 - (mark.top + mark.height / 2)) > 4 ? [link.textContent?.trim() ?? ''] : [];
+        }));
+        expect(alone, `${width}px`).toEqual([]);
+      }
     });
   }
 

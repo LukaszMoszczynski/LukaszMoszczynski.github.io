@@ -2,8 +2,9 @@
 /**
  * Inline text link in the site-wide `.text-link` style (global.css). A leading
  * "← " or trailing " →" / " ↗" in the label becomes a `.link-arrow` span that
- * nudges on hover; it stays in the accessible name, as before. The space next to
- * the arrow is non-breaking, so the arrow never wraps onto a line of its own.
+ * nudges on hover; it stays in the accessible name, as before. The arrow and the
+ * word next to it sit in one no-wrap span, so the arrow never wraps onto a line
+ * of its own (a no-break space alone does not stop a break before an inline-block).
  */
 import type { HTMLAttributes } from 'astro/types';
 interface Props extends HTMLAttributes<'a'> { label: string }
@@ -12,5 +13,16 @@ const leading = /^(←)\s*/.exec(label);
 const trailing = /\s*([→↗])$/.exec(label);
 const text = label.slice(leading ? leading[0].length : 0, trailing ? label.length - trailing[0].length : label.length);
 const arrowClass = (arrow: string) => ['link-arrow', { 'is-back': arrow === '←' }];
+// The word that travels with the arrow: the first one after a leading arrow, the last one before a trailing arrow.
+const firstSpace = text.indexOf(' ');
+const lastSpace = text.lastIndexOf(' ');
+const [before, joined, after] = leading
+  ? ['', firstSpace < 0 ? text : text.slice(0, firstSpace), firstSpace < 0 ? '' : text.slice(firstSpace)]
+  : trailing
+    ? [lastSpace < 0 ? '' : text.slice(0, lastSpace + 1), lastSpace < 0 ? text : text.slice(lastSpace + 1), '']
+    : ['', text, ''];
 ---
-<a class:list={['text-link', className]} {...attributes}>{leading && <><span class:list={arrowClass(leading[1])}>{leading[1]}</span>{' '}</>}{text}<slot />{trailing && <>{' '}<span class:list={arrowClass(trailing[1])}>{trailing[1]}</span></>}</a>
+<a class:list={['text-link', className]} {...attributes}>{before}<span class="link-keep">{leading && <><span class:list={arrowClass(leading[1])}>{leading[1]}</span>{' '}</>}{joined}{trailing && <><slot />{' '}<span class:list={arrowClass(trailing[1])}>{trailing[1]}</span></>}</span>{after}{!trailing && <slot />}</a>
+<style is:global>
+  .link-keep { white-space: nowrap }
+</style>
