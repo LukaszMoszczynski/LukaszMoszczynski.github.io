@@ -112,11 +112,15 @@ const loopNodes = FACTORY_NODES.map((stage, index) => {
           <path d="M150 66 C200 66 200 150 244 150" />
           <path d="M150 150 H244" />
           <path d="M150 234 C200 234 200 150 244 150" />
+          <path class="om-packet" pathLength="100" d="M150 66 C200 66 200 150 244 150" />
+          <path class="om-packet" pathLength="100" d="M150 150 H244" />
+          <path class="om-packet" pathLength="100" d="M150 234 C200 234 200 150 244 150" />
         </svg>
         <span class="shape pill domain" style="inset: 17% 63% 72% 7%">{!compact && <b>www</b>}</span>
         <span class="shape pill domain" style="inset: 45% 63% 45% 7%; opacity: .8">{!compact && <b>.com</b>}</span>
         <span class="shape pill domain" style="inset: 73% 63% 17% 7%; opacity: .65">{!compact && <b>{t(lang, 'visual.old')}</b>}</span>
-        <span class="shape page" style="inset: 14% 7% 14% 61%"><i class="dark" style="inset: 6% 8% 78% 8%"></i><i class="accent" style="inset: 28% 30% 52% 8%"></i><i style="inset: 54% 8% 34% 8%"></i><i style="inset: 70% 26% 20% 8%"></i></span>
+        <span class="om-301" style="left: 50%; top: 70%">301</span>
+        <span class="shape page" style="inset: 14% 7% 14% 61%"><i class="om-block dark" style="inset: 6% 8% 78% 8%"></i><i class="om-block accent" style="inset: 28% 30% 52% 8%"></i><i class="om-block" style="inset: 54% 8% 34% 8%"></i><i class="om-block" style="inset: 70% 26% 20% 8%"></i></span>
       </>
     )}
   </div>
@@ -207,6 +211,9 @@ const loopNodes = FACTORY_NODES.map((stage, index) => {
   svg { position: absolute; inset: 0; width: 100%; height: 100% }
   .arrow path, .lines path { fill: none; stroke: rgb(255 255 255 / .7); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke }
   .lines path { stroke-dasharray: 4 6 }
+  /* Omelański: packets are short dashes that run along the paths; hidden at rest. */
+  .lines .om-packet { stroke: #fff; stroke-width: 7; stroke-dasharray: 4 200; stroke-dashoffset: 4; vector-effect: none; opacity: 0 }
+  .om-301 { position: absolute; padding: 3px 6px; border-radius: 6px; background: var(--night); font: 600 max(9px, 2.2cqi)/1 var(--font-mono); color: #fff; letter-spacing: .04em }
   .ring { fill: none; stroke: rgb(255 255 255 / .2); stroke-width: 2 }
   /* Full ring at rest (the finished run); the story draws it from the top with the dash offset. */
   .ring-run { fill: none; stroke: var(--orange); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 100 100; stroke-dashoffset: 0; transform: rotate(-90deg); transform-origin: 200px 150px }

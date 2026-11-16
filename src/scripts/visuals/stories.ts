@@ -1,6 +1,7 @@
 import { dccStory } from './dcc';
 import { deliveryLoopStory } from './delivery-loop';
 import { designSystemStory } from './design-system';
+import { omelanskiStory } from './omelanski';
 import { qaAgentStory } from './qa-agent';
 import type { StoryFactory } from './story';
 import { wpStarterStory } from './wp-starter';
@@ -12,4 +13,5 @@ export const STORIES: Record<string, StoryFactory> = {
   'design-system': designSystemStory,
   dcc: dccStory,
   'wp-starter': wpStarterStory,
+  omelanski: omelanskiStory,
 };
