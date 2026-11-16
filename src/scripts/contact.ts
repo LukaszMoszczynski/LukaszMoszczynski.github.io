@@ -5,11 +5,19 @@ export { copyText } from './copy';
 
 const FEEDBACK_MS = 2000;
 
+/**
+ * Phone browsers hide their toolbar while scrolling, which makes the viewport
+ * taller and the real end of the page come sooner than the one ScrollTrigger
+ * measured (it ignores those resizes). Finish this far before the end so the
+ * line is always full at the bottom.
+ */
+const TOOLBAR_SLACK = 140;
+
 /** Scroll position where the line is done: section top at 25% of the viewport, but never beyond the end of the page. */
 function fillEnd(root: HTMLElement): number {
   const natural = root.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.25;
   const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-  return Math.max(0, Math.min(natural, maxScroll));
+  return Math.max(0, Math.min(natural, maxScroll - TOOLBAR_SLACK));
 }
 
 /**
