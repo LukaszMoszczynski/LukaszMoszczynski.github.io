@@ -125,12 +125,6 @@ const loopNodes = FACTORY_NODES.map((stage, index) => {
     )}
   </div>
 </div>
-<script>
-  import { motionEnabled, onPage } from '../scripts/lifecycle';
-  import { initProjectVisuals } from '../scripts/visuals/project-visual';
-  // One story per project, the same on the home card, the /work/ card and the case hero.
-  onPage(() => (motionEnabled() ? initProjectVisuals(document) : undefined));
-</script>
 <style>
   .project-visual { perspective: 900px }
   .project-screen {

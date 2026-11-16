@@ -71,13 +71,17 @@ const { lang, title, description, path, noindex } = Astro.props;
   </body>
 </html>
 <script>
-  import { onPage } from '../scripts/lifecycle';
+  import { motionEnabled, onPage } from '../scripts/lifecycle';
   import { initHoverFx } from '../scripts/hover-fx';
   import { initCardLinks } from '../scripts/card-links';
   import { initMotionToggles } from '../scripts/motion-toggle';
+  import { initProjectVisuals } from '../scripts/visuals/project-visual';
   onPage(initHoverFx);
   onPage(initCardLinks);
   onPage(initMotionToggles);
+  // Project visual stories (ProjectVisual.astro): registered here, because a component script
+  // renders inline where the component is first used, inside the first card.
+  onPage(() => (motionEnabled() ? initProjectVisuals(document) : undefined));
 </script>
 <style is:global>
   .skip-link {
