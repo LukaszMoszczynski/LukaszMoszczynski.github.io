@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
 /** Projects whose visual tells an animated story (all six once every story is in). */
-const STORY_SLUGS: string[] = ['qa-agent', 'delivery-loop'];
+const STORY_SLUGS: string[] = ['qa-agent', 'delivery-loop', 'design-system'];
 
 const settled = (page: Page) => expect(page.locator('html')).not.toHaveAttribute('data-astro-transition', /.*/);
 
