@@ -15,8 +15,8 @@ const mainLinks = [
 ];
 ---
 <header class="bar">
-  <!-- Wordmark: the full name; phones show "Łukasz M.". The name is the visible text plus ", home" (WCAG 2.5.3). -->
-  <a class="logo" href={home}><span class="logo-text fx-underline"><span class="logo-full">Łukasz Moszczyński</span><span class="logo-short">Łukasz M.</span><span class="visually-hidden">{t(lang, 'nav.logoHome')}</span></span></a>
+  <!-- Wordmark: the full name on every width (phones keep only it and the menu button). The name is the visible text plus ", home" (WCAG 2.5.3). -->
+  <a class="logo" href={home}><span class="logo-text fx-underline"><span class="logo-full">Łukasz Moszczyński</span><span class="visually-hidden">{t(lang, 'nav.logoHome')}</span></span></a>
   <div class="bar-tools">
     <LangSwitch lang={lang} />
     <ThemeToggle lang={lang} />
@@ -81,12 +81,7 @@ const mainLinks = [
   }
   .logo:is(:hover, :focus-visible) { color: var(--accent-ink) }
   .logo-text.fx-underline::after { bottom: -5px; height: 2px }
-  .logo-short { display: none }
   @media (max-width: 560px) { .logo { font-size: 15px } }
-  @media (max-width: 480px) {
-    .logo-full { display: none }
-    .logo-short { display: inline }
-  }
   .bar-tools { display: flex; align-items: center; gap: 8px }
 
   /* Segmented switches: a thumb slides under the active option (CSS transition; none with reduced motion). */

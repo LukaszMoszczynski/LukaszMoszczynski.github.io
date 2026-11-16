@@ -21,8 +21,8 @@ test('theme switch flips the emulated scheme, updates aria-checked and persists'
   await expect(toggle).toHaveAttribute('aria-checked', 'false');
 });
 
-/** The wordmark's name is its visible text (full or short) plus ", home". */
-const LOGO_NAME = /^Łukasz (Moszczyński|M\.) ?, home$/;
+/** The wordmark's name is its visible text, the full name on every width, plus ", home". */
+const LOGO_NAME = /^Łukasz Moszczyński ?, home$/;
 
 test('header controls are named by their visible text first (WCAG 2.5.3)', async ({ page }) => {
   await page.goto('./');
@@ -34,20 +34,21 @@ test('header controls are named by their visible text first (WCAG 2.5.3)', async
 });
 
 test.describe('wordmark', () => {
-  for (const width of [360, 390, 480, 481, 560, 561, 768, 1440]) {
-    test(`shows the name at ${width}px without touching the header tools`, async ({ page }) => {
+  for (const width of [320, 360, 390, 480, 481, 560, 561, 768, 1440]) {
+    test(`shows the full name at ${width}px without touching the header tools`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('./');
       const logo = page.locator('header .logo');
       // Label in name: the visible text starts the accessible name (WCAG 2.5.3).
-      await expect(logo).toHaveAccessibleName(width <= 480 ? /^Łukasz M\. ?, home$/ : /^Łukasz Moszczyński ?, home$/);
+      await expect(logo).toHaveAccessibleName(LOGO_NAME);
+      await expect(logo.locator('.logo-short')).toHaveCount(0);
       await expect(logo).toHaveCSS('font-weight', '600');
       await expect(logo).toHaveCSS('text-transform', 'none');
-      const visible = width <= 480 ? 'Łukasz M.' : 'Łukasz Moszczyński';
+      const visible = 'Łukasz Moszczyński';
       await expect(logo.getByText(visible, { exact: true })).toBeVisible();
       await expect(logo).toHaveCSS('font-size', width <= 560 ? '15px' : '16px');
       // The glyphs themselves (a range), not the box, which could shrink and let the text overflow.
-      const text = await logo.locator(width <= 480 ? '.logo-short' : '.logo-full').evaluate((element) => {
+      const text = await logo.locator('.logo-full').evaluate((element) => {
         const range = document.createRange();
         range.selectNodeContents(element);
         const box = range.getBoundingClientRect();
