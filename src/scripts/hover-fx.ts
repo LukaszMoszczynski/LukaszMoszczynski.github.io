@@ -27,6 +27,8 @@ export function initHoverFx(): () => void {
   };
   const fine = hasFinePointer();
   const pills = [...document.querySelectorAll<HTMLElement>(PILLS)];
+  // Some pages have no pills; GSAP warns about an empty target list.
+  if (!pills.length) return () => {};
 
   for (const pill of pills) {
     const origin = (event: PointerEvent) => {

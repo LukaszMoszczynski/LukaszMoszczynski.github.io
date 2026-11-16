@@ -37,7 +37,13 @@ export function initWorkStack(root: HTMLElement): () => void {
       if (!screen) return;
       const tiltX = gsap.quickTo(screen, 'rotationX', { duration: 0.35, ease: 'power3.out' });
       const tiltY = gsap.quickTo(screen, 'rotationY', { duration: 0.35, ease: 'power3.out' });
-      const grow = gsap.quickTo(screen, 'scale', { duration: 0.35, ease: 'power3.out' });
+      // quickTo cannot retarget the `scale` shorthand (GSAP warns on every move): one per axis.
+      const growX = gsap.quickTo(screen, 'scaleX', { duration: 0.35, ease: 'power3.out' });
+      const growY = gsap.quickTo(screen, 'scaleY', { duration: 0.35, ease: 'power3.out' });
+      const grow = (value: number) => {
+        growX(value);
+        growY(value);
+      };
       const onMove = (event: PointerEvent) => {
         const box = visual.getBoundingClientRect();
         const x = (event.clientX - box.left) / box.width - 0.5;
