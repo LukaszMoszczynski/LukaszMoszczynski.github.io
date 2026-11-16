@@ -40,7 +40,19 @@ test.describe('token build', () => {
     await expect(fourth).toHaveClass(/\bon\b/, { timeout: 1500 });
     await page.waitForTimeout(1500);
     await expect(fourth).toHaveClass(/\bon\b/);
-    await expect(page.locator('.build .p-page')).toHaveAttribute('style', /left: 2%/);
+    await expect(page.locator('.build .p-page')).toHaveAttribute('style', /(?:^|[;s])left: 2%/);
+  });
+
+  test('the active step shows its description, the others stay in the accessibility tree', async ({ page }) => {
+    await reachBuild(page);
+    const active = page.locator('.build .steps button.on');
+    await expect(active).toHaveCount(1);
+    await expect(active.locator('small')).toBeVisible();
+    const box = (await active.locator('small').boundingBox())!;
+    expect(box.height).toBeGreaterThan(12);
+    const inactive = page.locator('.build .steps button:not(.on) small');
+    await expect(inactive).toHaveCount(3);
+    for (const description of await inactive.all()) await expect(description).toHaveCSS('display', 'block');
   });
 
   test('pieces are visible at rest after entering', async ({ page }) => {
@@ -62,7 +74,7 @@ test.describe('token build', () => {
     }
     await expect(page.locator('.build .p-accent .label')).toHaveCSS('opacity', '1');
     await steps(page).nth(0).click();
-    await expect(page.locator('.build .p-page')).toHaveAttribute('style', /left: 68%/);
+    await expect(page.locator('.build .p-page')).toHaveAttribute('style', /(?:^|[;s])left: 68%/);
     await expect(steps(page).nth(0)).toHaveAttribute('aria-current', 'step');
   });
 

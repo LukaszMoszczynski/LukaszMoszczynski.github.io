@@ -29,9 +29,23 @@ const { lang, title, description, path, noindex } = Astro.props;
           var dark = matchMedia('(prefers-color-scheme: dark)').matches;
           target.dataset.theme = stored === 'light' || stored === 'dark' ? stored : dark ? 'dark' : 'light';
         };
+        // `motion`: animations may run, so CSS shows their start states from the first paint.
+        // `init-pending`: removed by lifecycle.ts once every section has set itself up.
+        // The timer is a safety net: if a script fails, nothing stays hidden for more than 3 s.
+        var timer;
+        var mark = function (target) {
+          if (!matchMedia('(prefers-reduced-motion: reduce)').matches) target.classList.add('motion');
+          target.classList.add('init-pending');
+          clearTimeout(timer);
+          timer = setTimeout(function () {
+            document.documentElement.classList.remove('init-pending');
+          }, 3000);
+        };
         apply(document.documentElement);
+        mark(document.documentElement);
         document.addEventListener('astro:before-swap', function (event) {
           apply(event.newDocument.documentElement);
+          mark(event.newDocument.documentElement);
         });
       })();
     </script>
