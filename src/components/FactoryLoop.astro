@@ -12,6 +12,9 @@ const CENTER = { x: 280, y: 225 };
 const RADIUS = 130;
 const LABEL_GAP = 26;
 const TOP_GAP = 50; // the Jira label is a 40px button and must clear its node at phone scale
+/** The ticket ends a little above the hub centre (factory-loop.ts), so the live "human" label sits below it. */
+const TICKET_REST = 20;
+const HUB_LABEL_LIVE = 18;
 
 const percent = (value: number, total: number) => `${Math.round((value / total) * 1000) / 10}%`;
 const nodes = FACTORY_NODES.map((stage, index) => {
@@ -38,6 +41,7 @@ const messages = Object.fromEntries(FACTORY_STAGES.map((stage) => [stage, t(lang
   data-messages={JSON.stringify(messages)}
   data-origin={`${CENTER.x} ${CENTER.y}`}
   data-radius={RADIUS}
+  data-ticket-rest={TICKET_REST}
 >
   <h2 id="factory-heading">{t(lang, 'factory.heading')}</h2>
   <p class="factory-intro factory-static-only">{t(lang, 'factory.introStatic')}</p>
@@ -62,7 +66,7 @@ const messages = Object.fromEntries(FACTORY_STAGES.map((stage) => [stage, t(lang
       ) : (
         <span class={`factory-label side-${node.side}`} data-stage={node.stage} style={node.style}>{node.label}</span>
       ))}
-      <span class="factory-label factory-hub-label" data-stage="clean" style={`left: 50%; top: ${percent(CENTER.y, HEIGHT)}`}>{t(lang, 'factory.hub')}</span>
+      <span class="factory-label factory-hub-label" data-stage="clean" style={`left: 50%; --hub-top: ${percent(CENTER.y, HEIGHT)}; --hub-top-live: ${percent(CENTER.y + HUB_LABEL_LIVE, HEIGHT)}`}>{t(lang, 'factory.hub')}</span>
     </div>
     <div class="factory-side">
       <ol class="factory-stages">
@@ -70,7 +74,7 @@ const messages = Object.fromEntries(FACTORY_STAGES.map((stage) => [stage, t(lang
       </ol>
       <p class="factory-note">{t(lang, 'factory.loopNote')}</p>
       <div class="factory-controls factory-live-only">
-        <button type="button" class="factory-run">{t(lang, 'factory.run')}</button>
+        <button type="button" class="factory-run fx-pill">{t(lang, 'factory.run')}</button>
         <p class="factory-status" aria-live="polite">{t(lang, 'factory.idle')}</p>
       </div>
     </div>
@@ -117,7 +121,9 @@ const messages = Object.fromEntries(FACTORY_STAGES.map((stage) => [stage, t(lang
   .factory-label.side-right { transform: translate(0, -50%); text-align: left }
   .factory-label.side-left { transform: translate(-100%, -50%); text-align: right }
   .factory-label.is-active { color: var(--accent-ink) }
-  .factory-hub-label { color: var(--muted); max-width: 16% }
+  .factory-hub-label { top: var(--hub-top); color: var(--muted); max-width: 16% }
+  /* Live, the ticket rests in the upper half of the hub; the label moves down so the ticket never covers it. */
+  .factory-loop.is-live .factory-hub-label { top: var(--hub-top-live) }
   .factory-hub-label.is-active { color: var(--on-accent) }
   .factory-jira {
     min-height: 40px; padding: 6px 14px; border-radius: 999px; cursor: pointer; max-width: none; white-space: nowrap;
@@ -138,6 +144,7 @@ const messages = Object.fromEntries(FACTORY_STAGES.map((stage) => [stage, t(lang
   .factory-run {
     min-height: 44px; min-width: 96px; padding: 10px 22px; border-radius: 999px; cursor: pointer; border: 0;
     background: var(--accent); color: var(--on-accent); font: 600 15px/1 var(--font-body);
+    --fx-fill: var(--ink); --fx-ink: var(--bg);
   }
   .factory-run[aria-disabled="true"], .factory-jira[aria-disabled="true"] { cursor: progress; opacity: .55 }
   .factory-status { margin: 0; font: 500 13px/1.4 var(--font-mono); color: var(--ink); flex: 1 1 14em }
