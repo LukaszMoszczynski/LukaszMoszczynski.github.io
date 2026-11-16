@@ -1,5 +1,6 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { takePlace } from './reading-place';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -43,10 +44,18 @@ function teardown(entry: Registered): void {
  * Section setups change layout (pin spacers, a collapsed deck), but Astro and
  * the browser scroll to a hash or a saved position before they run. Once all
  * of them ran, re-measure ScrollTrigger and put the reader back where they
- * were going.
+ * were going. After a language switch that is the same part of the page the
+ * reader was at (reading-place.ts), without a hash in the URL.
  */
 function restoreScroll(): void {
   ScrollTrigger.refresh();
+  if (navigationType === 'push' || navigationType === 'initial') {
+    const place = takePlace();
+    if (place !== null) {
+      window.scrollTo({ left: 0, top: place, behavior: 'instant' });
+      return;
+    }
+  }
   let hash = location.hash.slice(1);
   try {
     hash = decodeURIComponent(hash);

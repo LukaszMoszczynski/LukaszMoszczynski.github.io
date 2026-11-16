@@ -1,6 +1,7 @@
 import { navigate } from 'astro:transitions/client';
 import { gsap, motionEnabled } from './lifecycle';
 import { samePageHash, trapIndex } from './header-model';
+import { rememberPlace } from './reading-place';
 
 /** How long the language thumb slides before the page changes. */
 const LANG_SLIDE_MS = 280;
@@ -26,13 +27,16 @@ export function initHeader(root: HTMLElement): () => void {
   const motion = motionEnabled();
   let langTimer: number | undefined;
 
-  // Language: let the thumb slide, then go. Without motion the link just works.
+  // Language: remember the reader's place for the other page, let the thumb slide, then go.
+  // Without motion the link just works (the place is still remembered).
   const langLink = root.querySelector<HTMLAnchorElement>('[data-lang-switch]');
   const langSeg = langLink?.closest<HTMLElement>('.lang-seg');
-  if (langLink && langSeg && motion) {
+  if (langLink && langSeg) {
     listen(langLink, 'click', (event) => {
       const click = event as MouseEvent;
-      if (click.metaKey || click.ctrlKey || click.shiftKey || click.button !== 0) return;
+      if (click.metaKey || click.ctrlKey || click.shiftKey || click.altKey || click.button !== 0) return;
+      rememberPlace(new URL(langLink.href).pathname);
+      if (!motion) return;
       event.preventDefault();
       langSeg.dataset.current = langLink.hreflang;
       langSeg.classList.add('is-switching');

@@ -3,7 +3,7 @@ import { t, type Lang } from '../i18n/utils';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 ---
-<section class="statement wrap">
+<section class="statement wrap" id="statement">
   <p>{t(lang, 'statement.text')}</p>
 </section>
 <script>

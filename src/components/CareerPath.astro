@@ -17,7 +17,7 @@ const entries: { year: string; slug: string; text: boolean; link?: string }[] = 
 ];
 const key = (slug: string, part: string) => `path.${slug}.${part}` as UiKey;
 ---
-<section class="career wrap" aria-labelledby="career-heading">
+<section class="career wrap" id="career" aria-labelledby="career-heading">
   <div class="career-head">
     <p class="career-kicker">{t(lang, 'path.kicker')}</p>
     <h2 id="career-heading">{t(lang, 'path.heading')}</h2>

@@ -22,7 +22,7 @@ const styleFor = (index: number) =>
     ...Object.entries(pieceStyle(BUILD_STATES[0][index])).map(([property, value]) => `--start-${kebab(property)}: ${value}`),
   ].join('; ');
 ---
-<section class="build" aria-labelledby="build-heading">
+<section class="build" id="build" aria-labelledby="build-heading">
   <div class="build-in">
     <div class="build-copy">
       <p class="build-kicker">{t(lang, 'build.kicker')}</p>
