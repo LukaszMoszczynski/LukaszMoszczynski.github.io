@@ -1,18 +1,18 @@
 ---
 import { t, type Lang } from '../i18n/utils';
-import { BUILD_STATES, pieceStyle } from '../scripts/token-build';
+import { BUILD_STATES, BUILD_STEPS, pieceStyle } from '../scripts/token-build';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 
-const steps = [1, 2, 3, 4].map((number) => ({
+const steps = BUILD_STEPS.map((_, index) => index + 1).map((number) => ({
   number: String(number).padStart(2, '0'),
   title: t(lang, `build.step${number}.title` as 'build.step1.title'),
   text: t(lang, `build.step${number}.text` as 'build.step1.text'),
 }));
 const last = steps.length - 1;
 /**
- * Server render shows the finished page; JS with motion rewinds it to atoms.
- * The atoms state also goes out as --start-* properties, so CSS can show it
+ * Server render shows the finished page; JS with motion rewinds it to tokens.
+ * The tokens state also goes out as --start-* properties, so CSS can show it
  * from the first paint under `html.motion.init-pending` (no finished-page flash).
  */
 const kebab = (property: string) => property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
@@ -23,7 +23,7 @@ const styleFor = (index: number) =>
   ].join('; ');
 ---
 <section class="build" aria-labelledby="build-heading">
-  <div class="wrap build-in">
+  <div class="build-in">
     <div class="build-copy">
       <p class="build-kicker">{t(lang, 'build.kicker')}</p>
       <h2 class="build-heading" id="build-heading">{t(lang, 'build.heading')}</h2>
@@ -41,12 +41,22 @@ const styleFor = (index: number) =>
     </div>
     <div class="stage" role="img" aria-label={t(lang, 'build.stageLabel')}>
       <span class="stage-label">{t(lang, 'build.frame')}</span>
-      <div class="piece p-page" style={styleFor(0)}><span class="tag">color.surface</span></div>
-      <div class="piece p-violet" style={styleFor(1)}><span class="tag">color.brand</span></div>
-      <div class="piece p-type" style={styleFor(2)}><span class="aa">Aa</span><span class="bar-fill"></span><span class="tag">font.heading</span></div>
+      <div class="piece p-page" style={styleFor(0)}>
+        <span class="atom atom-check">✓</span><span class="tag">color.surface</span><span class="atom-tag">atom.check</span>
+      </div>
+      <div class="piece p-violet" style={styleFor(1)}>
+        <span class="atom atom-field"><span>you@mail.com</span><span class="atom-caret"></span></span><span class="tag">color.brand</span><span class="atom-tag">atom.input</span>
+      </div>
+      <div class="piece p-type" style={styleFor(2)}>
+        <span class="aa">Aa</span><span class="bar-fill"></span><span class="atom atom-chip">Figma</span><span class="tag">font.heading</span><span class="atom-tag">atom.chip</span>
+      </div>
       <div class="piece p-space" style={styleFor(3)}><span class="bar-fill"></span><span class="tag">space.3</span></div>
-      <div class="piece p-accent" style={styleFor(4)}><span class="label">{t(lang, 'build.buyNow')}</span><span class="tag">color.accent</span></div>
-      <div class="piece p-radius" style={styleFor(5)}><span class="tag">radius.full</span></div>
+      <div class="piece p-accent" style={styleFor(4)}>
+        <span class="label">{t(lang, 'build.buyNow')}</span><span class="tag">color.accent</span><span class="atom-tag">atom.button</span>
+      </div>
+      <div class="piece p-radius" style={styleFor(5)}>
+        <span class="atom atom-icon">→</span><span class="tag">radius.full</span><span class="atom-tag">atom.icon</span>
+      </div>
     </div>
   </div>
 </section>
@@ -59,14 +69,14 @@ const styleFor = (index: number) =>
   });
 </script>
 <style>
-  .build { min-height: 100vh; min-height: 100svh; display: grid; align-items: center; padding-block: 90px 40px }
-  .build-in { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(24px, 5vw, 72px); align-items: center; width: 100% }
+  .build { min-height: 100vh; min-height: 100svh; display: grid; align-items: center; padding-block: 76px 16px }
+  .build-in { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: center; width: 100% }
   .build-kicker { font-family: var(--font-mono); font-size: 13px; color: var(--accent-ink); margin: 0 0 12px }
-  .build-heading { font-family: var(--font-display); font-weight: 700; font-size: clamp(28px, 4vw, 54px); letter-spacing: -.035em; line-height: 1.05; margin: 0 0 24px; text-wrap: balance }
-  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; max-width: 380px }
+  .build-heading { font-family: var(--font-display); font-weight: 700; font-size: clamp(28px, 3vw, 44px); letter-spacing: -.035em; line-height: 1.05; margin: 0 0 20px; text-wrap: balance }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; max-width: 380px }
   .steps button {
     all: unset; box-sizing: border-box; position: relative; width: 100%; cursor: pointer;
-    display: grid; grid-template-columns: 34px 1fr; align-items: baseline; padding: 10px 12px; border-radius: 10px;
+    display: grid; grid-template-columns: 34px 1fr; align-items: baseline; padding: 9px 12px; border-radius: 10px;
     color: var(--muted); font-family: var(--font-body); line-height: 1.4; transition: background-color .3s, color .3s, box-shadow .3s;
   }
   .steps button:hover { color: var(--ink) }
@@ -79,34 +89,53 @@ const styleFor = (index: number) =>
   /* With the animation running only the active step shows its text; the others stay readable to assistive tech. */
   .build.is-animated .steps button:not(.on) small { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
 
-  .stage { position: relative; aspect-ratio: 4 / 3; width: 100%; max-width: 100%; border-radius: 24px; border: 1px dashed color-mix(in srgb, var(--select) 60%, transparent); background: color-mix(in srgb, var(--bg) 60%, transparent); backdrop-filter: blur(4px) }
+  /* As large as the column allows, but never taller than the viewport leaves room for. */
+  .stage {
+    position: relative; aspect-ratio: 4 / 3; width: min(100%, calc((100svh - 140px) * 4 / 3)); justify-self: end;
+    border-radius: 24px; border: 1px dashed color-mix(in srgb, var(--select) 60%, transparent);
+    background: color-mix(in srgb, var(--bg) 60%, transparent); backdrop-filter: blur(4px);
+  }
   .stage-label { position: absolute; top: -26px; left: 0; font-family: var(--font-mono); font-size: 12px; color: var(--select) }
-  .piece { position: absolute; display: grid; place-items: center; overflow: hidden }
-  .tag { position: absolute; left: 8px; bottom: 6px; font: 500 11px/1.2 var(--font-mono); opacity: 0 }
+  .piece { position: absolute; display: grid; place-items: center }
+  /* Token and atom names sit under their piece, so round pieces never clip them. */
+  .tag, .atom-tag { position: absolute; left: 0; top: calc(100% + 6px); font: 500 11px/1.2 var(--font-mono); color: var(--muted); white-space: nowrap; opacity: 0 }
   .p-page { background: var(--card); box-shadow: 0 0 0 1px var(--line), 0 30px 60px -30px rgb(20 10 40 / .45) }
   .p-violet { background: var(--violet); color: #fff }
   .p-accent { background: var(--accent); color: var(--on-accent) }
   .p-type { color: var(--ink); box-shadow: inset 0 0 0 1px var(--line) }
   .aa { font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 3.4vw, 48px); letter-spacing: -.04em; opacity: 0 }
-  .bar-fill { position: absolute; inset: 0; opacity: 1 }
+  .bar-fill { position: absolute; inset: 0; border-radius: inherit; opacity: 1 }
   .p-type .bar-fill { background: var(--ink) }
   .p-space { background: repeating-linear-gradient(90deg, var(--accent) 0 2px, transparent 2px 12px); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink) }
   .p-space .bar-fill { background: var(--line) }
   .p-radius { background: var(--surface); box-shadow: inset 0 0 0 2px var(--accent); color: var(--ink) }
-  .label { position: absolute; font-weight: 600; font-size: 13px; white-space: nowrap; opacity: 1 }
+  .label { position: absolute; font-weight: 600; font-size: clamp(12px, 1.1vw, 16px); white-space: nowrap; opacity: 1 }
 
-  /* Atoms state (initTokenBuild's applyState(0)) before the script has run; !important beats the inline finished state. */
+  /* Atom faces: real controls drawn with the same tokens, shown at step 02 only. */
+  .atom { position: absolute; inset: 0; border-radius: inherit; display: grid; place-items: center; opacity: 0 }
+  .atom-check { background: var(--violet); color: #fff; font: 700 clamp(14px, 1.6vw, 22px)/1 var(--font-body) }
+  .atom-field {
+    display: flex; align-items: center; gap: 2px; padding-inline: 6%;
+    background: var(--card); box-shadow: inset 0 0 0 1.5px var(--violet);
+    color: var(--muted); font: 500 clamp(12px, 1.3vw, 17px)/1 var(--font-body);
+  }
+  .atom-caret { width: 1.5px; height: 1.2em; background: var(--violet) }
+  .atom-chip { background: color-mix(in srgb, var(--violet) 16%, var(--card)); color: var(--ink); font: 600 clamp(11px, 1.2vw, 15px)/1 var(--font-body) }
+  .atom-icon { color: var(--ink); font: 600 clamp(16px, 2vw, 26px)/1 var(--font-body) }
+
+  /* Tokens state (initTokenBuild's applyState(0)) before the script has run; !important beats the inline finished state. */
   :global(html.motion.init-pending) .piece {
     left: var(--start-left) !important; top: var(--start-top) !important; width: var(--start-width) !important;
-    height: var(--start-height) !important; border-radius: var(--start-border-radius) !important;
+    height: var(--start-height) !important; border-radius: var(--start-border-radius) !important; opacity: var(--start-opacity) !important;
   }
-  :global(html.motion.init-pending) .tag { opacity: .85 }
+  :global(html.motion.init-pending) .tag { opacity: 1 }
   :global(html.motion.init-pending) .bar-fill, :global(html.motion.init-pending) .label { opacity: 0 }
   :global(html.motion.init-pending) .aa { opacity: 1 }
 
   @media (max-width: 860px) {
-    .build { padding-block: 72px 24px }
+    .build { padding-block: 64px 12px }
     .build-in { grid-template-columns: minmax(0, 1fr); gap: 40px }
+    .stage { width: 100%; justify-self: stretch }
     /* Two lines kept for the active text on phones, so switching steps does not move the frame. */
     .build.is-animated .steps button.on small { min-height: 2.8em }
   }

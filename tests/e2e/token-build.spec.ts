@@ -13,16 +13,18 @@ async function reachBuild(page: Page) {
 }
 
 test.describe('token build', () => {
-  test('section, heading and four step buttons are there in both languages', async ({ page }) => {
+  test('section, heading and five step buttons (Tokens to Pages) are there in both languages', async ({ page }) => {
     await page.goto(CASE);
     await expect(page.getByRole('heading', { level: 2, name: 'From token to page.' })).toBeAttached();
-    await expect(steps(page)).toHaveCount(4);
+    await expect(steps(page)).toHaveCount(5);
+    await expect(steps(page).locator('b')).toHaveText(['Tokens', 'Atoms', 'Molecules', 'Organisms', 'Pages']);
     await expect(page.locator('.build .stage')).toHaveCount(1);
     await expect(page.locator('.build-kicker')).toHaveText("how it's built");
     await page.goto(`pl/${CASE}`);
     await expect(page.getByRole('heading', { level: 2, name: 'Od tokenu do strony.' })).toBeAttached();
     await expect(page.locator('.build-kicker')).toHaveText('jak to jest zbudowane');
     await expect(page.locator('.build .p-accent .label')).toHaveText('Kup teraz');
+    await expect(steps(page).locator('b')).toHaveText(['Tokeny', 'Atomy', 'Molekuły', 'Organizmy', 'Strony']);
   });
 
   test('sits between the case-study hero and the prose, not on the home page or other cases', async ({ page }) => {
@@ -52,14 +54,14 @@ test.describe('token build', () => {
     await expect(page.locator('.build')).toBeInViewport();
   });
 
-  test('Enter on focused 04 jumps to the last step', async ({ page }) => {
+  test('Enter on focused 05 jumps to the last step', async ({ page }) => {
     await reachBuild(page);
-    const fourth = steps(page).nth(3);
-    await fourth.focus();
+    const fifth = steps(page).nth(4);
+    await fifth.focus();
     await page.keyboard.press('Enter');
-    await expect(fourth).toHaveClass(/\bon\b/, { timeout: 1500 });
+    await expect(fifth).toHaveClass(/\bon\b/, { timeout: 1500 });
     await page.waitForTimeout(1500);
-    await expect(fourth).toHaveClass(/\bon\b/);
+    await expect(fifth).toHaveClass(/\bon\b/);
     await expect(page.locator('.build .p-page')).toHaveAttribute('style', /(?:^|[;s])left: 2%/);
   });
 
@@ -71,7 +73,7 @@ test.describe('token build', () => {
     const box = (await active.locator('small').boundingBox())!;
     expect(box.height).toBeGreaterThan(12);
     const inactive = page.locator('.build .steps button:not(.on) small');
-    await expect(inactive).toHaveCount(3);
+    await expect(inactive).toHaveCount(4);
     for (const description of await inactive.all()) await expect(description).toHaveCSS('display', 'block');
   });
 
@@ -88,7 +90,7 @@ test.describe('token build', () => {
     await page.locator('.build').scrollIntoViewIfNeeded();
     await expect(page.locator('.pin-spacer')).toHaveCount(0);
     await expect(page.locator('.build .p-page')).toHaveAttribute('style', /left: 2%; top: 2%; width: 96%; height: 96%/);
-    for (let index = 0; index < 4; index++) {
+    for (let index = 0; index < 5; index++) {
       await expect(steps(page).nth(index)).toBeVisible();
       await expect(steps(page).nth(index).locator('small')).toBeVisible();
     }
@@ -102,5 +104,26 @@ test.describe('token build', () => {
     await page.goto(CASE);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(0);
+  });
+});
+
+test.describe('token build atoms', () => {
+  test('step 02 shows the atoms with their labels, and every token label is fully visible at step 01', async ({ page }) => {
+    await reachBuild(page);
+    await steps(page).nth(0).click();
+    await expect(steps(page).nth(0)).toHaveClass(/\bon\b/, { timeout: 1500 });
+    await expect(page.locator('.build .p-radius .tag')).toHaveCSS('opacity', '1', { timeout: 3000 });
+    // The radius.full label is not clipped by its circle: the whole text box sits inside the frame and nothing hides overflow.
+    const clipped = await page.locator('.build .piece .tag').evaluateAll((tags) =>
+      tags.some((tag) => getComputedStyle(tag.parentElement!).overflow !== 'visible' || tag.scrollWidth > tag.clientWidth + 1));
+    expect(clipped).toBe(false);
+    await expect(page.locator('.build .p-radius .tag')).toBeInViewport({ ratio: 1 });
+
+    await steps(page).nth(1).click();
+    await expect(steps(page).nth(1)).toHaveClass(/\bon\b/, { timeout: 1500 });
+    await expect(page.locator('.build .atom-tag')).toHaveText(['atom.check', 'atom.input', 'atom.chip', 'atom.button', 'atom.icon']);
+    await expect(page.locator('.build .p-violet .atom-field')).toHaveCSS('opacity', '1', { timeout: 3000 });
+    await expect(page.locator('.build .p-accent .label')).toHaveCSS('opacity', '1');
+    await expect(page.locator('.build .p-space')).toHaveCSS('opacity', '0');
   });
 });
