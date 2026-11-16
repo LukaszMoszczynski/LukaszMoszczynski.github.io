@@ -11,3 +11,66 @@ a { color: inherit }
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
+
+/*
+ * Inline text links (ArrowLink): ink text on an accent underline; on hover and focus an
+ * orange-to-violet line sweeps in over it, the text turns accent and the arrow nudges.
+ */
+.text-link {
+  color: var(--ink); font-weight: 600; text-decoration: underline; text-decoration-color: var(--accent);
+  text-decoration-thickness: 1.5px; text-underline-offset: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--violet)) 0 100% / 0 2px no-repeat; padding-bottom: 3px;
+  transition: color .25s, text-decoration-color .25s, background-size .4s cubic-bezier(.2, .7, .2, 1);
+}
+.text-link:hover, .text-link:focus-visible { color: var(--accent-ink); text-decoration-color: transparent; background-size: 100% 2px }
+.link-arrow { display: inline-block; text-decoration: none; transition: transform .25s }
+:is(.text-link, .arrow-hover):is(:hover, :focus-visible) .link-arrow { transform: translateX(4px) }
+:is(.text-link, .arrow-hover):is(:hover, :focus-visible) .link-arrow.is-back { transform: translateX(-4px) }
+
+/*
+ * Pills (.fx-pill): a fill wipes in from where the pointer entered (hover-fx.ts sets --fx-x / --fx-y),
+ * the text flips to --fx-ink and a soft glow comes up. Pills whose own background is already
+ * the accent set --fx-fill / --fx-ink.
+ */
+.fx-pill { --fx-fill: var(--accent); --fx-ink: var(--on-accent); position: relative; isolation: isolate; transition: color .3s }
+.fx-pill::before, .fx-pill::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none }
+.fx-pill::before {
+  z-index: -1; background: var(--fx-fill);
+  clip-path: circle(0% at var(--fx-x, 50%) var(--fx-y, 50%)); transition: clip-path .5s cubic-bezier(.2, .7, .2, 1);
+}
+.fx-pill::after { z-index: -2; box-shadow: 0 12px 32px -10px var(--glow-a), 0 0 24px -6px var(--glow-b); opacity: 0; transition: opacity .3s }
+/* Repeated class: beats component rules such as `.contact-btn.ghost` that set their own resting colour. */
+.fx-pill.fx-pill.fx-pill:is(:hover, :focus-visible) { color: var(--fx-ink) }
+.fx-pill:is(:hover, :focus-visible)::before { clip-path: circle(150% at var(--fx-x, 50%) var(--fx-y, 50%)) }
+.fx-pill:is(:hover, :focus-visible)::after { opacity: 1 }
+/* The arrow flies out to the top right while a copy flies in from the bottom left. */
+.fx-arrow { display: inline-grid; overflow: hidden; line-height: 1; vertical-align: -.05em }
+.fx-arrow > * { grid-area: 1 / 1; transition: transform .4s cubic-bezier(.2, .7, .2, 1) }
+.fx-arrow > :last-child { transform: translate(-120%, 120%) }
+:is(:hover, :focus-visible) > .fx-arrow > :first-child { transform: translate(120%, -120%) }
+:is(:hover, :focus-visible) > .fx-arrow > :last-child { transform: none }
+
+/* Big links: an orange-to-violet line draws from left to right under the text. */
+.fx-underline { position: relative; display: inline-block; max-width: 100% }
+.fx-underline::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 3px; border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--violet));
+  transform: scaleX(0); transform-origin: left; transition: transform .45s cubic-bezier(.2, .7, .2, 1);
+}
+:is(a, button):is(:hover, :focus-visible) .fx-underline::after { transform: scaleX(1) }
+
+/* Reduced motion: colours change, nothing moves or wipes. */
+@media (prefers-reduced-motion: reduce) {
+  .text-link, .fx-pill, .fx-pill::before, .fx-pill::after, .fx-arrow > *, .fx-underline::after, .link-arrow { transition: none }
+  :is(.text-link, .arrow-hover):is(:hover, :focus-visible) .link-arrow { transform: none !important }
+  :is(:hover, :focus-visible) > .fx-arrow > :first-child { transform: none }
+  :is(:hover, :focus-visible) > .fx-arrow > :last-child { transform: translate(-120%, 120%) }
+}
+
+/* Section divider: accent → violet → line, as wide as the content. Inside a .wrap it skips the side padding. */
+.section-rule { position: relative }
+.section-rule::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--violet) 80%, transparent) 30%, color-mix(in srgb, var(--muted) 40%, transparent) 65%, color-mix(in srgb, var(--muted) 20%, transparent));
+}
+.wrap.section-rule::before { left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)) }

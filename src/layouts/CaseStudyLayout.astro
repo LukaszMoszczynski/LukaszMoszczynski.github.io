@@ -3,6 +3,7 @@ import BaseLayout from './BaseLayout.astro';
 import ProjectVisual from '../components/ProjectVisual.astro';
 import FactoryLoop from '../components/FactoryLoop.astro';
 import TokenBuild from '../components/TokenBuild.astro';
+import ArrowLink from '../components/ArrowLink.astro';
 import { localizePath, t, type Lang } from '../i18n/utils';
 import type { ProjectEntry } from '../content/projects';
 interface Props { lang: Lang; project: ProjectEntry; next: ProjectEntry }
@@ -16,7 +17,7 @@ const transitionName = `visual-${project.slug}`;
   <article class="case" aria-labelledby="case-title">
     <header class:list={['case-hero', { 'is-text-only': hasLoop }]}>
       <div class="case-copy">
-        <a class="case-back" href={`${localizePath('/', lang)}#work`}>{t(lang, 'case.back')}</a>
+        <ArrowLink class="case-back" href={`${localizePath('/', lang)}#work`} label={t(lang, 'case.back')} />
         <p class="case-meta">
           <span>{meta}</span>
           {origin && <span class="case-origin">{origin}</span>}
@@ -31,8 +32,8 @@ const transitionName = `visual-${project.slug}`;
           <ul class="case-links" aria-label={t(lang, 'case.links')}>
             {links.map((link) => (
               <li>
-                <a href={link.href} target="_blank" rel="noopener noreferrer">
-                  {link.label} ↗<span class="case-hidden"> {t(lang, 'contact.newTab')}</span>
+                <a class="fx-pill" href={link.href} target="_blank" rel="noopener noreferrer">
+                  {link.label} <span class="fx-arrow"><span>↗</span><span aria-hidden="true">↗</span></span><span class="case-hidden"> {t(lang, 'contact.newTab')}</span>
                 </a>
               </li>
             ))}
@@ -49,10 +50,10 @@ const transitionName = `visual-${project.slug}`;
       <slot />
     </div>
 
-    <nav class="case-next" aria-label={t(lang, 'case.next')}>
+    <nav class="case-next section-rule" aria-label={t(lang, 'case.next')}>
       <a href={localizePath(`/work/${next.slug}/`, lang)} rel="next">
         <span class="case-next-label">{t(lang, 'case.next')}</span>
-        <span class="case-next-title">{next.data.title}</span>
+        <span class="case-next-title"><span class="fx-underline">{next.data.title}</span></span>
       </a>
     </nav>
   </article>
@@ -63,10 +64,8 @@ const transitionName = `visual-${project.slug}`;
   .case-hero.is-text-only { grid-template-columns: minmax(0, 1fr) }
   .case-hero.is-text-only .case-summary { max-width: 62ch }
   .case-back {
-    display: inline-flex; align-items: center; min-height: 40px; margin-bottom: 16px;
-    font-weight: 600; font-size: 15px; text-decoration: none; color: var(--muted);
+    display: inline-block; padding-block: 8px; line-height: 24px; margin-bottom: 8px; font-size: 15px;
   }
-  .case-back:hover { color: var(--accent-ink) }
   .case-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; font-weight: 600; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink) }
   .case-origin {
     font: 500 12px/1 var(--font-mono); letter-spacing: 0; text-transform: none; color: var(--ink);
@@ -82,7 +81,7 @@ const transitionName = `visual-${project.slug}`;
     display: inline-flex; align-items: center; min-height: 44px; padding: 10px 20px; border-radius: 999px;
     font-weight: 600; text-decoration: none; background: var(--ink); color: var(--bg);
   }
-  .case-links a:hover { background: var(--accent); color: var(--on-accent) }
+  .case-links .fx-arrow { margin-left: 6px }
   .case-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
 
   .case-prose { max-width: 72ch; margin-top: 72px }
@@ -93,7 +92,7 @@ const transitionName = `visual-${project.slug}`;
   .case-prose :global(li::marker) { color: var(--accent-ink) }
   .case-prose :global(code) { font: .9em var(--font-mono); padding: 1px 6px; border-radius: 6px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line) }
 
-  .case-next { margin-top: 88px; border-top: 1px solid var(--line); padding-top: 32px }
+  .case-next { margin-top: 88px; padding-top: 32px }
   .case-next a { display: inline-grid; gap: 6px; text-decoration: none; min-height: 44px }
   .case-next-label { font: 500 13px/1 var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em }
   .case-next-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(26px, 4vw, 48px); letter-spacing: -.035em; line-height: 1.05 }

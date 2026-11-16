@@ -13,16 +13,16 @@ const links = [
   { key: 'github', href: 'https://github.com/LukaszMoszczynski', ghost: true },
 ] as const;
 ---
-<section class="contact wrap" id="contact">
+<section class="contact wrap section-rule" id="contact">
   <h2 class="fill">{t(lang, 'contact.line')}</h2>
   <ul class="contact-rows">
     {rows.map((row) => (
       <li class="contact-row">
         <span class="contact-label">{row.label}</span>
-        <a class="contact-value" href={row.href}><span class="contact-text">{row.value}</span></a>
+        <a class="contact-value" href={row.href}><span class="contact-text fx-underline">{row.value}</span></a>
         <button
           type="button"
-          class="copy-btn"
+          class="copy-btn fx-pill"
           data-copy={row.value}
           data-copied={t(lang, 'contact.copied')}
           data-failed={t(lang, 'contact.copyFailed')}
@@ -33,8 +33,8 @@ const links = [
   </ul>
   <div class="contact-btns">
     {links.map((link) => (
-      <a class:list={['contact-btn', { ghost: link.ghost }]} href={link.href} target="_blank" rel="noopener">
-        {t(lang, `contact.${link.key}`)} ↗<span class="contact-hidden"> {t(lang, 'contact.newTab')}</span>
+      <a class:list={['contact-btn', 'fx-pill', { ghost: link.ghost }]} href={link.href} target="_blank" rel="noopener">
+        {t(lang, `contact.${link.key}`)} <span class="fx-arrow"><span>↗</span><span aria-hidden="true">↗</span></span><span class="contact-hidden"> {t(lang, 'contact.newTab')}</span>
       </a>
     ))}
   </div>
@@ -49,7 +49,7 @@ const links = [
   });
 </script>
 <style>
-  .contact { padding-block: 60px 40px; border-top: 1px solid var(--line) }
+  .contact { padding-block: 60px 40px }
   .fill {
     font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 9vw, 150px); line-height: .95; letter-spacing: -.05em;
     margin: 0 0 36px; --p: 100%;

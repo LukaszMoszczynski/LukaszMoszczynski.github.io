@@ -1,0 +1,15 @@
+---
+/**
+ * Inline text link in the site-wide `.text-link` style (global.css). A leading
+ * "← " or trailing " →" / " ↗" in the label becomes a `.link-arrow` span that
+ * nudges on hover; it stays in the accessible name, as before.
+ */
+import type { HTMLAttributes } from 'astro/types';
+interface Props extends HTMLAttributes<'a'> { label: string }
+const { label, class: className, ...attributes } = Astro.props;
+const leading = /^(←)\s*/.exec(label);
+const trailing = /\s*([→↗])$/.exec(label);
+const text = label.slice(leading ? leading[0].length : 0, trailing ? label.length - trailing[0].length : label.length);
+const arrowClass = (arrow: string) => ['link-arrow', { 'is-back': arrow === '←' }];
+---
+<a class:list={['text-link', className]} {...attributes}>{leading && <><span class:list={arrowClass(leading[1])}>{leading[1]}</span>{' '}</>}{text}<slot />{trailing && <>{' '}<span class:list={arrowClass(trailing[1])}>{trailing[1]}</span></>}</a>

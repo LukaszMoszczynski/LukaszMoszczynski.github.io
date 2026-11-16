@@ -1,5 +1,6 @@
 ---
 import ProjectVisual from './ProjectVisual.astro';
+import ArrowLink from './ArrowLink.astro';
 import { getProjects } from '../content/projects';
 import { localizePath, t, type Lang } from '../i18n/utils';
 interface Props { lang: Lang }
@@ -19,9 +20,9 @@ const projects = await getProjects(lang);
           <h3 id={`work-${project.slug}`}>{project.data.title}</h3>
           <p class="project-summary">{project.data.summary}</p>
           {project.data.origin && <p class="project-note">{t(lang, 'work.homePlNote')}</p>}
-          <a class="project-link" href={localizePath(`/work/${project.slug}/`, lang)}>
-            {t(lang, 'work.caseStudy')}<span class="work-hidden">: {project.data.title}</span>
-          </a>
+          <ArrowLink class="project-link" href={localizePath(`/work/${project.slug}/`, lang)} label={`${t(lang, 'work.caseStudy')} →`}>
+            <span class="work-hidden">: {project.data.title}</span>
+          </ArrowLink>
         </div>
         <ProjectVisual visual={project.data.visual} compact lang={lang} transitionName={`visual-${project.slug}`} />
       </article>
@@ -53,9 +54,6 @@ const projects = await getProjects(lang);
   .project-card h3 { font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 2.8vw, 38px); letter-spacing: -.03em; line-height: 1.05; margin: 8px 0 12px }
   .project-summary { margin: 0 0 18px; color: var(--muted) }
   .project-note { margin: -8px 0 18px; font-size: 14px; color: var(--muted); font-style: italic }
-  .project-link { font-weight: 600; text-decoration: none; display: inline-flex; gap: 8px; align-items: center }
-  .project-link::after { content: "→"; transition: transform .3s }
-  .project-link:hover::after { transform: translateX(5px) }
   .work-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
   /* Keep a whole card on screen below its sticky top. */
   .project-card :global(.project-visual) { width: min(100%, calc((100svh - 260px) * 4 / 3)); justify-self: center }
@@ -71,5 +69,4 @@ const projects = await getProjects(lang);
     .project-card { grid-template-columns: minmax(0, 1fr); gap: 18px; border-radius: 24px }
     .project-card :global(.project-visual) { order: -1; width: 100% }
   }
-  @media (prefers-reduced-motion: reduce) { .project-link::after { transition: none } }
 </style>

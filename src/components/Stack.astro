@@ -1,5 +1,6 @@
 ---
 import AgentLog from './AgentLog.astro';
+import ArrowLink from './ArrowLink.astro';
 import { t, localizePath, type Lang } from '../i18n/utils';
 import type { UiKey } from '../i18n/ui';
 interface Props { lang: Lang }
@@ -22,8 +23,8 @@ const cards = [
         <p>{t(lang, 'stack.ai.text')}</p>
         <ul>{aiTags.map((tag) => <li>{tag}</li>)}</ul>
         <p class="stack-links">
-          <a href={localizePath('/work/qa-agent/', lang)}>{t(lang, 'stack.ai.linkQa')}</a>
-          <a href={localizePath('/work/delivery-loop/', lang)}>{t(lang, 'stack.ai.linkFactory')}</a>
+          <ArrowLink href={localizePath('/work/qa-agent/', lang)} label={t(lang, 'stack.ai.linkQa')} />
+          <ArrowLink href={localizePath('/work/delivery-loop/', lang)} label={t(lang, 'stack.ai.linkFactory')} />
         </p>
       </div>
       <AgentLog lang={lang} />
@@ -60,6 +61,5 @@ const cards = [
   .stack .skill.ai h3 em { font-style: normal; color: var(--accent-ink) }
   .stack .skill.ai .info { display: grid; gap: 12px; min-width: 0 }
   .stack .stack-links { display: flex; flex-wrap: wrap; gap: 8px 20px }
-  .stack .stack-links a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px }
   @media (max-width: 860px) { .stack { padding-block: 12px 72px } .stack .skill-grid { grid-template-columns: minmax(0, 1fr) } .stack .skill.ai { grid-template-columns: minmax(0, 1fr) } }
 </style>
