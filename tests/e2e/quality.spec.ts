@@ -2,12 +2,12 @@ import { readdirSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 
 const slugs = readdirSync('src/content/projects/en').map((file) => file.replace(/\.[^.]+$/, ''));
-const pages = ['./', 'pl/', ...slugs.flatMap((slug) => [`work/${slug}/`, `pl/work/${slug}/`])];
+const pages = ['./', 'pl/', 'work/', 'pl/work/', ...slugs.flatMap((slug) => [`work/${slug}/`, `pl/work/${slug}/`])];
 const hosts = new Set(['localhost:4321']);
 
-test('there are six case studies in two languages', () => {
+test('there are six case studies and a work index in two languages', () => {
   expect(slugs).toHaveLength(6);
-  expect(pages).toHaveLength(14);
+  expect(pages).toHaveLength(16);
 });
 
 test('every internal link and asset resolves under the base path', async ({ page, request }, testInfo) => {

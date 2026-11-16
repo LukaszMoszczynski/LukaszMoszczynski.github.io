@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorkIndex from '../../components/WorkIndex.astro';
+import { t } from '../../i18n/utils';
+const lang = 'en';
+---
+<BaseLayout lang={lang} title={`${t(lang, 'nav.work')} · Łukasz Moszczyński`} description={t(lang, 'work.indexIntro')} path="/work/">
+  <WorkIndex lang={lang} />
+</BaseLayout>

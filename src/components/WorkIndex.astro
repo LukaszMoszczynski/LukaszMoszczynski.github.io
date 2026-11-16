@@ -1,0 +1,68 @@
+---
+import ProjectVisual from './ProjectVisual.astro';
+import { getProjects } from '../content/projects';
+import { localizePath, t, type Lang } from '../i18n/utils';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const projects = await getProjects(lang);
+---
+<section class="work-index" aria-labelledby="work-index-title">
+  <h1 id="work-index-title">{t(lang, 'nav.work')}</h1>
+  <p class="work-index-intro">{t(lang, 'work.indexIntro')}</p>
+  <ul class="work-index-grid">
+    {projects.map((project) => (
+      <li class="work-index-card">
+        <ProjectVisual visual={project.data.visual} compact lang={lang} transitionName={`visual-${project.slug}`} />
+        <div class="work-index-copy">
+          <p class="work-index-meta">
+            <span>{project.data.meta}</span>
+            {project.data.origin && <span class="work-index-origin">{project.data.origin}</span>}
+          </p>
+          <h2><a href={localizePath(`/work/${project.slug}/`, lang)}>{project.data.title}</a></h2>
+          <p class="work-index-summary">{project.data.summary}</p>
+          <ul class="work-index-tags" aria-label={t(lang, 'case.tags')}>
+            {project.data.tags.map((tag) => <li>{tag}</li>)}
+          </ul>
+        </div>
+      </li>
+    ))}
+  </ul>
+</section>
+<style>
+  .work-index { padding-block: 120px 96px }
+  h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(34px, 5vw, 72px); letter-spacing: -.045em; line-height: 1; margin: 0 0 16px }
+  .work-index-intro { margin: 0 0 48px; font-size: clamp(17px, 1.6vw, 20px); color: var(--muted); max-width: 56ch }
+  .work-index-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px }
+  /* The whole card is clickable through the title link's stretched ::after. */
+  .work-index-card {
+    position: relative; display: grid; grid-template-rows: auto 1fr; gap: 20px;
+    background: var(--surface); border-radius: 28px; padding: clamp(18px, 2.4vw, 28px);
+    box-shadow: 0 0 0 1px var(--line), 0 40px 80px -40px rgb(20 10 40 / .45);
+    transition: box-shadow .3s, transform .3s;
+  }
+  .work-index-card:hover { box-shadow: 0 0 0 1px var(--accent), 0 40px 80px -40px rgb(20 10 40 / .45); transform: translateY(-3px) }
+  .work-index-card:focus-within { box-shadow: 0 0 0 2px var(--accent), 0 40px 80px -40px rgb(20 10 40 / .45) }
+  .work-index-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; font-weight: 600; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink) }
+  .work-index-origin {
+    font: 500 12px/1 var(--font-mono); letter-spacing: 0; text-transform: none; color: var(--ink);
+    padding: 5px 9px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); background: var(--bg);
+  }
+  h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 2.2vw, 30px); letter-spacing: -.03em; line-height: 1.1; margin: 8px 0 10px }
+  h2 a { text-decoration: none; color: var(--ink) }
+  h2 a::after { content: ""; position: absolute; inset: 0; border-radius: inherit }
+  h2 a:focus-visible { outline: none }
+  .work-index-card:hover h2 a { color: var(--accent-ink) }
+  .work-index-summary { margin: 0 0 16px; color: var(--muted); font-size: 16px }
+  .work-index-tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px }
+  .work-index-tags li { font: 500 12px/1 var(--font-mono); padding: 8px 11px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); background: var(--bg) }
+  @media (max-width: 860px) {
+    .work-index { padding-block: 88px 64px }
+    .work-index-intro { margin-bottom: 32px }
+    .work-index-grid { grid-template-columns: minmax(0, 1fr); gap: 20px }
+    .work-index-card { border-radius: 22px }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .work-index-card { transition: none }
+    .work-index-card:hover { transform: none }
+  }
+</style>

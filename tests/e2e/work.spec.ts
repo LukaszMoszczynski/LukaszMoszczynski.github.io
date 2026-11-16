@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const SLUGS = ['dcc', 'design-system', 'qa-agent', 'delivery-loop', 'wp-starter', 'omelanski'];
+const SLUGS = ['qa-agent', 'delivery-loop', 'design-system', 'dcc', 'wp-starter', 'omelanski'];
 
 test.describe('selected work', () => {
   for (const [path, prefix] of [['./', 'work/'], ['pl/', 'pl/work/']]) {
@@ -18,8 +18,8 @@ test.describe('selected work', () => {
   test('home.pl cards carry the origin badge and the others do not', async ({ page }) => {
     await page.goto('./');
     const cards = page.locator('#work article.project-card');
-    await expect(cards.nth(2).locator('.project-origin')).toHaveText('home.pl');
-    await expect(cards.nth(3).locator('.project-origin')).toHaveText('home.pl');
+    await expect(cards.nth(0).locator('.project-origin')).toHaveText('home.pl');
+    await expect(cards.nth(1).locator('.project-origin')).toHaveText('home.pl');
     await expect(cards.locator('.project-origin')).toHaveCount(2);
   });
 
@@ -86,5 +86,29 @@ test.describe('selected work, reduced motion', () => {
       expect(await card.evaluate((node) => getComputedStyle(node).opacity)).toBe('1');
       expect(await card.evaluate((node) => getComputedStyle(node).transform)).toBe('none');
     }
+  });
+});
+
+test.describe('work index page', () => {
+  for (const [path, heading] of [['work/', 'Work'], ['pl/work/', 'Projekty']] as const) {
+    test(`${path} lists all six projects with links, summaries and tags`, async ({ page }) => {
+      const response = await page.goto(path);
+      expect(response?.status()).toBe(200);
+      await expect(page.getByRole('heading', { level: 1, name: heading })).toBeVisible();
+      const cards = page.locator('.work-index-card');
+      await expect(cards).toHaveCount(6);
+      for (const [index, slug] of SLUGS.entries()) {
+        const card = cards.nth(index);
+        await expect(card.locator('h2 a')).toHaveAttribute('href', new RegExp(`/portfolio-preview/${path}${slug}/$`));
+        await expect(card.locator('.work-index-summary')).not.toBeEmpty();
+        expect(await card.locator('.work-index-tags li').count()).toBeGreaterThan(0);
+        await expect(card.locator('.project-visual')).toHaveCount(1);
+      }
+    });
+  }
+
+  test('the header Work link still goes to the home section', async ({ page }) => {
+    await page.goto('work/');
+    await expect(page.locator('header .nav-link').first()).toHaveAttribute('href', /\/portfolio-preview\/#work$/);
   });
 });
