@@ -1,0 +1,78 @@
+---
+import { t, type Lang } from '../i18n/utils';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const email = 'moszczynski.luk@gmail.com';
+const phone = '+48 880 944 496';
+const rows = [
+  { key: 'email', label: t(lang, 'contact.email'), value: email, href: `mailto:${email}`, copyLabel: t(lang, 'contact.copyEmailLabel') },
+  { key: 'phone', label: t(lang, 'contact.phone'), value: phone, href: 'tel:+48880944496', copyLabel: t(lang, 'contact.copyPhoneLabel') },
+];
+const links = [
+  { key: 'linkedin', href: 'https://www.linkedin.com/in/%C5%82ukasz-moszczy%C5%84ski-764110161/', ghost: false },
+  { key: 'github', href: 'https://github.com/LukaszMoszczynski', ghost: true },
+] as const;
+---
+<section class="contact wrap" id="contact">
+  <h2 class="fill">{t(lang, 'contact.line')}</h2>
+  <ul class="contact-rows">
+    {rows.map((row) => (
+      <li class="contact-row">
+        <span class="contact-label">{row.label}</span>
+        <a class="contact-value" href={row.href}><span class="contact-text">{row.value}</span></a>
+        <button
+          type="button"
+          class="copy-btn"
+          data-copy={row.value}
+          data-copied={t(lang, 'contact.copied')}
+          data-failed={t(lang, 'contact.copyFailed')}
+          aria-label={row.copyLabel}
+        >{t(lang, 'contact.copy')}</button>
+      </li>
+    ))}
+  </ul>
+  <div class="contact-btns">
+    {links.map((link) => (
+      <a class:list={['contact-btn', { ghost: link.ghost }]} href={link.href} target="_blank" rel="noopener">
+        {t(lang, `contact.${link.key}`)} ↗<span class="contact-hidden"> {t(lang, 'contact.newTab')}</span>
+      </a>
+    ))}
+  </div>
+  <p class="contact-announce contact-hidden" role="status" aria-live="polite"></p>
+</section>
+<script>
+  import { motionEnabled, onPage } from '../scripts/lifecycle';
+  import { initContact } from '../scripts/contact';
+  onPage(() => {
+    const root = document.querySelector<HTMLElement>('#contact');
+    return root ? initContact(root, motionEnabled()) : undefined;
+  });
+</script>
+<style>
+  .contact { padding-block: 60px 40px; border-top: 1px solid var(--line) }
+  .fill {
+    font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 9vw, 150px); line-height: .95; letter-spacing: -.05em;
+    margin: 0 0 36px; --p: 100%;
+    background: linear-gradient(90deg, var(--accent) 0 var(--p), var(--dim) var(--p) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .contact-rows { list-style: none; margin: 0 0 32px; padding: 0; display: grid; gap: 14px }
+  .contact-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px }
+  .contact-label { width: 72px; font: 400 13px/1 var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em }
+  .contact-value { font: 600 clamp(18px, 2.4vw, 28px)/1.2 var(--font-display); color: var(--ink); text-decoration: none; overflow-wrap: anywhere }
+  .contact-text { user-select: all }
+  .contact-value:hover { color: var(--accent) }
+  .copy-btn {
+    min-height: 40px; min-width: 96px; padding: 8px 18px; border-radius: 999px; cursor: pointer;
+    font: 500 13px/1 var(--font-mono); color: var(--ink); background: transparent; border: 0; box-shadow: inset 0 0 0 1.5px var(--line);
+  }
+  .copy-btn:hover { box-shadow: inset 0 0 0 1.5px var(--accent) }
+  .contact-btns { display: flex; flex-wrap: wrap; gap: 12px }
+  .contact-btn {
+    display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 16px 26px; border-radius: 999px;
+    text-decoration: none; font-weight: 600; background: var(--ink); color: var(--bg);
+  }
+  .contact-btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink) }
+  .contact-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0 }
+  @media (max-width: 860px) { .contact { padding-block: 40px 24px } .contact-label { width: 100% } }
+</style>

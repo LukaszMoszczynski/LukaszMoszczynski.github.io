@@ -76,6 +76,10 @@ export const ui = {
     'contact.copied': 'Copied',
     'contact.copyEmailLabel': 'Copy email address',
     'contact.copyPhoneLabel': 'Copy phone number',
+    'contact.linkedin': 'LinkedIn',
+    'contact.github': 'GitHub',
+    'contact.newTab': '(opens in a new tab)',
+    'contact.copyFailed': 'Press Ctrl+C to copy',
     'footer.copyright': '© 2026 Łukasz Moszczyński',
   },
   pl: {
@@ -155,6 +159,10 @@ export const ui = {
     'contact.copied': 'Skopiowano',
     'contact.copyEmailLabel': 'Skopiuj adres e-mail',
     'contact.copyPhoneLabel': 'Skopiuj numer telefonu',
+    'contact.linkedin': 'LinkedIn',
+    'contact.github': 'GitHub',
+    'contact.newTab': '(otwiera się w nowej karcie)',
+    'contact.copyFailed': 'Naciśnij Ctrl+C, aby skopiować',
     'footer.copyright': '© 2026 Łukasz Moszczyński',
   },
 } as const;
