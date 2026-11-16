@@ -7,10 +7,14 @@ export function splitWords(text: string): string[] {
 
 /** A statement whose top is above this share of the viewport height counts as visible at load (a peeking first line counts). */
 const STATEMENT_IN_VIEW = 0.98;
+/** The colour scrub runs from the section top at 60% of the viewport to its bottom at 30%. */
+export const HEAT_START = 'top 60%';
+export const HEAT_END = 'bottom 30%';
 
 /**
- * Word-by-word light-up of the statement. Server render is plain text; with
- * motion the words are wrapped in `.word` spans and scrubbed from dim to full.
+ * Word-by-word light-up of the statement, then a word-by-word turn to orange as the reader
+ * scrolls past it. Server render is plain text; with motion the words are wrapped in
+ * `.word` spans, scrubbed from dim to full and then from ink to the text accent.
  * Cleanup restores the original text.
  */
 export function initStatement(root: HTMLElement): () => void {
@@ -41,6 +45,14 @@ export function initStatement(root: HTMLElement): () => void {
       { opacity: 1, stagger: 0.1, ease: 'none', scrollTrigger: { trigger: paragraph, start: 'top 80%', end: 'bottom 45%', scrub: true } },
     );
   }
+
+  // Reading on past it, the words turn from ink to the text accent one by one (--heat 0 → 1, CSS mixes
+  // the colour, so a theme switch needs nothing here). Scrubbed both ways; a page loaded below it starts orange.
+  gsap.fromTo(
+    words,
+    { '--heat': 0 },
+    { '--heat': 1, stagger: 0.1, ease: 'none', scrollTrigger: { trigger: root, start: HEAT_START, end: HEAT_END, scrub: true } },
+  );
 
   return () => {
     paragraph.textContent = original;
