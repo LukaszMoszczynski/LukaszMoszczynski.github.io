@@ -53,7 +53,7 @@ const transitionName = `visual-${project.slug}`;
     <nav class="case-next section-rule" aria-label={t(lang, 'case.next')}>
       <a href={localizePath(`/work/${next.slug}/`, lang)} rel="next">
         <span class="case-next-label">{t(lang, 'case.next')}</span>
-        <span class="case-next-title"><span class="fx-underline"><span class="case-next-name">{next.data.title}</span>{' '}<span class="case-next-arrow" aria-hidden="true">→</span></span></span>
+        <span class="case-next-title"><span class="case-next-line"><span class="case-next-name">{next.data.title}</span>{' '}<span class="case-next-arrow" aria-hidden="true">→</span></span></span>
       </a>
     </nav>
   </article>
@@ -98,6 +98,13 @@ const transitionName = `visual-${project.slug}`;
   .case-next-label { font: 500 13px/1 var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em }
   .case-next-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 4vw, 48px); letter-spacing: -.035em; line-height: 1.1; overflow-wrap: break-word; hyphens: auto }
   /* The arrow follows a no-break space inside the underlined title, so it never wraps onto a line of its own. */
+  /* The hover line is an inline background: one fragment per wrapped line, each as wide as its own text (arrow included), drawn left to right. */
+  .case-next-line {
+    padding-bottom: 4px; -webkit-box-decoration-break: clone; box-decoration-break: clone;
+    background: linear-gradient(90deg, var(--accent), var(--violet)) no-repeat 0 100% / 0% 3px;
+    transition: background-size .45s cubic-bezier(.2, .7, .2, 1);
+  }
+  .case-next a:is(:hover, :focus-visible) .case-next-line { background-size: 100% 3px }
   .case-next-arrow { display: inline-block; color: var(--accent-display); transition: transform .3s }
   .case-next a:is(:hover, :focus-visible) .case-next-arrow { transform: translateX(6px) }
 
@@ -107,5 +114,5 @@ const transitionName = `visual-${project.slug}`;
     .case-prose { margin-top: 48px }
     .case-next { margin-top: 56px }
   }
-  @media (prefers-reduced-motion: reduce) { .case-next-arrow { transition: none } }
+  @media (prefers-reduced-motion: reduce) { .case-next-arrow, .case-next-line { transition: none } }
 </style>

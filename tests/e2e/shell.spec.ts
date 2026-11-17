@@ -525,3 +525,27 @@ test.describe('arrow links', () => {
     }
   });
 });
+
+for (const theme of ['dark', 'light'] as const) {
+  for (const width of [1280, 360]) {
+    test(`the next-project hover line follows each line of text, not the container (${theme}, ${width}px)`, async ({ page }) => {
+      await useTheme(page, theme);
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('work/delivery-loop/');
+      const link = page.locator('.case-next a');
+      await link.scrollIntoViewIfNeeded();
+      await link.hover();
+      const line = page.locator('.case-next-line');
+      await expect(line).toHaveCSS('background-size', '100% 3px');
+      await expect.poll(() => line.evaluate((element) => getComputedStyle(element).backgroundImage)).toContain('linear-gradient');
+      const widths = await line.evaluate((element) => {
+        const fragments = [...element.getClientRects()].map((rect) => Math.round(rect.width));
+        return { fragments, container: Math.round(element.closest('.case-next')!.getBoundingClientRect().width), block: Math.round(element.parentElement!.getBoundingClientRect().width) };
+      });
+      // One drawn fragment per wrapped line; the shortest (last) line is not stretched to the block width.
+      expect(widths.fragments.length).toBeGreaterThan(1);
+      for (const fragment of widths.fragments) expect(fragment).toBeLessThanOrEqual(widths.block);
+      expect(Math.min(...widths.fragments)).toBeLessThan(widths.block - 8);
+    });
+  }
+}
