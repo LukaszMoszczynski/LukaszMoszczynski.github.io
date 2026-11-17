@@ -36,6 +36,81 @@ test.describe('statement and career path', () => {
     expect(await page.evaluate(() => window.scrollY)).toBe(0);
   });
 
+  /** Lowest and highest word opacity right now. */
+  const opacityRange = (page: Page) =>
+    page.locator('.statement .word').evaluateAll((nodes) => {
+      const values = nodes.map((node) => Number(getComputedStyle(node).opacity));
+      return { min: Math.min(...values), max: Math.max(...values) };
+    });
+
+  test('the entrance on screen at load starts clearly muted and ends at full ink', async ({ page }) => {
+    await page.goto('./');
+    const statement = page.locator('.statement p');
+    await expect(statement.locator('.word').first()).toBeAttached();
+    const visible = await statement.evaluate((node) => node.getBoundingClientRect().top < window.innerHeight * 0.98);
+    test.skip(!visible, 'statement starts below the fold at this viewport');
+    // Clearly muted at the start (not the old, barely visible 0.65), and lit word by word.
+    expect((await opacityRange(page)).min).toBeLessThan(0.3);
+    await expect(page.locator('.statement')).toHaveAttribute('data-entrance', 'running');
+    await expect.poll(async () => (await opacityRange(page)).min, { timeout: 4000 }).toBeGreaterThan(0.99);
+    await expect(page.locator('.statement')).not.toHaveAttribute('data-entrance', /.*/);
+  });
+
+  test('below the fold the words are not dim off screen; the entrance plays on arrival and ends lit without more scrolling', async ({ page }) => {
+    await page.goto('./');
+    const statement = page.locator('.statement p');
+    await expect(statement.locator('.word').first()).toBeAttached();
+    const below = await statement.evaluate((node) => node.getBoundingClientRect().top >= window.innerHeight);
+    test.skip(!below, 'statement is on screen at load at this viewport');
+    await page.waitForTimeout(600);
+    expect((await opacityRange(page)).min).toBe(1);
+    // Bring its top just past the play line and stop there.
+    await page.evaluate(() => {
+      const box = document.querySelector('.statement p')!.getBoundingClientRect();
+      window.scrollTo({ top: window.scrollY + box.top - window.innerHeight * 0.7, behavior: 'instant' });
+    });
+    await expect.poll(async () => (await opacityRange(page)).min, { timeout: 1500 }).toBeLessThan(0.5);
+    await expect.poll(async () => (await opacityRange(page)).min, { timeout: 4000 }).toBeGreaterThan(0.99);
+    await expect(page.locator('.statement')).not.toHaveAttribute('data-entrance', /.*/);
+  });
+
+  test('a reader who stops just short of the play line still gets the full text (fallback)', async ({ page }) => {
+    await page.goto('./');
+    const statement = page.locator('.statement p');
+    await expect(statement.locator('.word').first()).toBeAttached();
+    const below = await statement.evaluate((node) => node.getBoundingClientRect().top >= window.innerHeight);
+    test.skip(!below, 'statement is on screen at load at this viewport');
+    await page.evaluate(() => {
+      const box = document.querySelector('.statement p')!.getBoundingClientRect();
+      window.scrollTo({ top: window.scrollY + box.top - window.innerHeight * 0.08, behavior: 'instant' });
+    });
+    await expect(page.locator('.statement')).toHaveAttribute('data-entrance', 'running');
+    await expect.poll(async () => (await opacityRange(page)).min, { timeout: 6000 }).toBeGreaterThan(0.99);
+  });
+
+  test('a stored Pause animations choice shows the final text at once', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('motion-paused', '1'));
+    await page.goto('./');
+    await expect(page.locator('.statement .word').first()).toBeAttached();
+    expect((await opacityRange(page)).min).toBe(1);
+    await expect(page.locator('.statement')).not.toHaveAttribute('data-entrance', /.*/);
+    await page.evaluate(() => document.querySelector('.statement')!.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await page.waitForTimeout(300);
+    expect((await opacityRange(page)).min).toBe(1);
+  });
+
+  test('switching Pause animations on mid-entrance shows the final text at once', async ({ page }) => {
+    await page.goto('./');
+    await expect(page.locator('.statement .word').first()).toBeAttached();
+    await page.evaluate(() => document.querySelector('.statement')!.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await expect(page.locator('.statement')).toHaveAttribute('data-entrance', 'running');
+    const pause = page.locator('footer [data-motion-toggle]');
+    await pause.evaluate((button: HTMLElement) => button.click());
+    await expect(pause).toHaveAttribute('aria-pressed', 'true');
+    expect((await opacityRange(page)).min).toBe(1);
+    await expect(page.locator('.statement')).not.toHaveAttribute('data-entrance', /.*/);
+  });
+
   test('timeline has 8 entries that all light up at the end', async ({ page }) => {
     await page.goto('./');
     const items = page.locator('.career .tl li');

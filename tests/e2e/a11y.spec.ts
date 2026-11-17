@@ -28,6 +28,8 @@ async function scrollThrough(page: Page) {
 }
 
 async function audit(page: Page) {
+  // The statement's entrance is a short, time-based reveal that ends at full ink: audit the text at rest.
+  await expect(page.locator('[data-entrance="running"]')).toHaveCount(0, { timeout: 6000 });
   const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
   return results.violations.map((violation) => ({
     rule: violation.id,
