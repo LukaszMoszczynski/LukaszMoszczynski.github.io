@@ -1,11 +1,50 @@
 import { gsap } from './lifecycle';
-import { factorySequence, nextRotation, type FactoryStage } from './factory-sequence';
+import { LOOP_CENTER, LOOP_RADIUS, factorySequence, nextRotation, type FactoryStage } from './factory-sequence';
 
 export { factorySequence, type FactoryStage } from './factory-sequence';
 
-const SECONDS_PER_NODE = 0.32;
-const HOLD_SECONDS = 0.4;
-const TO_CENTER_SECONDS = 0.6;
+/** Timing of one run, shared by the board and the card visual so both move the same way. */
+export const SECONDS_PER_NODE = 0.32;
+export const HOLD_SECONDS = 0.4;
+export const TO_CENTER_SECONDS = 0.6;
+export const LOOP_ORIGIN = `${LOOP_CENTER.x} ${LOOP_CENTER.y}`;
+
+export interface LoopRunParts {
+  /** Turns round the ring's centre (svgOrigin LOOP_ORIGIN). */
+  arm: SVGGElement;
+  ticket: SVGRectElement;
+  /** The ticket's `y` when it sits in the middle of the hub (the board draws it on the top station, the card in the hub). */
+  hubY: number;
+}
+
+/**
+ * Appends one run of the delivery loop to `timeline`: the arm turns the ticket clockwise from
+ * station to station, holds at each, and at `clean` the ticket slides down the arm into the
+ * middle of the hub. `arrive(stage, at)` is called while building, once per stage, with the
+ * time the ticket arrives, so the caller adds its own way of lighting the stage there.
+ */
+export function addLoopRun(
+  timeline: gsap.core.Timeline,
+  parts: LoopRunParts,
+  sequence: readonly FactoryStage[],
+  arrive: (stage: FactoryStage, at: number) => void,
+): void {
+  let rotation = 0;
+  for (const stage of sequence) {
+    if (stage === 'clean') {
+      // Down the arm by one radius: the ring's centre, whatever the arm's rotation.
+      timeline.to(parts.ticket, { y: parts.hubY, duration: TO_CENTER_SECONDS, ease: 'power2.inOut' });
+    } else {
+      const target = nextRotation(rotation, stage);
+      const steps = (target - rotation) / 60;
+      if (steps > 0) timeline.to(parts.arm, { rotation: target, duration: SECONDS_PER_NODE * steps, ease: 'power1.inOut' });
+      rotation = target;
+    }
+    const at = timeline.duration();
+    arrive(stage, at);
+    if (stage !== 'clean') timeline.to({}, { duration: HOLD_SECONDS }, at);
+  }
+}
 
 /**
  * Delivery loop: Run (or the Jira label) sends a ticket round the ring of
@@ -24,13 +63,12 @@ export function initFactoryLoop(root: HTMLElement): () => void {
   if (!buttons.length || !status || !arm || !ticket) return () => {};
 
   const messages = JSON.parse(root.dataset.messages ?? '{}') as Record<FactoryStage, string>;
-  const radius = Number(root.dataset.radius ?? 130);
   const idle = status.textContent ?? '';
   let timeline: gsap.core.Timeline | undefined;
   let running = false;
 
   root.classList.add('is-live');
-  gsap.set(arm, { svgOrigin: root.dataset.origin ?? '280 225', rotation: 0 });
+  gsap.set(arm, { svgOrigin: LOOP_ORIGIN, rotation: 0 });
 
   const mark = (stage: FactoryStage | null) => {
     marked.forEach((element) => element.classList.toggle('is-active', (element as HTMLElement | SVGElement).dataset.stage === stage));
@@ -51,24 +89,13 @@ export function initFactoryLoop(root: HTMLElement): () => void {
     setRunning(true);
     root.classList.remove('is-clean');
     gsap.set(arm, { rotation: 0 });
-    gsap.set(ticket, { y: 0, scale: 1, transformOrigin: '50% 50%' });
+    gsap.set(ticket, { y: 0 });
 
-    const sequence = factorySequence(gsap.utils.random(1, 2, 1));
-    let rotation = 0;
     timeline = gsap.timeline({ onComplete: () => setRunning(false) });
-    for (const stage of sequence) {
-      if (stage === 'clean') {
-        // Down the arm by one radius: the ring's centre, whatever the arm's rotation.
-        timeline.to(ticket, { y: radius, scale: 1.25, duration: TO_CENTER_SECONDS, ease: 'power2.inOut' });
-      } else {
-        const target = nextRotation(rotation, stage);
-        const steps = (target - rotation) / 60;
-        if (steps > 0) timeline.to(arm, { rotation: target, duration: SECONDS_PER_NODE * steps, ease: 'power1.inOut' });
-        rotation = target;
-      }
-      timeline.call(announce, [stage]);
-      if (stage !== 'clean') timeline.to({}, { duration: HOLD_SECONDS });
-    }
+    const run = timeline;
+    addLoopRun(run, { arm, ticket, hubY: LOOP_RADIUS }, factorySequence(gsap.utils.random(1, 2, 1)), (stage, at) => {
+      run.call(announce, [stage], at);
+    });
   };
 
   const onClick = (event: Event) => {

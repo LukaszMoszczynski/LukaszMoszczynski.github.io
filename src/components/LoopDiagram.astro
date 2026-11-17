@@ -1,0 +1,54 @@
+---
+import { HUB_RADIUS, LOOP_CENTER, LOOP_HEIGHT, LOOP_RADIUS, LOOP_WIDTH, TICKET_SIZE, loopNodes } from '../scripts/factory-sequence';
+/**
+ * The delivery loop drawing: dashed track, six stations, the human hub in the centre and the
+ * ticket on an arm that turns round the centre. The interactive board (FactoryLoop.astro) and the
+ * compact card visual (ProjectVisual.astro) both draw it, so they are one animation in two sizes.
+ *
+ * - `ticketAt="top"`: the board; the ticket waits on the top station and only shows once the board is live.
+ * - `ticketAt="hub"`: the card; drawn on its finished frame (ticket in the hub, the hub lit), which is
+ *   what no JS, reduced motion and Pause animations show. `lit` adds the lit overlays its story fades.
+ * - `compact`: the card has no labels, so the drawing is cropped to the ring and fills the card.
+ */
+interface Props { ticketAt: 'top' | 'hub'; lit?: boolean; compact?: boolean }
+const { ticketAt, lit = false, compact = false } = Astro.props;
+/** Ring plus the big station and a little air round it. */
+const CROP = 30;
+const viewBox = compact
+  ? `${LOOP_CENTER.x - LOOP_RADIUS - CROP} ${LOOP_CENTER.y - LOOP_RADIUS - CROP} ${2 * (LOOP_RADIUS + CROP)} ${2 * (LOOP_RADIUS + CROP)}`
+  : `0 0 ${LOOP_WIDTH} ${LOOP_HEIGHT}`;
+const nodes = loopNodes();
+const ticketY = ticketAt === 'top' ? LOOP_CENTER.y - LOOP_RADIUS : LOOP_CENTER.y;
+---
+<svg class="loop-diagram" viewBox={viewBox} aria-hidden="true" focusable="false" data-origin={`${LOOP_CENTER.x} ${LOOP_CENTER.y}`} data-radius={LOOP_RADIUS}>
+  <circle class="factory-ring" cx={LOOP_CENTER.x} cy={LOOP_CENTER.y} r={LOOP_RADIUS} />
+  <circle class="factory-hub" data-stage="clean" cx={LOOP_CENTER.x} cy={LOOP_CENTER.y} r={HUB_RADIUS} />
+  {nodes.map((node) => (
+    <circle class:list={['factory-node', { 'is-factory': node.stage === 'factory' }]} data-stage={node.stage} cx={node.x} cy={node.y} r={node.radius} />
+  ))}
+  {lit && (
+    <g class="loop-lights">
+      {nodes.map((node) => <circle class="loop-lit" data-lit={node.stage} cx={node.x} cy={node.y} r={node.radius} />)}
+      <circle class="loop-lit is-hub" data-lit="clean" cx={LOOP_CENTER.x} cy={LOOP_CENTER.y} r={HUB_RADIUS} />
+    </g>
+  )}
+  <g class="factory-arm">
+    <rect class="factory-ticket" x={LOOP_CENTER.x - TICKET_SIZE.width / 2} y={ticketY - TICKET_SIZE.height / 2} width={TICKET_SIZE.width} height={TICKET_SIZE.height} rx="5" />
+  </g>
+</svg>
+<style>
+  .loop-diagram { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible }
+  .factory-ring { fill: none; stroke: var(--line); stroke-width: 3; stroke-dasharray: 2 8; stroke-linecap: round }
+  .factory-hub { fill: var(--bg); stroke: var(--line); stroke-width: 2; transition: fill .3s }
+  .factory-node { fill: var(--bg); stroke: var(--muted); stroke-width: 2; transition: fill .3s, stroke .3s }
+  .factory-node.is-factory { stroke: var(--accent) }
+  .factory-node.is-active, .factory-hub.is-active { fill: var(--accent); stroke: var(--accent) }
+  /* The card's lit stations look exactly like the board's active ones; only the hub is lit at rest. */
+  .loop-lit { fill: var(--accent); stroke: var(--accent); stroke-width: 2; opacity: 0 }
+  .loop-lit.is-hub { opacity: 1 }
+  .factory-ticket { fill: var(--accent); stroke: var(--surface); stroke-width: 3 }
+  :global(.factory-loop:not(.is-live)) .factory-arm { display: none }
+  @media (prefers-reduced-motion: reduce) {
+    .factory-node, .factory-hub { transition: none }
+  }
+</style>

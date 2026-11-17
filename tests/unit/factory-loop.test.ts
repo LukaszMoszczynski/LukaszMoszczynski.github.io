@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { factorySequence } from '../../src/scripts/factory-loop';
-import { FACTORY_NODES, arcShare, nextRotation, ringStops } from '../../src/scripts/factory-sequence';
+import { FACTORY_NODES, LOOP_CENTER, LOOP_RADIUS, loopNodes, nextRotation } from '../../src/scripts/factory-sequence';
 
 describe('factorySequence', () => {
   it('goes straight to clean without review comments', () => {
@@ -32,29 +32,15 @@ describe('ring', () => {
   });
 });
 
-describe('ringStops', () => {
-  it('walks the ring clockwise, and on round for a review cycle', () => {
-    expect(ringStops(1)).toEqual([
-      { stage: 'label', rotation: 0 },
-      { stage: 'factory', rotation: 60 },
-      { stage: 'push', rotation: 120 },
-      { stage: 'review', rotation: 180 },
-      { stage: 'comments', rotation: 240 },
-      { stage: 'fix', rotation: 300 },
-      { stage: 'push', rotation: 480 },
-      { stage: 'review', rotation: 540 },
-    ]);
+describe('loopNodes', () => {
+  it('puts the six stations on the ring, clockwise from the top, labels outside', () => {
+    const nodes = loopNodes();
+    expect(nodes.map((node) => node.stage)).toEqual([...FACTORY_NODES]);
+    for (const node of nodes) expect(Math.hypot(node.x - LOOP_CENTER.x, node.y - LOOP_CENTER.y)).toBeCloseTo(LOOP_RADIUS, 0);
+    expect(nodes.map((node) => node.side)).toEqual(['top', 'right', 'right', 'bottom', 'left', 'left']);
+    expect(nodes[0]).toMatchObject({ x: LOOP_CENTER.x, y: LOOP_CENTER.y - LOOP_RADIUS });
   });
-  it('never includes the hub', () => {
-    expect(ringStops(0).map((stop) => stop.stage)).toEqual(['label', 'factory', 'push', 'review']);
-  });
-});
-
-describe('arcShare', () => {
-  it('grows with the rotation and stays full after one lap', () => {
-    expect(arcShare(0)).toBe(0);
-    expect(arcShare(180)).toBe(0.5);
-    expect(arcShare(360)).toBe(1);
-    expect(arcShare(540)).toBe(1);
+  it('makes the agent pipeline the big station', () => {
+    expect(loopNodes().filter((node) => node.radius > 12).map((node) => node.stage)).toEqual(['factory']);
   });
 });

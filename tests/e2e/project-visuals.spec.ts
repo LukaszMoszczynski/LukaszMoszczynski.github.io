@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { useTheme } from './helpers';
 
 /** Projects whose visual tells an animated story (all six once every story is in). */
 const STORY_SLUGS: string[] = ['qa-agent', 'delivery-loop', 'design-system', 'dcc', 'wp-starter', 'omelanski'];
@@ -188,5 +189,96 @@ test.describe('project visuals, reduced motion', () => {
       await expect(hero).not.toHaveAttribute('data-visual-state', /.*/);
       await expectStill(hero);
     }
+  });
+});
+
+test.describe('delivery loop: the card is a compact copy of the case board', () => {
+  /** The look of the drawing: computed paint of each kind of part, and how many there are. */
+  const look = (scope: Locator) =>
+    scope.evaluate((root) => {
+      const paint = (selector: string) => {
+        const element = root.querySelector(selector)!;
+        const style = getComputedStyle(element);
+        return [style.fill, style.stroke, style.strokeWidth, style.strokeDasharray].join(' ');
+      };
+      const count = (selector: string) => root.querySelectorAll(selector).length;
+      return {
+        nodes: count('.factory-node'), hubs: count('.factory-hub'), rings: count('.factory-ring'), tickets: count('.factory-ticket'),
+        node: paint('.factory-node:not(.is-factory)'), factory: paint('.factory-node.is-factory'),
+        ring: paint('.factory-ring'), hub: paint('.factory-hub'), ticket: paint('.factory-ticket'),
+        radii: [...root.querySelectorAll('.factory-node')].map((node) => node.getAttribute('r')).join(','),
+      };
+    });
+
+  for (const scheme of ['light', 'dark'] as const) {
+    test(`same stations, track, hub, ticket and colours as the board (${scheme})`, async ({ page }) => {
+      await useTheme(page, scheme);
+      await page.goto('work/');
+      const card = indexVisual(page, 'delivery-loop');
+      const cardLook = await look(card);
+      await page.goto('work/delivery-loop/');
+      const boardLook = await look(page.locator('.factory-board'));
+      expect(cardLook).toEqual(boardLook);
+      expect(cardLook.nodes).toBe(6);
+    });
+  }
+
+  test('at rest only the hub is lit, the ticket sits in its middle, and every light sits exactly on its station', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('work/');
+    const card = indexVisual(page, 'delivery-loop');
+    await card.scrollIntoViewIfNeeded();
+    const rest = await card.evaluate((root) => {
+      const centre = (element: Element) => {
+        const box = element.getBoundingClientRect();
+        return { x: box.left + box.width / 2, y: box.top + box.height / 2, width: box.width };
+      };
+      const lights = [...root.querySelectorAll<SVGElement>('.loop-lit')];
+      return {
+        lit: lights.filter((light) => Number(getComputedStyle(light).opacity) > 0).map((light) => light.dataset.lit),
+        hub: centre(root.querySelector('.factory-hub')!),
+        ticket: centre(root.querySelector('.factory-ticket')!),
+        offsets: lights.map((light) => {
+          const target = light.dataset.lit === 'clean' ? root.querySelector('.factory-hub')! : root.querySelector(`.factory-node[data-stage="${light.dataset.lit}"]`)!;
+          const [a, b] = [centre(light), centre(target)];
+          return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y), Math.abs(a.width - b.width));
+        }),
+      };
+    });
+    expect(rest.lit).toEqual(['clean']);
+    expect(Math.abs(rest.ticket.x - rest.hub.x)).toBeLessThan(1);
+    expect(Math.abs(rest.ticket.y - rest.hub.y)).toBeLessThan(1);
+    expect(Math.max(...rest.offsets)).toBeLessThan(0.5);
+  });
+
+  test('while it plays, one station at a time lights up, exactly over the station (no stray rings), as on the board', async ({ page }) => {
+    test.setTimeout(30_000);
+    await page.goto('work/');
+    const card = indexVisual(page, 'delivery-loop');
+    await card.scrollIntoViewIfNeeded();
+    await expect(card).toHaveAttribute('data-visual-state', 'playing');
+    const seen = new Set<string>();
+    for (let sample = 0; sample < 40; sample++) {
+      const state = await card.evaluate((root) => {
+        const centre = (element: Element) => {
+          const box = element.getBoundingClientRect();
+          return { x: box.left + box.width / 2, y: box.top + box.height / 2, width: box.width };
+        };
+        return [...root.querySelectorAll<SVGElement>('.loop-lit')]
+          .filter((light) => Number(getComputedStyle(light).opacity) > 0.95 && light.dataset.lit !== 'clean')
+          .map((light) => {
+            const own = centre(light);
+            const station = centre(root.querySelector(`.factory-node[data-stage="${light.dataset.lit}"]`)!);
+            return { stage: light.dataset.lit!, size: Math.abs(own.width - station.width) + Math.hypot(own.x - station.x, own.y - station.y) };
+          });
+      });
+      expect(state.length).toBeLessThanOrEqual(1);
+      for (const light of state) {
+        seen.add(light.stage);
+        expect(light.size).toBeLessThan(0.5);
+      }
+      await page.waitForTimeout(250);
+    }
+    expect(seen.size).toBeGreaterThanOrEqual(4);
   });
 });

@@ -1,36 +1,25 @@
 ---
 import { t, type Lang } from '../i18n/utils';
 import type { UiKey } from '../i18n/ui';
-import { DEGREES_PER_NODE, FACTORY_NODES, FACTORY_STAGES } from '../scripts/factory-sequence';
+import { FACTORY_STAGES, HUB_RADIUS, LOOP_CENTER, LOOP_HEIGHT, LOOP_WIDTH, loopNodes } from '../scripts/factory-sequence';
+import LoopDiagram from './LoopDiagram.astro';
 interface Props { lang: Lang; transitionName?: string }
 const { lang, transitionName } = Astro.props;
 
-// Diagram geometry, in viewBox units. Kept in sync with factory-loop.ts through data attributes.
-const WIDTH = 560;
-const HEIGHT = 440;
-const CENTER = { x: 280, y: 225 };
-const RADIUS = 130;
+// Label placement round the shared drawing (LoopDiagram.astro), in its viewBox units.
 const LABEL_GAP = 26;
 const TOP_GAP = 50; // the Jira label is a 40px button and must clear its node at phone scale
-const HUB_RADIUS = 46;
 /** The "human" label sits just below the hub, so the ticket can rest in its centre (factory-loop.ts). */
 const HUB_LABEL_GAP = 16;
 
 const percent = (value: number, total: number) => `${Math.round((value / total) * 1000) / 10}%`;
-const nodes = FACTORY_NODES.map((stage, index) => {
-  const angle = (index * DEGREES_PER_NODE * Math.PI) / 180;
-  const x = CENTER.x + Math.sin(angle) * RADIUS;
-  const y = CENTER.y - Math.cos(angle) * RADIUS;
-  const side = Math.sin(angle) > 0.3 ? 'right' : Math.sin(angle) < -0.3 ? 'left' : Math.cos(angle) > 0 ? 'top' : 'bottom';
-  const labelX = side === 'right' ? x + LABEL_GAP : side === 'left' ? x - LABEL_GAP : x;
-  const labelY = side === 'top' ? y - TOP_GAP : side === 'bottom' ? y + LABEL_GAP : y;
+const nodes = loopNodes().map((node) => {
+  const labelX = node.side === 'right' ? node.x + LABEL_GAP : node.side === 'left' ? node.x - LABEL_GAP : node.x;
+  const labelY = node.side === 'top' ? node.y - TOP_GAP : node.side === 'bottom' ? node.y + LABEL_GAP : node.y;
   return {
-    stage,
-    x: Math.round(x * 10) / 10,
-    y: Math.round(y * 10) / 10,
-    side,
-    style: `left: ${percent(labelX, WIDTH)}; top: ${percent(labelY, HEIGHT)}`,
-    label: t(lang, `factory.node.${stage}` as UiKey),
+    ...node,
+    style: `left: ${percent(labelX, LOOP_WIDTH)}; top: ${percent(labelY, LOOP_HEIGHT)}`,
+    label: t(lang, `factory.node.${node.stage}` as UiKey),
   };
 });
 const messages = Object.fromEntries(FACTORY_STAGES.map((stage) => [stage, t(lang, `factory.stage.${stage}` as UiKey)]));
@@ -39,24 +28,13 @@ const messages = Object.fromEntries(FACTORY_STAGES.map((stage) => [stage, t(lang
   class="factory-loop"
   aria-labelledby="factory-heading"
   data-messages={JSON.stringify(messages)}
-  data-origin={`${CENTER.x} ${CENTER.y}`}
-  data-radius={RADIUS}
 >
   <h2 id="factory-heading">{t(lang, 'factory.heading')}</h2>
   <p class="factory-intro factory-static-only">{t(lang, 'factory.introStatic')}</p>
   <p class="factory-intro factory-live-only">{t(lang, 'factory.intro')}</p>
   <div class="factory-board" transition:name={transitionName}>
     <div class="factory-diagram">
-      <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} aria-hidden="true" focusable="false">
-        <circle class="factory-ring" cx={CENTER.x} cy={CENTER.y} r={RADIUS} />
-        <circle class="factory-hub" data-stage="clean" cx={CENTER.x} cy={CENTER.y} r={HUB_RADIUS} />
-        {nodes.map((node) => (
-          <circle class:list={['factory-node', { 'is-factory': node.stage === 'factory' }]} data-stage={node.stage} cx={node.x} cy={node.y} r={node.stage === 'factory' ? 17 : 12} />
-        ))}
-        <g class="factory-arm">
-          <rect class="factory-ticket" x={CENTER.x - 15} y={CENTER.y - RADIUS - 10} width="30" height="20" rx="5" />
-        </g>
-      </svg>
+      <LoopDiagram ticketAt="top" />
       {nodes.map((node) => node.stage === 'label' ? (
         <>
           <span class={`factory-label side-${node.side} factory-static-only`} data-stage={node.stage} style={node.style}>{node.label}</span>
@@ -65,7 +43,7 @@ const messages = Object.fromEntries(FACTORY_STAGES.map((stage) => [stage, t(lang
       ) : (
         <span class={`factory-label side-${node.side}`} data-stage={node.stage} style={node.style}>{node.label}</span>
       ))}
-      <span class="factory-label factory-hub-label" data-stage="clean" style={`left: 50%; top: ${percent(CENTER.y + HUB_RADIUS + HUB_LABEL_GAP, HEIGHT)}`}>{t(lang, 'factory.hub')}</span>
+      <span class="factory-label factory-hub-label" data-stage="clean" style={`left: 50%; top: ${percent(LOOP_CENTER.y + HUB_RADIUS + HUB_LABEL_GAP, LOOP_HEIGHT)}`}>{t(lang, 'factory.hub')}</span>
     </div>
     <div class="factory-side">
       <ol class="factory-stages">
@@ -104,14 +82,6 @@ const messages = Object.fromEntries(FACTORY_STAGES.map((stage) => [stage, t(lang
     box-shadow: 0 0 0 1px var(--line), 0 40px 80px -40px rgb(20 10 40 / .45);
   }
   .factory-diagram { position: relative; aspect-ratio: 560 / 440; min-width: 0 }
-  svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible }
-  .factory-ring { fill: none; stroke: var(--line); stroke-width: 3; stroke-dasharray: 2 8; stroke-linecap: round }
-  .factory-hub { fill: var(--bg); stroke: var(--line); stroke-width: 2; transition: fill .3s }
-  .factory-node { fill: var(--bg); stroke: var(--muted); stroke-width: 2; transition: fill .3s, stroke .3s }
-  .factory-node.is-factory { stroke: var(--accent) }
-  .factory-node.is-active, .factory-hub.is-active { fill: var(--accent); stroke: var(--accent) }
-  .factory-ticket { fill: var(--accent); stroke: var(--surface); stroke-width: 3 }
-  .factory-loop:not(.is-live) .factory-arm { display: none }
 
   .factory-label {
     position: absolute; max-width: 26%; font: 500 12px/1.25 var(--font-mono); color: var(--ink);
@@ -154,6 +124,6 @@ const messages = Object.fromEntries(FACTORY_STAGES.map((stage) => [stage, t(lang
     .factory-label { font-size: 11px }
   }
   @media (prefers-reduced-motion: reduce) {
-    .factory-node, .factory-hub, .factory-label, .factory-stages li { transition: none }
+    .factory-label, .factory-stages li { transition: none }
   }
 </style>

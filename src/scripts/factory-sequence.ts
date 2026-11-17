@@ -33,25 +33,41 @@ export function nextRotation(current: number, stage: FactoryStage): number {
   return current + delta;
 }
 
-export interface RingStop {
-  stage: FactoryStage;
-  /** Cumulative clockwise rotation of the ticket, in degrees, when it reaches the stage. */
-  rotation: number;
+/**
+ * Geometry of the loop diagram, in viewBox units. One drawing (LoopDiagram.astro) serves the
+ * interactive board on the case page and the compact, self-playing card visual, so both look alike.
+ */
+export const LOOP_WIDTH = 560;
+export const LOOP_HEIGHT = 440;
+export const LOOP_CENTER = { x: 280, y: 225 } as const;
+export const LOOP_RADIUS = 130;
+export const HUB_RADIUS = 46;
+export const TICKET_SIZE = { width: 30, height: 20 } as const;
+
+export interface LoopNode {
+  stage: (typeof FACTORY_NODES)[number];
+  x: number;
+  y: number;
+  /** Circle radius: the agent pipeline is the big station. */
+  radius: number;
+  /** Where its label goes, seen from the node. */
+  side: 'top' | 'right' | 'bottom' | 'left';
 }
 
-/** The ticket's stops round the ring for one run (the hub, `clean`, is not on the ring). */
-export function ringStops(reviewCycles: number): RingStop[] {
-  const stops: RingStop[] = [];
-  let rotation = 0;
-  for (const stage of factorySequence(reviewCycles)) {
-    if (stage === 'clean') break;
-    rotation = nextRotation(rotation, stage);
-    stops.push({ stage, rotation });
-  }
-  return stops;
-}
+const round = (value: number) => Math.round(value * 10) / 10;
 
-/** Share of the ring (0–1) the orange arc covers once the ticket has turned `rotation` degrees. */
-export function arcShare(rotation: number): number {
-  return Math.min(Math.max(rotation / 360, 0), 1);
+/** The six stations round the ring, clockwise from the top. */
+export function loopNodes(): LoopNode[] {
+  return FACTORY_NODES.map((stage, index) => {
+    const angle = (index * DEGREES_PER_NODE * Math.PI) / 180;
+    const sine = Math.sin(angle);
+    const side = sine > 0.3 ? 'right' : sine < -0.3 ? 'left' : Math.cos(angle) > 0 ? 'top' : 'bottom';
+    return {
+      stage,
+      x: round(LOOP_CENTER.x + sine * LOOP_RADIUS),
+      y: round(LOOP_CENTER.y - Math.cos(angle) * LOOP_RADIUS),
+      radius: stage === 'factory' ? 17 : 12,
+      side,
+    };
+  });
 }
