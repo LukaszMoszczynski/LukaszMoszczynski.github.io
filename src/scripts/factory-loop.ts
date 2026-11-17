@@ -9,7 +9,7 @@ const TO_CENTER_SECONDS = 0.6;
 
 /**
  * Delivery loop: Run (or the Jira label) sends a ticket round the ring of
- * six stations for one or two random review cycles, ending in the hub, above its label, with
+ * six stations for one or two random review cycles, ending in the middle of the hub, with
  * "review clean · ready for a human". Each stage is announced through a polite
  * live region. Both buttons are aria-disabled while a run is going, so focus
  * stays where it was. Not started with reduced motion: the static diagram the
@@ -25,7 +25,6 @@ export function initFactoryLoop(root: HTMLElement): () => void {
 
   const messages = JSON.parse(root.dataset.messages ?? '{}') as Record<FactoryStage, string>;
   const radius = Number(root.dataset.radius ?? 130);
-  const ticketRest = Number(root.dataset.ticketRest ?? 20);
   const idle = status.textContent ?? '';
   let timeline: gsap.core.Timeline | undefined;
   let running = false;
@@ -52,16 +51,15 @@ export function initFactoryLoop(root: HTMLElement): () => void {
     setRunning(true);
     root.classList.remove('is-clean');
     gsap.set(arm, { rotation: 0 });
-    gsap.set(ticket, { y: 0, scale: 1 });
+    gsap.set(ticket, { y: 0, scale: 1, transformOrigin: '50% 50%' });
 
     const sequence = factorySequence(gsap.utils.random(1, 2, 1));
     let rotation = 0;
     timeline = gsap.timeline({ onComplete: () => setRunning(false) });
     for (const stage of sequence) {
       if (stage === 'clean') {
-        // The arm is turned (the run ends at the bottom node), so "up on screen" depends on its rotation.
-        const upright = Math.cos((rotation * Math.PI) / 180) >= 0 ? 1 : -1;
-        timeline.to(ticket, { y: radius - upright * ticketRest, scale: 1.25, duration: TO_CENTER_SECONDS, ease: 'power2.inOut' });
+        // Down the arm by one radius: the ring's centre, whatever the arm's rotation.
+        timeline.to(ticket, { y: radius, scale: 1.25, duration: TO_CENTER_SECONDS, ease: 'power2.inOut' });
       } else {
         const target = nextRotation(rotation, stage);
         const steps = (target - rotation) / 60;

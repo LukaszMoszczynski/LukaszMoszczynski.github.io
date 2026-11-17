@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { showSwitches } from './helpers';
+import { showSwitches, useTheme } from './helpers';
 
 /** Waits until the ClientRouter has finished its view transition. */
 const settled = (page: Page) => expect(page.locator('html')).not.toHaveAttribute('data-astro-transition', /.*/);
@@ -111,6 +111,32 @@ test.describe('delivery loop', () => {
     await expect(run).toBeEnabled();
     await expect(factory.locator('.factory-hub-label')).toHaveClass(/is-active/);
   });
+
+  for (const scheme of ['light', 'dark'] as const) {
+    test(`the run ends with the ticket in the middle of the hub, the "human" label clear below it (${scheme})`, async ({ page }) => {
+      test.setTimeout(60_000);
+      await useTheme(page, scheme);
+      await page.goto('work/delivery-loop/');
+      const factory = page.locator('.factory-loop');
+      await factory.getByRole('button', { name: 'Run' }).click();
+      await expect(factory.locator('.factory-status')).toHaveText('review clean · ready for a human', { timeout: 25_000 });
+      await expect(factory.getByRole('button', { name: 'Run' })).toBeEnabled();
+      const boxes = await factory.evaluate((root) => {
+        const rect = (selector: string) => {
+          const box = root.querySelector(selector)!.getBoundingClientRect();
+          return { left: box.left, right: box.right, top: box.top, bottom: box.bottom, x: box.left + box.width / 2, y: box.top + box.height / 2 };
+        };
+        return { hub: rect('.factory-hub'), ticket: rect('.factory-ticket'), label: rect('.factory-hub-label') };
+      });
+      expect(Math.abs(boxes.ticket.x - boxes.hub.x)).toBeLessThan(1.5);
+      expect(Math.abs(boxes.ticket.y - boxes.hub.y)).toBeLessThan(1.5);
+      expect(boxes.ticket.top).toBeGreaterThan(boxes.hub.top);
+      expect(boxes.ticket.bottom).toBeLessThan(boxes.hub.bottom);
+      // The label sits under the hub, centred, and does not touch the ticket.
+      expect(boxes.label.top).toBeGreaterThanOrEqual(boxes.hub.bottom - 1);
+      expect(Math.abs(boxes.label.x - boxes.hub.x)).toBeLessThan(1.5);
+    });
+  }
 
   test('Enter on the Jira label starts a run (PL)', async ({ page }) => {
     test.setTimeout(60_000);

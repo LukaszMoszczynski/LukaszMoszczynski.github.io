@@ -12,9 +12,9 @@ const CENTER = { x: 280, y: 225 };
 const RADIUS = 130;
 const LABEL_GAP = 26;
 const TOP_GAP = 50; // the Jira label is a 40px button and must clear its node at phone scale
-/** The ticket ends a little above the hub centre (factory-loop.ts), so the live "human" label sits below it. */
-const TICKET_REST = 20;
-const HUB_LABEL_LIVE = 18;
+const HUB_RADIUS = 46;
+/** The "human" label sits just below the hub, so the ticket can rest in its centre (factory-loop.ts). */
+const HUB_LABEL_GAP = 16;
 
 const percent = (value: number, total: number) => `${Math.round((value / total) * 1000) / 10}%`;
 const nodes = FACTORY_NODES.map((stage, index) => {
@@ -41,7 +41,6 @@ const messages = Object.fromEntries(FACTORY_STAGES.map((stage) => [stage, t(lang
   data-messages={JSON.stringify(messages)}
   data-origin={`${CENTER.x} ${CENTER.y}`}
   data-radius={RADIUS}
-  data-ticket-rest={TICKET_REST}
 >
   <h2 id="factory-heading">{t(lang, 'factory.heading')}</h2>
   <p class="factory-intro factory-static-only">{t(lang, 'factory.introStatic')}</p>
@@ -50,7 +49,7 @@ const messages = Object.fromEntries(FACTORY_STAGES.map((stage) => [stage, t(lang
     <div class="factory-diagram">
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} aria-hidden="true" focusable="false">
         <circle class="factory-ring" cx={CENTER.x} cy={CENTER.y} r={RADIUS} />
-        <circle class="factory-hub" data-stage="clean" cx={CENTER.x} cy={CENTER.y} r="46" />
+        <circle class="factory-hub" data-stage="clean" cx={CENTER.x} cy={CENTER.y} r={HUB_RADIUS} />
         {nodes.map((node) => (
           <circle class:list={['factory-node', { 'is-factory': node.stage === 'factory' }]} data-stage={node.stage} cx={node.x} cy={node.y} r={node.stage === 'factory' ? 17 : 12} />
         ))}
@@ -66,7 +65,7 @@ const messages = Object.fromEntries(FACTORY_STAGES.map((stage) => [stage, t(lang
       ) : (
         <span class={`factory-label side-${node.side}`} data-stage={node.stage} style={node.style}>{node.label}</span>
       ))}
-      <span class="factory-label factory-hub-label" data-stage="clean" style={`left: 50%; --hub-top: ${percent(CENTER.y, HEIGHT)}; --hub-top-live: ${percent(CENTER.y + HUB_LABEL_LIVE, HEIGHT)}`}>{t(lang, 'factory.hub')}</span>
+      <span class="factory-label factory-hub-label" data-stage="clean" style={`left: 50%; top: ${percent(CENTER.y + HUB_RADIUS + HUB_LABEL_GAP, HEIGHT)}`}>{t(lang, 'factory.hub')}</span>
     </div>
     <div class="factory-side">
       <ol class="factory-stages">
@@ -121,10 +120,9 @@ const messages = Object.fromEntries(FACTORY_STAGES.map((stage) => [stage, t(lang
   .factory-label.side-right { transform: translate(0, -50%); text-align: left }
   .factory-label.side-left { transform: translate(-100%, -50%); text-align: right }
   .factory-label.is-active { color: var(--accent-ink) }
-  .factory-hub-label { top: var(--hub-top); color: var(--muted); max-width: 16% }
-  /* Live, the ticket rests in the upper half of the hub; the label moves down so the ticket never covers it. */
-  .factory-loop.is-live .factory-hub-label { top: var(--hub-top-live) }
-  .factory-hub-label.is-active { color: var(--on-accent) }
+  /* Below the hub, on the board surface: the ticket ends in the middle of the hub and never covers it. */
+  .factory-hub-label { color: var(--muted); max-width: 30%; white-space: nowrap }
+  .factory-hub-label.is-active { color: var(--accent-ink) }
   .factory-jira {
     min-height: 40px; padding: 6px 14px; border-radius: 999px; cursor: pointer; max-width: none; white-space: nowrap;
     border: 1px solid var(--accent); background: var(--surface); color: var(--ink); font: inherit; font: 500 12px/1.2 var(--font-mono);
