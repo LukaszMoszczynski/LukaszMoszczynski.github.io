@@ -3,6 +3,9 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 /** Projects whose visual tells an animated story (all six once every story is in). */
 const STORY_SLUGS: string[] = ['qa-agent', 'delivery-loop', 'design-system', 'dcc', 'wp-starter', 'omelanski'];
 
+/** The delivery loop case page has no hero visual: its interactive board takes the place (and the transition name). */
+const CASE_SLUGS = STORY_SLUGS.filter((slug) => slug !== 'delivery-loop');
+
 const settled = (page: Page) => expect(page.locator('html')).not.toHaveAttribute('data-astro-transition', /.*/);
 
 /** Everything a story animates, read from the computed styles of every part of the screen. */
@@ -71,6 +74,10 @@ test.describe('project visuals', () => {
 
       await page.goto(`work/${slug}/`);
       const hero = page.locator('.case-hero .project-visual');
+      if (!CASE_SLUGS.includes(slug)) {
+        await expect(hero).toHaveCount(0);
+        return;
+      }
       await expect(hero).toHaveAttribute('data-visual', slug);
       await expect(hero).toHaveAttribute('data-visual-state', 'playing');
       await expectMoving(hero);
@@ -103,7 +110,7 @@ test.describe('project visuals', () => {
 
   test('Pause animations puts every visual on its finished frame, the one the server renders', async ({ page }) => {
     test.skip(!STORY_SLUGS.length, 'no story yet');
-    for (const slug of STORY_SLUGS) {
+    for (const slug of CASE_SLUGS) {
       await page.goto(`work/${slug}/`);
       const hero = page.locator('.case-hero .project-visual');
       await expect(hero).toHaveAttribute('data-visual-state', 'playing');
@@ -174,7 +181,7 @@ test.describe('project visuals, reduced motion', () => {
   test.use({ reducedMotion: 'reduce' });
   test('every visual stays on its finished frame', async ({ page }) => {
     test.skip(!STORY_SLUGS.length, 'no story yet');
-    for (const slug of STORY_SLUGS) {
+    for (const slug of CASE_SLUGS) {
       await page.goto(`work/${slug}/`);
       const hero = page.locator('.case-hero .project-visual');
       await expect(hero).toHaveAttribute('data-visual', slug);

@@ -82,17 +82,15 @@ test.describe('case study pages', () => {
     expect(caseName).toBe('visual-qa-agent');
   });
 
-  test('the delivery loop hero shows the shared visual; the interactive board stays below it', async ({ page }) => {
+  test('the delivery loop hero has no visual; the interactive board carries the shared transition name', async ({ page }) => {
     await page.goto('./');
     const card = page.locator('#work .project-card', { has: page.locator('a.project-link[href$="/work/delivery-loop/"]') });
     expect(await card.locator('.project-visual').evaluate((element) => getComputedStyle(element).viewTransitionName)).toBe('visual-delivery-loop');
     await card.locator('a.project-link').click();
     await expect(page).toHaveURL(/\/work\/delivery-loop\/$/);
-    const hero = page.locator('.case-hero .project-visual');
-    await expect(hero).toHaveCount(1);
-    expect(await hero.evaluate((element) => getComputedStyle(element).viewTransitionName)).toBe('visual-delivery-loop');
+    await expect(page.locator('.case-hero .project-visual')).toHaveCount(0);
     await expect(page.locator('.factory-loop .factory-board')).toBeVisible();
-    expect(await page.locator('.factory-loop .factory-board').evaluate((element) => getComputedStyle(element).viewTransitionName)).toBe('none');
+    expect(await page.locator('.factory-loop .factory-board').evaluate((element) => getComputedStyle(element).viewTransitionName)).toBe('visual-delivery-loop');
   });
 });
 
