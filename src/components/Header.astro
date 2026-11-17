@@ -166,10 +166,20 @@ const mainLinks = [
   .bar::before {
     content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0;
     background: color-mix(in srgb, var(--surface) 82%, transparent); backdrop-filter: blur(14px);
-    box-shadow: 0 1px 0 var(--line); transition: opacity .25s;
+    box-shadow: 0 1px 0 var(--line); transform: translateY(-100%);
+    transition: opacity .35s ease, transform .45s cubic-bezier(.2, .7, .2, 1);
   }
-  .bar.is-scrolled::before { opacity: 1 }
-  html.menu-open .bar::before { opacity: 0 }
+  /* A thin orange-to-violet line draws under the surface as it slides in, and retracts as it leaves. */
+  .bar::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; z-index: 0; pointer-events: none;
+    background: linear-gradient(90deg, var(--accent), var(--violet), transparent);
+    transform: scaleX(0); transform-origin: left; opacity: .8;
+    transition: transform .6s cubic-bezier(.2, .7, .2, 1);
+  }
+  .bar.is-scrolled::before { opacity: 1; transform: none }
+  .bar.is-scrolled::after { transform: scaleX(1); transition-delay: .12s }
+  html.menu-open .bar::before { opacity: 0; transform: translateY(-100%) }
+  html.menu-open .bar::after { transform: scaleX(0) }
 
   /* Narrow phones: the pills are one target each, so their halves can be a little narrower to leave room for the name. */
   @media (max-width: 400px) {
@@ -179,6 +189,6 @@ const mainLinks = [
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .logo, .seg-thumb, .seg-option, .menu-lines span, .menu-link-text, .menu-projects a, .bar::before { transition: none }
+    .logo, .seg-thumb, .seg-option, .menu-lines span, .menu-link-text, .menu-projects a, .bar::before, .bar::after { transition: none }
   }
 </style>
