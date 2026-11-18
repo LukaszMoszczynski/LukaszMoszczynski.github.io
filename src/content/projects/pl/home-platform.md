@@ -24,7 +24,7 @@ Zespół frontendu home.pl buduje strony marketingowe i sprzedażowe wielomarkow
 - **Treści w headless CMS, strony z Gatsby.** Prawie wszystko, co widać na tych stronach, siedzi w CMS-ie, a Gatsby generuje z tego strony przez GraphQL.
 - **Uniwersalny kreator stron.** Wymyśliłem go na początku razem z kolegą: redaktor składa stronę w CMS-ie z zestawu gotowych sekcji, a Gatsby buduje ją dla każdej marki.
 - **Ponad 700 landing pages w 8 markach**, a za nimi ścieżki sprzedaży: upselle, koszyki i konfiguratory produktów.
-- **Nowy CMS i więcej marek.** W 2019 była jedna marka IONOS, a treści leżały w Contentfulu. Potem przeszły do Squidexa, a grupa urosła do 8 marek.
+- **Nowy CMS i więcej marek.** W 2019 była jedna marka IONOS, a treści leżały w Contentfulu. Potem przeszły do Squidexa, a strony obsługują dziś 8 marek.
 - **Biblioteka frontendu w trakcie zmiany.** Biblioteka na styled-components była już w 2019, razem z Gatsby; przez lata z niej korzystaliśmy i ją rozbudowywaliśmy. Teraz przechodzimy na Tailwinda i własną bibliotekę budowaną z tokenów z Figmy, ze Storybookiem i motywami dla wielu marek, tak jak w moim [design systemie](../design-system/).
 
 ## Najważniejsze
