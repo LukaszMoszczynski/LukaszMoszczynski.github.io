@@ -119,7 +119,7 @@ test.describe('delivery loop', () => {
     await run.click();
     await expect(run).toBeDisabled();
     await expect(factory.getByRole('button', { name: 'Jira label' })).toBeDisabled();
-    await expect(status).toHaveText(/Agents in local Docker/);
+    await expect(status).toHaveText(/Agents in a Docker container/);
     await expect(status).toHaveText(/Auto-reviewer/, { timeout: 10_000 });
     await expect(status).toHaveText('review clean · ready for a human', { timeout: 25_000 });
     await expect(run).toBeEnabled();
@@ -173,7 +173,7 @@ test.describe('delivery loop', () => {
     page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
     await page.goto('work/delivery-loop/');
     await page.locator('.factory-loop').getByRole('button', { name: 'Run' }).click();
-    await expect(page.locator('.factory-status')).toHaveText(/Agents in local Docker/);
+    await expect(page.locator('.factory-status')).toHaveText(/Agents in a Docker container/);
     await page.getByRole('navigation', { name: 'Next project' }).getByRole('link').click();
     await expect(page).toHaveURL(/\/work\/design-system\/$/);
     await page.waitForTimeout(1500);
@@ -188,7 +188,7 @@ test.describe('delivery loop, reduced motion', () => {
     const factory = page.locator('.factory-loop');
     await expect(factory.locator('.factory-stages li')).toHaveText([
       'Jira label · the task goes to the agent pipeline',
-      'Agents in local Docker · they solve the task',
+      'Agents in a Docker container · they solve the task',
       'Push to GitLab · a merge request opens',
       'Auto-reviewer reads the merge request',
       'Comments · the review asks for changes',

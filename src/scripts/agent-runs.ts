@@ -20,7 +20,7 @@ export const AGENT_RUNS: Record<RunKey, LogLine[]> = {
   factory: [
     comment('# Jira label → reviewed merge request'),
     step('jira: label added to the task'),
-    step('agent pipeline (local docker): task picked up'),
+    step('agent pipeline (docker container): task picked up'),
     step('agent: implementing · running tests'),
     ok('✓ branch pushed to GitLab'),
     step('auto-reviewer: 2 comments left'),
