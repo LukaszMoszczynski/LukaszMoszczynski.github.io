@@ -18,7 +18,7 @@ Many tasks are small and well described, but each one still needs someone to pic
 
 An automated delivery process with a human in the loop. Agents do the routine part; a person reviews the result and merges it.
 
-**I wrote the skills, instructions and agents that make it work.** They run on the team's skills, which describe how the team works and its best practices, so the agents work the way the team does.
+**I wrote the skills, instructions and agents that make it work.** The agents run on my **"resolve ticket" skill**, which goes step by step: it reads Figma and builds components and sections in Tailwind. That skill sits on top of the team's skills, which describe how the team works and its best practices, so the agents work the way the team does.
 
 1. A **label in Jira** hands the task to an **agent pipeline in local Docker**.
 2. The **agents solve the task** and **push it to GitLab**.

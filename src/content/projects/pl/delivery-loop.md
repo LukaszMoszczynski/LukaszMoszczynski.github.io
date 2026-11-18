@@ -18,7 +18,7 @@ Wiele zadań jest małych i dobrze opisanych, ale każde i tak wymaga, żeby kto
 
 Automatyczny proces dostarczania zmian z człowiekiem w pętli. Rutynową część robią agenci, a człowiek przegląda wynik i go merguje.
 
-**Skille, instrukcje i agentów, dzięki którym to działa, napisałem sam.** Działają na skillach zespołu, które opisują sposób pracy zespołu i jego dobre praktyki, więc agenci pracują tak, jak pracuje zespół.
+**Skille, instrukcje i agentów, dzięki którym to działa, napisałem sam.** Agenci działają na moim **skillu „resolve ticket”**, który idzie krok po kroku: czyta Figmę i tworzy komponenty i sekcje w Tailwindzie. Ten skill stoi na skillach zespołu, które opisują sposób pracy zespołu i jego dobre praktyki, więc agenci pracują tak, jak pracuje zespół.
 
 1. **Etykieta w Jirze** przekazuje zadanie do **agentów w lokalnym Dockerze**.
 2. **Agenci rozwiązują zadanie** i **wypychają je do GitLaba**.
