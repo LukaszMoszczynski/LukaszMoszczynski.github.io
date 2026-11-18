@@ -2,7 +2,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { useTheme } from './helpers';
 
 /** Projects whose visual tells an animated story (all six once every story is in). */
-const STORY_SLUGS: string[] = ['qa-agent', 'delivery-loop', 'design-system', 'dcc', 'wp-starter', 'omelanski'];
+const STORY_SLUGS: string[] = ['qa-agent', 'delivery-loop', 'design-system', 'home-platform', 'dcc', 'wp-starter', 'omelanski'];
 
 /** The delivery loop case page has no hero visual: its interactive board takes the place (and the transition name). */
 const CASE_SLUGS = STORY_SLUGS.filter((slug) => slug !== 'delivery-loop');
@@ -280,5 +280,34 @@ test.describe('delivery loop: the card is a compact copy of the case board', () 
       await page.waitForTimeout(250);
     }
     expect(seen.size).toBeGreaterThanOrEqual(4);
+  });
+});
+
+test.describe('home.pl platform: sections build a page that re-skins per brand', () => {
+  test('the slots come from the CMS column, every brand accent takes its turn, and basket and configurator fan out', async ({ page }) => {
+    test.setTimeout(30_000);
+    await page.goto('work/home-platform/');
+    const hero = page.locator('.case-hero .project-visual');
+    await expect(hero).toHaveAttribute('data-visual-state', 'playing');
+    const brands = new Set<string>();
+    let slotsAway = false;
+    let minisHidden = false;
+    for (let sample = 0; sample < 50; sample++) {
+      const state = await hero.evaluate((root) => {
+        const tints = [...root.querySelectorAll<HTMLElement>('.hp-bar .hp-tint')];
+        const shown = tints.filter((tint) => Number(getComputedStyle(tint).opacity) > 0.95).map((tint) => tint.dataset.brand!);
+        const firstSlot = root.querySelector('.hp-slot')!.getBoundingClientRect();
+        const firstSection = root.querySelector('.hp-section')!.getBoundingClientRect();
+        const minis = [...root.querySelectorAll('.hp-mini')].map((mini) => Number(getComputedStyle(mini).opacity));
+        return { top: shown.at(-1) ?? '0', slotOnSection: Math.abs(firstSlot.left - firstSection.left) < 2, minisHidden: minis.every((opacity) => opacity < 0.05) };
+      });
+      brands.add(state.top);
+      slotsAway ||= state.slotOnSection;
+      minisHidden ||= state.minisHidden;
+      await page.waitForTimeout(150);
+    }
+    expect([...brands].sort()).toEqual(['0', '1', '2', '3']);
+    expect(slotsAway).toBe(true);
+    expect(minisHidden).toBe(true);
   });
 });
