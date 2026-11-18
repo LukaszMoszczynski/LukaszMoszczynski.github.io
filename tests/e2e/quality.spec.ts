@@ -5,9 +5,9 @@ const slugs = readdirSync('src/content/projects/en').map((file) => file.replace(
 const pages = ['./', 'pl/', 'work/', 'pl/work/', ...slugs.flatMap((slug) => [`work/${slug}/`, `pl/work/${slug}/`])];
 const hosts = new Set(['localhost:4321']);
 
-test('there are six case studies and a work index in two languages', () => {
-  expect(slugs).toHaveLength(6);
-  expect(pages).toHaveLength(16);
+test('there are seven case studies and a work index in two languages', () => {
+  expect(slugs).toHaveLength(7);
+  expect(pages).toHaveLength(18);
 });
 
 test('every internal link and asset resolves under the base path', async ({ page, request }, testInfo) => {

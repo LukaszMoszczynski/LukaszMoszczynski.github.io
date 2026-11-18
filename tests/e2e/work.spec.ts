@@ -1,13 +1,13 @@
 import { expect, test } from '@playwright/test';
 
-const SLUGS = ['qa-agent', 'delivery-loop', 'design-system', 'dcc', 'wp-starter', 'omelanski'];
+const SLUGS = ['qa-agent', 'delivery-loop', 'design-system', 'home-platform', 'dcc', 'wp-starter', 'omelanski'];
 
 test.describe('selected work', () => {
   for (const [path, prefix] of [['./', 'work/'], ['pl/', 'pl/work/']]) {
-    test(`6 project cards link to their case studies (${path})`, async ({ page }) => {
+    test(`7 project cards link to their case studies (${path})`, async ({ page }) => {
       await page.goto(path);
       const cards = page.locator('#work article.project-card');
-      await expect(cards).toHaveCount(6);
+      await expect(cards).toHaveCount(7);
       for (const [index, slug] of SLUGS.entries()) {
         const href = await cards.nth(index).locator('a').first().getAttribute('href');
         expect(href).toMatch(new RegExp(`/portfolio-preview/${prefix}${slug}/$`));
@@ -16,14 +16,14 @@ test.describe('selected work', () => {
   }
 
   for (const [path, titles] of [
-    ['./', ['AI QA agent for merge requests', 'Human-in-the-loop delivery', 'Multi-brand design system synced with Figma', 'WordPress shop with online payments', 'Figma to WordPress starter', 'Fast static company website']],
-    ['pl/', ['Agent AI do testów merge requestów', 'Automatyczny proces z człowiekiem w pętli', 'Wielomarkowy design system zsynchronizowany z Figmą', 'Sklep WordPress z płatnościami online', 'Starter Figma → WordPress', 'Szybka statyczna strona firmowa']],
+    ['./', ['AI QA agent for merge requests', 'Human-in-the-loop delivery', 'Multi-brand design system synced with Figma', 'Multi-brand sales sites built from one page creator', 'WordPress shop with online payments', 'Figma to WordPress starter', 'Fast static company website']],
+    ['pl/', ['Agent AI do testów merge requestów', 'Automatyczny proces z człowiekiem w pętli', 'Wielomarkowy design system zsynchronizowany z Figmą', 'Wielomarkowe strony sprzedażowe z jednego kreatora stron', 'Sklep WordPress z płatnościami online', 'Starter Figma → WordPress', 'Szybka statyczna strona firmowa']],
   ] as const) {
     test(`cards are titled by what was delivered, the client is a small chip (${path})`, async ({ page }) => {
       await page.goto(path);
       const cards = page.locator('#work article.project-card');
       await expect(cards.locator('h3')).toHaveText([...titles]);
-      const clients = ['home.pl', 'home.pl', null, 'DCC Grygorcewicz', null, 'Omelański'];
+      const clients = ['home.pl', 'home.pl', null, 'home.pl', 'DCC Grygorcewicz', null, 'Omelański'];
       for (const [index, client] of clients.entries()) {
         const chip = cards.nth(index).locator('.project-client');
         if (client) await expect(chip).toHaveText(client);
@@ -32,7 +32,7 @@ test.describe('selected work', () => {
       // The /work/ list uses the same titles and chips.
       await page.goto(`${path}work/`);
       await expect(page.locator('.work-index-card h2')).toHaveText([...titles]);
-      await expect(page.locator('.work-index-client')).toHaveText(['home.pl', 'home.pl', 'DCC Grygorcewicz', 'Omelański']);
+      await expect(page.locator('.work-index-client')).toHaveText(['home.pl', 'home.pl', 'home.pl', 'DCC Grygorcewicz', 'Omelański']);
     });
   }
 
@@ -44,7 +44,7 @@ test.describe('selected work', () => {
     await page.goto('pl/work/wp-starter/');
     await expect(page.locator('.case-next-name')).toHaveText('Szybka statyczna strona firmowa');
     await expect(page.locator('.case-client')).toHaveCount(0);
-    await expect(page.locator('.menu-projects a')).toHaveText(['Agent QA', 'Automatyczny proces z człowiekiem w pętli', 'Design System', 'DCC Grygorcewicz', 'WP Starter', 'Omelański']);
+    await expect(page.locator('.menu-projects a')).toHaveText(['Agent QA', 'Automatyczny proces z człowiekiem w pętli', 'Design System', 'Platforma home.pl', 'DCC Grygorcewicz', 'WP Starter', 'Omelański']);
   });
 
   test('section has no horizontal overflow', async ({ page }) => {
@@ -83,7 +83,7 @@ test.describe('selected work', () => {
     await expect.poll(() => copyOpacity(0)).toBeLessThan(0.6);
     await expect.poll(() => cards.first().evaluate((node) => getComputedStyle(node).transform)).toMatch(/^matrix\(0\.9[12]/);
     expect(await cards.first().evaluate((node) => getComputedStyle(node).opacity)).toBe('1');
-    expect(await copyOpacity(5)).toBe(1);
+    expect(await copyOpacity(6)).toBe(1);
   });
 
   test('hovering a visual tilts it on desktop', async ({ page }, testInfo) => {
@@ -104,7 +104,7 @@ test.describe('selected work, reduced motion', () => {
   test('cards are fully opaque and unscaled', async ({ page }) => {
     await page.goto('./');
     const cards = page.locator('#work article.project-card');
-    await expect(cards).toHaveCount(6);
+    await expect(cards).toHaveCount(7);
     await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
     for (const card of await cards.all()) {
       expect(await card.evaluate((node) => getComputedStyle(node).opacity)).toBe('1');
@@ -115,12 +115,12 @@ test.describe('selected work, reduced motion', () => {
 
 test.describe('work index page', () => {
   for (const [path, heading] of [['work/', 'Work'], ['pl/work/', 'Projekty']] as const) {
-    test(`${path} lists all six projects with links, summaries and tags`, async ({ page }) => {
+    test(`${path} lists all seven projects with links, summaries and tags`, async ({ page }) => {
       const response = await page.goto(path);
       expect(response?.status()).toBe(200);
       await expect(page.getByRole('heading', { level: 1, name: heading })).toBeVisible();
       const cards = page.locator('.work-index-card');
-      await expect(cards).toHaveCount(6);
+      await expect(cards).toHaveCount(7);
       for (const [index, slug] of SLUGS.entries()) {
         const card = cards.nth(index);
         await expect(card.locator('h2 a')).toHaveAttribute('href', new RegExp(`/portfolio-preview/${path}${slug}/$`));

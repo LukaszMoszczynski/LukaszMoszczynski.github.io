@@ -4,6 +4,23 @@ import { t, type Lang } from '../i18n/utils';
 import LoopDiagram from './LoopDiagram.astro';
 interface Props { visual: Project['visual']; compact?: boolean; lang?: Lang; transitionName?: string }
 const { visual, compact = false, lang = 'en', transitionName } = Astro.props;
+
+/** home.pl platform, in % of the screen: the CMS column of sections and the page slots they fill. */
+type Box = { left: number; top: number; width: number; height: number };
+const inset = (box: Box) => `inset: ${box.top}% ${100 - box.left - box.width}% ${100 - box.top - box.height}% ${box.left}%`;
+const cmsSections: Box[] = [18, 34, 50, 66].map((top) => ({ left: 9, top, width: 14, height: 12 }));
+const pageSlots: Box[] = [[21, 22], [46, 12], [61, 12], [76, 10]].map(([top, height]) => ({ left: 35, top, width: 34, height }));
+/** Where a slot starts: on top of its CMS section (translate in % of the slot, then scale from the top-left corner). */
+const slotFrom = (index: number) => {
+  const [section, slot] = [cmsSections[index], pageSlots[index]];
+  const round = (value: number) => Math.round(value * 1000) / 1000;
+  return [
+    round(((section.left - slot.left) / slot.width) * 100), round(((section.top - slot.top) / slot.height) * 100),
+    round(section.width / slot.width), round(section.height / slot.height),
+  ].join(' ');
+};
+/** Generic brand accents (no logos): the first is the page at rest, the others wash over it in turn. */
+const brandAccents = ['#eb6126', '#2f6fe4', '#16a37f', '#c2367a'];
 ---
 <div class:list={['project-visual', { 'is-compact': compact }]} data-visual={visual} aria-hidden="true" transition:name={transitionName}>
   <div class={`project-screen v-${visual}`}>
@@ -54,6 +71,22 @@ const { visual, compact = false, lang = 'en', transitionName } = Astro.props;
     {visual === 'delivery-loop' && (
       <div class="loop-board"><LoopDiagram ticketAt="hub" lit compact /></div>
     )}
+    {visual === 'home-platform' && (
+      <>
+        <span class="hp-cms" style="inset: 12% 74% 12% 6%"></span>
+        {cmsSections.map((section) => <span class="hp-section" style={inset(section)}></span>)}
+        <span class="hp-page" style="inset: 8% 28% 8% 32%"></span>
+        <span class="hp-bar" style="inset: 12% 31% 82% 35%">{brandAccents.map((accent, index) => <i class="hp-tint" data-brand={index} style={`background: ${accent}`}></i>)}</span>
+        {pageSlots.map((slot, index) => (
+          <span class="hp-slot" style={inset(slot)} data-from={slotFrom(index)}>
+            {index === 0 && <b class="hp-cta">{brandAccents.map((accent, brand) => <i class="hp-tint" data-brand={brand} style={`background: ${accent}`}></i>)}</b>}
+          </span>
+        ))}
+        <span class="hp-mini" style="inset: 14% 4% 56% 75%; transform: rotate(6deg)" data-turn="6"><i style="inset: 14% 12% 70% 12%"></i><i style="inset: 38% 30% 46% 12%"></i><i class="hp-mini-accent" style="inset: 66% 12% 14% 12%"></i></span>
+        <span class="hp-mini" style="inset: 52% 5% 16% 74%; transform: rotate(-5deg)" data-turn="-5"><i class="hp-mini-option hp-mini-accent" style="inset: 14% 12% 66% 12%"></i><i class="hp-mini-option" style="inset: 42% 12% 38% 12%"></i><i class="hp-mini-option" style="inset: 70% 12% 10% 12%"></i></span>
+        {!compact && <span class="label" style="left: 6%; top: 3%">CMS</span>}
+      </>
+    )}
     {visual === 'wp-starter' && (
       <>
         <span class="frame" style="inset: 12% 58% 12% 7%"><i class="wp-source" style="inset: 6% 8% 70% 8%"></i><i class="wp-source accent" style="inset: 36% 8% 40% 8%"></i><i class="wp-source" style="inset: 66% 8% 6% 8%"></i></span>
@@ -99,6 +132,7 @@ const { visual, compact = false, lang = 'en', transitionName } = Astro.props;
   /* Delivery loop: a compact copy of the board on the case page (LoopDiagram.astro), in the board's own colours. */
   .v-delivery-loop { background: var(--surface); box-shadow: inset 0 0 0 1px var(--line) }
   .loop-board { position: absolute; inset: 8% }
+  .v-home-platform { background: linear-gradient(135deg, #2a1d4d, #5b3fa8) }
   .v-wp-starter { background: linear-gradient(135deg, #1a1230, #372662) }
   .v-omelanski { background: linear-gradient(135deg, #5b3fa8, #eb6126) }
 
@@ -158,6 +192,21 @@ const { visual, compact = false, lang = 'en', transitionName } = Astro.props;
   .page { background: var(--white) }
   /* WP Starter: a block keeps its Figma look (light fill, dashed outline) while it travels; it fades at rest. */
   .wp-skin { position: absolute; inset: 0; border-radius: inherit; background: rgb(255 255 255 / .22); border: 1.5px dashed #5aa7e6; opacity: 0 }
+
+  /* home.pl platform: CMS sections fill the page slots, the page re-skins per brand, basket and configurator fan out. */
+  .hp-cms { position: absolute; border: 2px dashed rgb(255 255 255 / .45); border-radius: 12px }
+  .hp-section { position: absolute; border-radius: 6px; background: rgb(255 255 255 / .3) }
+  .hp-page { position: absolute; border-radius: 14px; background: var(--white); box-shadow: 0 18px 30px -16px rgb(0 0 0 / .5) }
+  .hp-bar, .hp-cta { position: absolute; border-radius: 6px; overflow: hidden }
+  .hp-cta { inset: 60% 52% 16% 8%; border-radius: 999px }
+  /* Brand tints stack in order; the first is the brand at rest, the later ones are hidden until they wash over it. */
+  .hp-tint { position: absolute; inset: 0 }
+  .hp-tint:not([data-brand="0"]) { opacity: 0 }
+  .hp-slot { position: absolute; border-radius: 6px; background: rgb(42 29 77 / .12) }
+  .hp-mini { position: absolute; border-radius: 10px; background: var(--white); box-shadow: 0 14px 26px -12px rgb(0 0 0 / .5) }
+  .hp-mini i { position: absolute; border-radius: 4px; background: rgb(42 29 77 / .14) }
+  .hp-mini .hp-mini-option { border-radius: 999px }
+  .hp-mini .hp-mini-accent { background: var(--orange) }
 
   .domain { display: grid; place-items: center }
   .domain b { font: 600 11px/1 var(--font-mono); color: var(--brand) }

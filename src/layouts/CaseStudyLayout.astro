@@ -8,7 +8,7 @@ import { localizePath, t, type Lang } from '../i18n/utils';
 import type { ProjectEntry } from '../content/projects';
 interface Props { lang: Lang; project: ProjectEntry; next: ProjectEntry }
 const { lang, project, next } = Astro.props;
-const { title, summary, meta, tags, links, origin, client, visual } = project.data;
+const { title, summary, meta, tags, links, origin, team, client, visual } = project.data;
 /** The delivery loop has no hero visual: its interactive board below the hero is the visual (and carries the transition name). */
 const hasLoop = visual === 'delivery-loop';
 const transitionName = `visual-${project.slug}`;
@@ -25,6 +25,7 @@ const transitionName = `visual-${project.slug}`;
         <h1 id="case-title">{title}</h1>
         <p class="case-summary">{summary}</p>
         {origin && <p class="case-note">{t(lang, 'work.homePlNote')}</p>}
+        {team && <p class="case-note">{t(lang, 'work.teamCredit')}</p>}
         <ul class="case-tags" aria-label={t(lang, 'case.tags')}>
           {tags.map((tag) => <li>{tag}</li>)}
         </ul>

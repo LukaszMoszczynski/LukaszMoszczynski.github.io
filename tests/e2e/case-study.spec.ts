@@ -4,11 +4,13 @@ import { showSwitches, useTheme } from './helpers';
 /** Waits until the ClientRouter has finished its view transition. */
 const settled = (page: Page) => expect(page.locator('html')).not.toHaveAttribute('data-astro-transition', /.*/);
 
-const SLUGS = ['qa-agent', 'delivery-loop', 'design-system', 'dcc', 'wp-starter', 'omelanski'];
+const SLUGS = ['qa-agent', 'delivery-loop', 'design-system', 'home-platform', 'dcc', 'wp-starter', 'omelanski'];
 const HOME_PL = ['qa-agent', 'delivery-loop'];
+/** Team work, told in the team's voice. */
+const TEAM = ['home-platform'];
 const SECTIONS = {
-  en: { prefix: '', headings: ['Problem', 'What I built', 'Highlights'], next: 'Next project', note: 'Built at home.pl' },
-  pl: { prefix: 'pl/', headings: ['Problem', 'Co zbudowałem', 'Najważniejsze'], next: 'Następny projekt', note: 'Zbudowane w home.pl' },
+  en: { prefix: '', headings: ['Problem', 'What I built', 'Highlights'], teamHeadings: ['Problem', 'What we built', 'Highlights'], next: 'Next project', note: 'Built at home.pl', credit: 'Built with the home.pl frontend team.' },
+  pl: { prefix: 'pl/', headings: ['Problem', 'Co zbudowałem', 'Najważniejsze'], teamHeadings: ['Problem', 'Co zbudowaliśmy', 'Najważniejsze'], next: 'Następny projekt', note: 'Zbudowane w home.pl', credit: 'Zbudowane z zespołem frontendu home.pl.' },
 } as const;
 
 test.describe('case study pages', () => {
@@ -21,7 +23,7 @@ test.describe('case study pages', () => {
         await expect(page.locator('h1')).not.toBeEmpty();
         await expect(page.locator('.case-summary')).not.toBeEmpty();
         expect(await page.locator('.case-tags li').count()).toBeGreaterThan(0);
-        await expect(page.locator('.case-prose h2')).toHaveText([...copy.headings]);
+        await expect(page.locator('.case-prose h2')).toHaveText([...(TEAM.includes(slug) ? copy.teamHeadings : copy.headings)]);
         const next = page.getByRole('navigation', { name: copy.next }).getByRole('link');
         const nextSlug = SLUGS[(index + 1) % SLUGS.length];
         expect(await next.getAttribute('href')).toMatch(new RegExp(`/portfolio-preview/${copy.prefix}work/${nextSlug}/$`));
@@ -51,12 +53,24 @@ test.describe('case study pages', () => {
     });
   }
 
-  test('DCC and Omelański link to their live versions in both languages', async ({ page }) => {
+  test('the home.pl platform credits the team, has no description-only note and no images', async ({ page }) => {
+    for (const copy of Object.values(SECTIONS)) {
+      await page.goto(`${copy.prefix}work/home-platform/`);
+      await expect(page.locator('.case-note')).toHaveText(copy.credit);
+      await expect(page.locator('.case-client')).toHaveText('home.pl');
+      await expect(page.locator('img')).toHaveCount(0);
+    }
+  });
+
+  test('DCC, Omelański and the home.pl platform link to their live versions in both languages', async ({ page }) => {
     const expected = [
       { path: 'work/dcc/', name: 'Test version', href: 'http://test.lotusblanc.eu/' },
       { path: 'pl/work/dcc/', name: 'Wersja testowa', href: 'http://test.lotusblanc.eu/' },
       { path: 'work/omelanski/', name: 'GitHub Pages preview', href: 'https://lukaszmoszczynski.github.io/omelanski-site/' },
       { path: 'pl/work/omelanski/', name: 'Podgląd na GitHub Pages', href: 'https://lukaszmoszczynski.github.io/omelanski-site/' },
+      { path: 'work/home-platform/', name: 'home.pl', href: 'https://home.pl/' },
+      { path: 'work/home-platform/', name: 'az.pl', href: 'https://az.pl/' },
+      { path: 'pl/work/home-platform/', name: 'az.pl', href: 'https://az.pl/' },
     ];
     for (const { path, name, href } of expected) {
       await page.goto(path);
@@ -197,6 +211,8 @@ test('home ↔ case study navigation keeps the token-build pin on the design-sys
   await page.goto('./');
   await expect(page.locator('.pin-spacer')).toHaveCount(0);
   for (const slug of ['design-system', 'dcc', 'design-system', 'omelanski', 'design-system']) {
+    // Back from a case, the page may be restored near the end of the sticky stack, where later cards cover earlier ones.
+    await page.evaluate(() => document.querySelector('#work')!.scrollIntoView({ block: 'start', behavior: 'instant' }));
     await page.locator(`#work a.project-link[href$="/work/${slug}/"]`).click();
     await expect(page).toHaveURL(new RegExp(`/work/${slug}/$`));
     await expect(page.locator('h1')).toBeVisible();

@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { useTheme } from './helpers';
 
-const COUNT = 6;
+const COUNT = 7;
 
 /** How the focused card sits: inside the viewport below the header, nothing on top of it, its ring. */
 const focusedCard = (page: Page) =>

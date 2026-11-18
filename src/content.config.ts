@@ -2,7 +2,7 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
-const VISUALS = ['dcc', 'design-system', 'wp-starter', 'omelanski', 'qa-agent', 'delivery-loop'] as const;
+const VISUALS = ['dcc', 'design-system', 'wp-starter', 'omelanski', 'qa-agent', 'delivery-loop', 'home-platform'] as const;
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
@@ -20,6 +20,8 @@ const projects = defineCollection({
     visual: z.enum(VISUALS),
     links: z.array(z.object({ label: z.string(), href: z.url() })),
     origin: z.literal('home.pl').optional(),
+    /** Team work shown in full: the case credits the home.pl frontend team instead of the description-only note. */
+    team: z.boolean().optional(),
   }),
 });
 

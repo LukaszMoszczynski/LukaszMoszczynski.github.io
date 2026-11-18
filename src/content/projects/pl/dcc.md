@@ -5,7 +5,7 @@ client: DCC Grygorcewicz
 summary: Motyw blokowy WordPressa zbudowany z Figmy dla firmy szkoleniowej, ze sklepem WooCommerce, własną wtyczką płatności Przelewy24 i e-voucherami w PDF.
 meta: WordPress · sklep · płatności
 tags: [WordPress, WooCommerce, PHP, Przelewy24, GSAP, Swup, Playwright]
-order: 4
+order: 5
 visual: dcc
 links:
   - label: Wersja testowa

@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { getProjects } from '../../src/content/projects';
 
-const ORDER = ['qa-agent', 'delivery-loop', 'design-system', 'dcc', 'wp-starter', 'omelanski'];
+const ORDER = ['qa-agent', 'delivery-loop', 'design-system', 'home-platform', 'dcc', 'wp-starter', 'omelanski'];
 
 describe('getProjects', () => {
   for (const lang of ['en', 'pl'] as const) {
-    it(`returns the 6 projects in order (${lang})`, async () => {
+    it(`returns the 7 projects in order (${lang})`, async () => {
       const projects = await getProjects(lang);
       expect(projects.map((project) => project.slug)).toEqual(ORDER);
     });
@@ -29,7 +29,7 @@ describe('getProjects', () => {
     it(`gives client work a client chip and every project a title (${lang})`, async () => {
       const projects = await getProjects(lang);
       const clients = Object.fromEntries(projects.map((project) => [project.slug, project.data.client ?? null]));
-      expect(clients).toEqual({ 'qa-agent': 'home.pl', 'delivery-loop': 'home.pl', 'design-system': null, dcc: 'DCC Grygorcewicz', 'wp-starter': null, omelanski: 'Omelański' });
+      expect(clients).toEqual({ 'qa-agent': 'home.pl', 'delivery-loop': 'home.pl', 'design-system': null, 'home-platform': 'home.pl', dcc: 'DCC Grygorcewicz', 'wp-starter': null, omelanski: 'Omelański' });
       for (const project of projects) expect(project.data.title).not.toBe(project.data.client);
     });
   }

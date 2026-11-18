@@ -92,7 +92,7 @@ test.describe('project visuals', () => {
     for (const index of [0, 2, 4]) {
       await showHomeCard(page, index);
       await expect.poll(() => visuals.evaluateAll((elements) => elements.map((element) => element.getAttribute('data-visual-state') === 'playing'))).toEqual(
-        [0, 1, 2, 3, 4, 5].map((position) => position === index && STORY_SLUGS.includes(['qa-agent', 'delivery-loop', 'design-system', 'dcc', 'wp-starter', 'omelanski'][position])),
+        [0, 1, 2, 3, 4, 5, 6].map((position) => position === index && STORY_SLUGS.includes(['qa-agent', 'delivery-loop', 'design-system', 'home-platform', 'dcc', 'wp-starter', 'omelanski'][position])),
       );
     }
   });

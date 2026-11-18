@@ -5,7 +5,7 @@ client: Omelański
 summary: A fast static Astro site for a property management company, with several domains redirected to one address and a package ready to upload to the client's hosting.
 meta: Astro · static site
 tags: [Astro, TypeScript, SEO, Accessibility, Playwright]
-order: 6
+order: 7
 visual: omelanski
 links:
   - label: omelanski.pl
