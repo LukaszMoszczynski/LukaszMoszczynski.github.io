@@ -3,10 +3,12 @@ import { t, type Lang } from '../i18n/utils';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const lines = ['Łukasz', 'Moszczyński'].map((line) => [...line]);
+/** The eyebrow wraps only between its parts, never inside a job title. */
+const eyebrowParts = t(lang, 'hero.eyebrow').split(' · ');
 ---
 <section class="hero" id="top">
   <div class="wrap">
-    <p class="eyebrow">{t(lang, 'hero.eyebrow')}</p>
+    <p class="eyebrow"><span>{eyebrowParts.map((part, index) => <>{index > 0 && ' · '}<span class="eyebrow-part">{part}</span></>)}</span></p>
     <h1 class="name" aria-label="Łukasz Moszczyński">
       {lines.map((letters) => (
         <span class="line" aria-hidden="true">{letters.map((letter) => <span class="char">{letter}</span>)}</span>
@@ -32,6 +34,7 @@ const lines = ['Łukasz', 'Moszczyński'].map((line) => [...line]);
 <style is:global>
   .hero { position: relative; padding-block: 150px 90px; overflow: hidden; isolation: isolate }
   .eyebrow { font-family: var(--font-body); font-weight: 600; font-size: 14px; color: var(--muted); margin: 0 0 22px; display: flex; gap: 10px; align-items: center }
+  .eyebrow-part { white-space: nowrap }
   .eyebrow::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 25%, transparent) }
   .name { font-family: var(--font-display); font-weight: 300; font-size: clamp(36px, 8.6vw, 150px); line-height: .98; letter-spacing: -.02em; margin: 0; cursor: default; contain: layout }
   .name .line { display: block; overflow: hidden; padding-bottom: .08em; white-space: nowrap }
