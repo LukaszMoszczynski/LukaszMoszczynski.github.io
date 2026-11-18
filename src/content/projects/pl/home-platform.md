@@ -4,7 +4,7 @@ short: Platforma home.pl
 client: home.pl
 summary: "Strony sprzedażowe 8 marek grupy hostingowej: ponad 700 landing pages, które redaktorzy składają z gotowych sekcji w CMS-ie, a buduje je Gatsby."
 meta: Gatsby · CMS · wiele marek
-tags: [Gatsby, GraphQL, Squidex, Contentful, React, styled-components, Tailwind, Storybook, Multi-brand]
+tags: [Gatsby, GraphQL, Squidex, React, Redux, styled-components, Tailwind, Storybook, Weblate, Playwright, Biome, Multi-brand]
 order: 4
 visual: home-platform
 team: true

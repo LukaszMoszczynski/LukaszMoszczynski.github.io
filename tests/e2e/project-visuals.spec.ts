@@ -80,6 +80,7 @@ test.describe('project visuals', () => {
         return;
       }
       await expect(hero).toHaveAttribute('data-visual', slug);
+      await hero.scrollIntoViewIfNeeded();
       await expect(hero).toHaveAttribute('data-visual-state', 'playing');
       await expectMoving(hero);
     });
@@ -114,6 +115,7 @@ test.describe('project visuals', () => {
     for (const slug of CASE_SLUGS) {
       await page.goto(`work/${slug}/`);
       const hero = page.locator('.case-hero .project-visual');
+      await hero.scrollIntoViewIfNeeded();
       await expect(hero).toHaveAttribute('data-visual-state', 'playing');
       await page.evaluate(() => document.querySelector<HTMLButtonElement>('footer [data-motion-toggle]')!.click());
       await expect(hero).toHaveAttribute('data-visual-state', 'at-rest');
@@ -288,6 +290,7 @@ test.describe('home.pl platform: sections build a page that re-skins per brand',
     test.setTimeout(30_000);
     await page.goto('work/home-platform/');
     const hero = page.locator('.case-hero .project-visual');
+    await hero.scrollIntoViewIfNeeded();
     await expect(hero).toHaveAttribute('data-visual-state', 'playing');
     const brands = new Set<string>();
     let slotsAway = false;
