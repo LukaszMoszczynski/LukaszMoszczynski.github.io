@@ -1,7 +1,6 @@
 ---
 title: Szybka statyczna strona firmowa
 short: Omelański
-client: Omelański
 summary: Szybka statyczna strona w Astro dla firmy zarządzającej nieruchomościami, z kilkoma domenami przekierowanymi na jeden adres i paczką gotową do wgrania na hosting klienta.
 meta: Astro · strona statyczna
 tags: [Astro, TypeScript, SEO, Dostępność, Playwright]

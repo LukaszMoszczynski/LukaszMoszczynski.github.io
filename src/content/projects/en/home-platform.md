@@ -4,7 +4,7 @@ short: home.pl platform
 client: home.pl
 summary: "The sales sites of a hosting group with 8 brands: more than 700 landing pages that users compose from predefined sections in a headless CMS, built by Gatsby."
 meta: Gatsby · CMS · multi-brand
-tags: [Gatsby, GraphQL, Squidex, React, Redux, styled-components, Tailwind, Storybook, Weblate, Playwright, Biome, Multi-brand]
+tags: [Gatsby, GraphQL, Squidex, React, Redux, styled-components, Tailwind, Storybook, Weblate, Playwright, Vitest, Biome, Multi-brand]
 order: 4
 visual: home-platform
 team: true

@@ -23,7 +23,7 @@ test.describe('selected work', () => {
       await page.goto(path);
       const cards = page.locator('#work article.project-card');
       await expect(cards.locator('h3')).toHaveText([...titles]);
-      const clients = ['home.pl', 'home.pl', null, 'home.pl', 'DCC Grygorcewicz', null, 'Omelański'];
+      const clients = ['home.pl', 'home.pl', null, 'home.pl', null, null, null];
       for (const [index, client] of clients.entries()) {
         const chip = cards.nth(index).locator('.project-client');
         if (client) await expect(chip).toHaveText(client);
@@ -32,7 +32,7 @@ test.describe('selected work', () => {
       // The /work/ list uses the same titles and chips.
       await page.goto(`${path}work/`);
       await expect(page.locator('.work-index-card h2')).toHaveText([...titles]);
-      await expect(page.locator('.work-index-client')).toHaveText(['home.pl', 'home.pl', 'home.pl', 'DCC Grygorcewicz', 'Omelański']);
+      await expect(page.locator('.work-index-client')).toHaveText(['home.pl', 'home.pl', 'home.pl']);
     });
   }
 
@@ -40,7 +40,7 @@ test.describe('selected work', () => {
     await page.goto('work/omelanski/');
     await expect(page.locator('h1')).toHaveText('Fast static company website');
     await expect(page).toHaveTitle(/^Fast static company website · /);
-    await expect(page.locator('.case-client')).toHaveText('Omelański');
+    await expect(page.locator('.case-client')).toHaveCount(0);
     await page.goto('pl/work/wp-starter/');
     await expect(page.locator('.case-next-name')).toHaveText('Szybka statyczna strona firmowa');
     await expect(page.locator('.case-client')).toHaveCount(0);
