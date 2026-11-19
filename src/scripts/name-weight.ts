@@ -11,16 +11,14 @@ export function snapWeight(weight: number, step = 50): number {
 }
 
 /**
- * Hero behaviour: letter rise-in after the grid draws, lines drifting apart on
- * scroll, and letters getting heavier near a fine pointer. Returns cleanup.
+ * Hero behaviour: lines drifting apart on scroll, and letters getting heavier
+ * near a fine pointer. Returns cleanup.
  *
- * The rise-in starts from the state that `html.motion.init-pending` already
- * shows in CSS (see Hero.astro), so the name never flashes in full first.
+ * The rise-in is a CSS animation (Hero.astro) that starts with the first paint.
  */
 export function initHero(root: HTMLElement): () => void {
   const chars = [...root.querySelectorAll<HTMLElement>('.name .char')];
   const lines = root.querySelectorAll<HTMLElement>('.name .line');
-  const reveal = root.querySelectorAll<HTMLElement>('.eyebrow, .claim, .sub, .grid-hint');
 
   // Letter centres are cached: measuring every letter on every move forced a layout per letter.
   let centres: Array<{ x: number; y: number }> = [];
@@ -30,15 +28,9 @@ export function initHero(root: HTMLElement): () => void {
   };
 
   if (motionEnabled()) {
-    // After a language switch the name is already there: no second rise-in.
-    if (!quietArrival()) {
-      gsap.fromTo(
-        chars,
-        { y: 0, yPercent: 120, rotate: 10 },
-        { yPercent: 0, rotate: 0, duration: 1.2, ease: 'expo.out', stagger: 0.035, delay: 0.4, onComplete: markStale },
-      );
-      gsap.fromTo(reveal, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'expo.out', stagger: 0.08, delay: 0.8 });
-    }
+    // After a language switch the name is already there: no second rise-in. The rise-in itself is CSS
+    // (Hero.astro); `still` keeps it off once the quiet-arrival class leaves <html>.
+    if (quietArrival()) root.classList.add('still');
     const scrub = { trigger: root, start: 'top top', end: 'bottom top', scrub: true };
     gsap.to(lines[0], { xPercent: -8, ease: 'none', scrollTrigger: scrub });
     gsap.to(lines[1], { xPercent: 6, ease: 'none', scrollTrigger: { ...scrub } });
@@ -88,6 +80,8 @@ export function initHero(root: HTMLElement): () => void {
   document.fonts?.ready.then(() => {
     if (alive) markStale();
   });
+  // The letters moved: the CSS rise-in ended.
+  root.addEventListener('animationend', markStale);
   root.addEventListener('pointerenter', markStale);
   root.addEventListener('pointermove', onMove);
   root.addEventListener('pointerleave', onLeave);
@@ -96,6 +90,7 @@ export function initHero(root: HTMLElement): () => void {
   return () => {
     alive = false;
     cancelAnimationFrame(frame);
+    root.removeEventListener('animationend', markStale);
     root.removeEventListener('pointerenter', markStale);
     root.removeEventListener('pointermove', onMove);
     root.removeEventListener('pointerleave', onLeave);

@@ -128,6 +128,39 @@ test.describe('first paint', () => {
     await expect(page.locator('#recommendations .quote').nth(1)).not.toHaveCSS('grid-area', '1 / 1');
   });
 
+  test('the hero rise-in plays from the first paint, without waiting for the scripts', async ({ page }) => {
+    let scriptsLoaded = 0;
+    page.on('requestfinished', (request) => { if (/\/_astro\/.*\.js$/.test(request.url())) scriptsLoaded++; });
+    await page.route(/\/_astro\/.*\.js$/, async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 10_000));
+      await route.continue().catch(() => {});
+    });
+    await page.goto('./', { waitUntil: 'commit' });
+    // Moving, not just released: a letter caught between its start pose and rest while the
+    // safety timer (3 s, it would snap everything to rest) still holds init-pending.
+    const midway = await page.waitForFunction(() => {
+      const char = document.querySelector<HTMLElement>('.hero .char');
+      if (!char || !document.documentElement.classList.contains('init-pending')) return false;
+      const lift = Math.abs(new DOMMatrix(getComputedStyle(char).transform).m42);
+      return lift > 0.5 && lift < char.offsetHeight * 0.9;
+    }, undefined, { polling: 16, timeout: 2800 });
+    expect(await midway.jsonValue()).toBe(true);
+    const last = page.locator('.hero .char').last();
+    await expect.poll(() => last.evaluate((element) => getComputedStyle(element).transform), { timeout: 4000 }).toBe('none');
+    await expect(page.locator('.hero .grid-hint')).toHaveCSS('opacity', '1', { timeout: 1000 });
+    expect(scriptsLoaded).toBe(0);
+  });
+
+  test('Polish letters in the name use Unbounded from the small subset file', async ({ page }) => {
+    const fonts: string[] = [];
+    page.on('response', (response) => { if (response.url().endsWith('.woff2')) fonts.push(response.url()); });
+    await page.goto('./');
+    await page.evaluate(() => document.fonts.ready);
+    expect(await page.evaluate(() => document.fonts.check('300 40px "Unbounded Variable"', 'ŁńąćęśźżŚŹŻ'))).toBe(true);
+    expect(fonts.some((url) => /unbounded-polish-wght\.[\w-]+\.woff2$/.test(url))).toBe(true);
+    expect(fonts.some((url) => url.includes('unbounded-latin-ext'))).toBe(false);
+  });
+
   test('reduced motion: nothing is held in a start state', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('./', { waitUntil: 'commit' });

@@ -2,6 +2,8 @@
 import { t, type Lang } from '../i18n/utils';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
+/** Each letter's place in the name; the rise-in staggers by it. */
+let letterIndex = 0;
 const lines = ['Łukasz', 'Moszczyński'].map((line) => [...line]);
 /** The eyebrow wraps only between its parts, never inside a job title. */
 const eyebrowParts = t(lang, 'hero.eyebrow').split(' · ');
@@ -11,7 +13,7 @@ const eyebrowParts = t(lang, 'hero.eyebrow').split(' · ');
     <p class="eyebrow"><span>{eyebrowParts.map((part, index) => <>{index > 0 && ' · '}<span class="eyebrow-part">{part}</span></>)}</span></p>
     <h1 class="name" aria-label="Łukasz Moszczyński">
       {lines.map((letters) => (
-        <span class="line" aria-hidden="true">{letters.map((letter) => <span class="char">{letter}</span>)}</span>
+        <span class="line" aria-hidden="true">{letters.map((letter) => <span class="char" style={`--i: ${letterIndex++}`}>{letter}</span>)}</span>
       ))}
     </h1>
     <div class="hero-foot">
@@ -40,9 +42,20 @@ const eyebrowParts = t(lang, 'hero.eyebrow').split(' · ');
   .name .line { display: block; overflow: hidden; padding-bottom: .08em; white-space: nowrap }
   .name .line + .line { color: var(--accent-display) }
   .char { display: inline-block }
-  /* Start of the rise-in (name-weight.ts), shown from the first paint so the name never flashes in full. */
-  html.motion.init-pending:not(.quiet-arrival) .hero .char { transform: translateY(120%) rotate(10deg) }
-  html.motion.init-pending:not(.quiet-arrival) .hero :is(.eyebrow, .claim, .sub, .grid-hint) { opacity: 0; transform: translateY(18px) }
+  /*
+   * Rise-in: plain CSS, so it starts with the first paint instead of waiting for the scripts (on a slow
+   * phone that wait made the page look unfinished for seconds). `fill-mode: backwards` holds the start pose
+   * during the delay, so the name never flashes in full; once done, the animation leaves no trace. Skipped after a language switch: the class is
+   * on <html> while the new page is swapped in, and name-weight.ts marks the hero `still` before it goes.
+   */
+  html.motion:not(.quiet-arrival) .hero:not(.still) .char { animation: hero-char-rise 1.2s var(--ease-expo-out) calc(.4s + var(--i) * 35ms) backwards }
+  html.motion:not(.quiet-arrival) .hero:not(.still) :is(.eyebrow, .claim, .sub, .grid-hint) { animation: hero-reveal 1s var(--ease-expo-out) .8s backwards }
+  html.motion:not(.quiet-arrival) .hero:not(.still) .claim { animation-delay: .88s }
+  html.motion:not(.quiet-arrival) .hero:not(.still) .sub { animation-delay: .96s }
+  html.motion:not(.quiet-arrival) .hero:not(.still) .grid-hint { animation-delay: 1.04s }
+  .hero { --ease-expo-out: cubic-bezier(.19, 1, .22, 1) }
+  @keyframes hero-char-rise { from { transform: translateY(120%) rotate(10deg) } to { transform: none } }
+  @keyframes hero-reveal { from { opacity: 0; transform: translateY(18px) } to { opacity: 1; transform: none } }
   .hero-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 24px; margin-top: 32px }
   /* Bold, so it counts as large text from 18.7px and its orange part can use the display orange. */
   .claim { font-family: var(--font-display); font-weight: 700; font-size: clamp(20px, 2.4vw, 30px); line-height: 1.2; letter-spacing: -.02em; margin: 0; max-width: 20ch }
