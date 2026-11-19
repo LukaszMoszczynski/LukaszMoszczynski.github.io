@@ -1,6 +1,6 @@
 ---
 title: WordPress shop with online payments
-short: DCC Grygorcewicz
+short: WordPress shop
 summary: A WordPress block theme built from Figma for a training company, with a WooCommerce shop, my own Przelewy24 payment plugin and PDF e-vouchers.
 meta: WordPress · shop · payments
 tags: [WordPress, WooCommerce, PHP, Przelewy24, GSAP, Swup, Playwright]

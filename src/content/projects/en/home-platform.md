@@ -1,6 +1,6 @@
 ---
 title: Multi-brand sales sites built from one page creator
-short: home.pl platform
+short: Multi-brand sites
 client: home.pl
 summary: "The sales sites of a hosting group with 8 brands: more than 700 landing pages that users compose from predefined sections in a headless CMS, built by Gatsby."
 meta: Gatsby · CMS · multi-brand

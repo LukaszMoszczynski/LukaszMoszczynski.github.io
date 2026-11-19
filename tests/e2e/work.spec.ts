@@ -44,7 +44,7 @@ test.describe('selected work', () => {
     await page.goto('pl/work/wp-starter/');
     await expect(page.locator('.case-next-name')).toHaveText('Szybka statyczna strona firmowa');
     await expect(page.locator('.case-client')).toHaveCount(0);
-    await expect(page.locator('.menu-projects a')).toHaveText(['Agent QA', 'Automatyczny proces z człowiekiem w pętli', 'Design System', 'Platforma home.pl', 'DCC Grygorcewicz', 'WP Starter', 'Omelański']);
+    await expect(page.locator('.menu-projects a')).toHaveText(['Agent QA', 'Człowiek w pętli', 'Design system', 'Strony wielu marek', 'Sklep WordPress', 'Figma → WordPress', 'Strona firmowa']);
   });
 
   test('section has no horizontal overflow', async ({ page }) => {

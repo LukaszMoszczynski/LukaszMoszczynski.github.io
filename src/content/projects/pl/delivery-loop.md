@@ -1,5 +1,6 @@
 ---
 title: Automatyczny proces z człowiekiem w pętli
+short: Człowiek w pętli
 client: home.pl
 summary: Etykieta w Jirze przekazuje zadanie agentom w kontenerze Dockera. Rozwiązują je i w pętli poprawiają uwagi z review, aż będzie czyste, a potem człowiek przegląda pracę i ją merguje.
 meta: AI · agenci · proces

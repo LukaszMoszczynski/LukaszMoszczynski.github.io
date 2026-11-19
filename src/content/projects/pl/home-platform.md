@@ -1,6 +1,6 @@
 ---
 title: Wielomarkowe strony sprzedażowe z jednego kreatora stron
-short: Platforma home.pl
+short: Strony wielu marek
 client: home.pl
 summary: "Strony sprzedażowe 8 marek grupy hostingowej: ponad 700 landing pages, które użytkownicy składają z gotowych sekcji w CMS-ie, a buduje je Gatsby."
 meta: Gatsby · CMS · wiele marek
