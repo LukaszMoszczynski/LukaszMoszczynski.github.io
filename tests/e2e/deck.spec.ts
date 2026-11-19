@@ -1,22 +1,22 @@
 import { expect, test } from '@playwright/test';
 import { useTheme } from './helpers';
 
-const names = ['Aleksandra Zalewska', 'Szymon Papis', 'Dawid Krajewski'];
+const names = ['Sylwia Wochniak', 'Aleksandra Zalewska', 'Szymon Papis', 'Dawid Krajewski'];
 
 async function topName(page: import('@playwright/test').Page) {
   return page.locator('.quote:not([aria-hidden="true"]) figcaption b').textContent();
 }
 
 test.describe('recommendations deck', () => {
-  test('top card is Aleksandra Zalewska and the deck is a labelled region', async ({ page }) => {
+  test('top card is Sylwia Wochniak and the deck is a labelled region', async ({ page }) => {
     await page.goto('./');
     await expect(page.locator('.deck')).toHaveAttribute('role', 'region');
     await expect(page.locator('.deck')).toHaveAttribute('aria-label', /.+/);
     await expect.poll(() => topName(page)).toBe(names[0]);
-    await expect(page.locator('.quote[aria-hidden="true"]')).toHaveCount(2);
+    await expect(page.locator('.quote[aria-hidden="true"]')).toHaveCount(3);
   });
 
-  test('dragging the top card 200px right reveals Szymon Papis', async ({ page, isMobile }) => {
+  test('dragging the top card 200px right reveals Aleksandra Zalewska', async ({ page, isMobile }) => {
     test.skip(!!isMobile, 'mouse drag is a desktop interaction');
     await page.goto('./');
     const card = page.locator('.quote').first();
@@ -56,9 +56,11 @@ test.describe('recommendations deck', () => {
     await page.keyboard.press('Enter');
     await expect.poll(() => topName(page)).toBe(names[1]);
     await expect(page.locator('.deck-announce')).toContainText(names[1]);
-    await expect(page.locator('.deck-announce')).toContainText('Szymon');
+    await expect(page.locator('.deck-announce')).toContainText('Aleksandra');
     await page.keyboard.press('Enter');
     await expect.poll(() => topName(page)).toBe(names[2]);
+    await page.keyboard.press('Enter');
+    await expect.poll(() => topName(page)).toBe(names[3]);
     await page.keyboard.press('Enter');
     await expect.poll(() => topName(page)).toBe(names[0]);
     expect((await next.boundingBox())!.height).toBeGreaterThanOrEqual(40);
@@ -73,8 +75,8 @@ test.describe('recommendations deck', () => {
     await expect.poll(() => topName(page)).toBe(names[0]);
     await page.locator('.deck').focus();
     await page.keyboard.press('ArrowLeft');
-    await expect.poll(() => topName(page)).toBe(names[2]);
-    await expect(page.locator('.deck-announce')).toContainText('Recommendation 3 of 3');
+    await expect.poll(() => topName(page)).toBe(names[3]);
+    await expect(page.locator('.deck-announce')).toContainText('Recommendation 4 of 4');
     await expect(page.locator('.reco-hint')).not.toContainText(/drag/i);
     await expect(page.locator('.quote').first()).toHaveCSS('cursor', 'default');
   });
@@ -83,12 +85,12 @@ test.describe('recommendations deck', () => {
     await page.goto('./');
     const previous = page.getByRole('button', { name: /previous/i });
     await previous.click();
-    await expect.poll(() => topName(page)).toBe(names[2]);
-    await expect(page.locator('.deck-announce')).toContainText('Recommendation 3 of 3');
-    await expect(page.locator('.deck-announce')).toContainText(names[2]);
+    await expect.poll(() => topName(page)).toBe(names[3]);
+    await expect(page.locator('.deck-announce')).toContainText('Recommendation 4 of 4');
+    await expect(page.locator('.deck-announce')).toContainText(names[3]);
     await page.getByRole('button', { name: /next/i }).click();
     await expect.poll(() => topName(page)).toBe(names[0]);
-    await expect(page.locator('.deck-announce')).toContainText('Recommendation 1 of 3');
+    await expect(page.locator('.deck-announce')).toContainText('Recommendation 1 of 4');
     expect((await previous.boundingBox())!.height).toBeGreaterThanOrEqual(40);
   });
 
@@ -105,12 +107,12 @@ test.describe('recommendations deck', () => {
 
     await page.keyboard.press('ArrowRight');
     await expect.poll(() => topName(page)).toBe(names[1]);
-    await expect(page.locator('.deck-announce')).toHaveText(/^Recommendation 2 of 3: Szymon Papis/);
+    await expect(page.locator('.deck-announce')).toHaveText(/^Recommendation 2 of 4: Aleksandra Zalewska/);
     await expect(deck).toBeFocused();
     await page.keyboard.press('ArrowLeft');
     await expect.poll(() => topName(page)).toBe(names[0]);
     await page.keyboard.press('ArrowLeft');
-    await expect.poll(() => topName(page)).toBe(names[2]);
+    await expect.poll(() => topName(page)).toBe(names[3]);
 
     // Arrows work on the buttons too, and focus stays put.
     await next.focus();
@@ -119,8 +121,8 @@ test.describe('recommendations deck', () => {
     await expect(next).toBeFocused();
 
     // Hidden cards are out of the tab order and the accessibility tree.
-    await expect(page.locator('.quote[inert]')).toHaveCount(2);
-    await expect(page.locator('.quote[aria-hidden="true"]')).toHaveCount(2);
+    await expect(page.locator('.quote[inert]')).toHaveCount(3);
+    await expect(page.locator('.quote[aria-hidden="true"]')).toHaveCount(3);
     await expect(deck.getByRole('figure')).toHaveCount(1);
     await expect(deck).toContainText(names[0]);
     await expect(deck.getByRole('figure')).not.toContainText(names[1]);
@@ -179,7 +181,7 @@ test.describe('recommendations deck', () => {
 
   test.describe('no JS', () => {
     test.use({ javaScriptEnabled: false });
-    test('all three quotes are readable', async ({ page }) => {
+    test('all four quotes are readable', async ({ page }) => {
       await page.goto('./');
       for (const name of names) await expect(page.getByText(name)).toBeVisible();
       await expect(page.getByRole('button', { name: /next/i })).toBeHidden();
