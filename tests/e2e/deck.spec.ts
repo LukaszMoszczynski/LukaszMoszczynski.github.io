@@ -188,4 +188,25 @@ test.describe('recommendations deck', () => {
       await expect(page.getByRole('button', { name: /previous/i })).toBeHidden();
     });
   });
+  test('before deck.ts runs every card is drawn in the pose deck.ts gives it, the fourth too', async ({ page }) => {
+    await page.goto('./');
+    await expect(page.locator('html')).not.toHaveClass(/init-pending/);
+    // Back to the pre-init look: the class on, deck.ts inline styles off.
+    const drawn = await page.locator('.reco .quote').evaluateAll((cards) => {
+      document.documentElement.classList.add('init-pending');
+      return cards.map((card) => {
+        const element = card as HTMLElement;
+        element.style.removeProperty('transform');
+        element.style.removeProperty('z-index');
+        const style = getComputedStyle(element);
+        return { zIndex: style.zIndex, transform: style.transform };
+      });
+    });
+    expect(drawn).toHaveLength(4);
+    expect(drawn.map((card) => card.zIndex)).toEqual(['4', '3', '2', '1']);
+    for (const card of drawn) expect(card.transform).not.toBe('none');
+    // The fourth card sits lowest: 48px down (matrix translateY), smaller than the third.
+    const translateY = (transform: string) => Number(transform.match(/matrix\(([^)]+)\)/)![1].split(',')[5]);
+    expect(translateY(drawn[3].transform)).toBeCloseTo(48, 0);
+  });
 });

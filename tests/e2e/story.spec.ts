@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { useTheme } from './helpers';
+import { langSwitch, useTheme } from './helpers';
 import { ui } from '../../src/i18n/ui';
 
 const statementText = ui.en['statement.text'];
@@ -109,6 +109,27 @@ test.describe('statement and career path', () => {
     await expect(pause).toHaveAttribute('aria-pressed', 'true');
     expect((await opacityRange(page)).min).toBe(1);
     await expect(page.locator('.statement')).not.toHaveAttribute('data-entrance', /.*/);
+  });
+
+  test('back from a language switch with the statement in sight, it does not replay its entrance', async ({ page }) => {
+    // A short screen, so the statement is below the fold while the page is at the top.
+    await page.setViewportSize({ width: 1366, height: 650 });
+    await page.goto('./');
+    const statement = page.locator('.statement p');
+    await expect(statement.locator('.word').first()).toBeAttached();
+    const below = await statement.evaluate((node) => node.getBoundingClientRect().top >= window.innerHeight);
+    test.skip(!below, 'statement is on screen at load at this viewport');
+    await page.evaluate(() => document.querySelector('.statement')!.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await expect.poll(async () => (await opacityRange(page)).min, { timeout: 6000 }).toBeGreaterThan(0.99);
+    await (await langSwitch(page)).click();
+    await expect(page).toHaveURL(/\/pl\/$/);
+    await expect(page.locator('html')).not.toHaveAttribute('data-astro-transition', /.*/);
+    await expect(page.locator('.statement p')).toBeInViewport();
+    for (let sample = 0; sample < 6; sample++) {
+      expect((await opacityRange(page)).min).toBe(1);
+      await expect(page.locator('.statement')).not.toHaveAttribute('data-entrance', /.*/);
+      await page.waitForTimeout(250);
+    }
   });
 
   test('timeline has 8 entries that all light up at the end', async ({ page }) => {

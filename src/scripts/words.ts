@@ -85,20 +85,30 @@ export function initStatement(root: HTMLElement): () => void {
     timers.push(window.setTimeout(finish, FALLBACK_MS + delay * 1000));
   };
 
-  const box = paragraph.getBoundingClientRect();
-  const onScreen = box.top < innerHeight * STATEMENT_IN_VIEW;
-  if (motionPaused() || (quietArrival() && onScreen) || box.bottom <= 0) {
-    // Paused, back from a language switch with it in sight, or already read above: final text, no entrance.
-    state = 'done';
-  } else if (onScreen) {
-    // On screen at load (short hero, restored scroll): it lights up once, without waiting for a scroll.
-    play();
+  const start = (quiet: boolean) => {
+    if (state !== 'waiting') return;
+    const box = paragraph.getBoundingClientRect();
+    const onScreen = box.top < innerHeight * STATEMENT_IN_VIEW;
+    if (motionPaused() || (quiet && onScreen) || box.bottom <= 0) {
+      // Paused, back from a language switch with it in sight, or already read above: final text, no entrance.
+      state = 'done';
+    } else if (onScreen) {
+      // On screen at load (short hero, restored scroll): it lights up once, without waiting for a scroll.
+      play();
+    } else {
+      // Further down: still full ink until it is just below the screen edge, so it is never dim where nobody looks for long.
+      triggers.push(
+        ScrollTrigger.create({ trigger: paragraph, start: DIM_START, once: true, onEnter: dim }),
+        ScrollTrigger.create({ trigger: paragraph, start: PLAY_START, once: true, onEnter: () => play(0) }),
+      );
+    }
+  };
+  if (quietArrival()) {
+    // After a language switch the page is still at the top here; lifecycle.ts puts the reader back at
+    // their place once every setup ran. Measure after that, in the microtask that follows the setups.
+    queueMicrotask(() => start(true));
   } else {
-    // Further down: still full ink until it is just below the screen edge, so it is never dim where nobody looks for long.
-    triggers.push(
-      ScrollTrigger.create({ trigger: paragraph, start: DIM_START, once: true, onEnter: dim }),
-      ScrollTrigger.create({ trigger: paragraph, start: PLAY_START, once: true, onEnter: () => play(0) }),
-    );
+    start(false);
   }
   const stopListening = onMotionPauseChange((paused) => {
     if (paused) finish();

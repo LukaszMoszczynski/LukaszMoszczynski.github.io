@@ -157,4 +157,20 @@ test.describe('token build atoms', () => {
     await expect(page.locator('.build .p-accent .label')).toHaveCSS('opacity', '1');
     await expect(page.locator('.build .p-space')).toHaveCSS('opacity', '0');
   });
+  test('pins or not by the current viewport, also after rotating a tablet both ways', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop', 'one run is enough: the viewport is set here');
+    const spacers = page.locator('.pin-spacer');
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto(CASE);
+    await expect(page.locator('html')).not.toHaveClass(/init-pending/);
+    await expect(spacers).toHaveCount(1);
+    await page.setViewportSize({ width: 768, height: 1024 });
+    await expect(spacers).toHaveCount(0);
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await expect(spacers).toHaveCount(1);
+    // Steps still drive the build after the rebuild.
+    await page.locator('.build').scrollIntoViewIfNeeded();
+    await steps(page).nth(2).evaluate((button: HTMLElement) => button.click());
+    await expect(steps(page).nth(2)).toHaveClass(/\bon\b/, { timeout: 1500 });
+  });
 });

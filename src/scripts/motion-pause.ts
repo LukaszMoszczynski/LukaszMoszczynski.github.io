@@ -28,7 +28,8 @@ export function setMotionPaused(paused: boolean): void {
     if (paused) localStorage.setItem(PAUSE_KEY, '1');
     else localStorage.removeItem(PAUSE_KEY);
   } catch {
-    // storage unavailable: the choice lasts until the next full page load
+    // storage unavailable: the choice lasts until the next full page load (the head script in
+    // BaseLayout carries the class over on client-side navigations)
   }
   document.dispatchEvent(new CustomEvent(PAUSE_EVENT, { detail: { paused } }));
 }

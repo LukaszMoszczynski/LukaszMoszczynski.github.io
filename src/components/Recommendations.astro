@@ -1,5 +1,6 @@
 ---
 import { t, type Lang } from '../i18n/utils';
+import { cardPose } from '../scripts/deck-model';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 
@@ -23,12 +24,16 @@ const quotes = [
     <p class="deck-announce" aria-live="polite" aria-atomic="true" data-template={t(lang, 'reco.position')}></p>
   </div>
   <div class="deck" id="reco-deck" role="region" aria-label={t(lang, 'reco.kicker')}>
-    {quotes.map((quote) => (
-      <figure class="quote">
+    {quotes.map((quote, index) => {
+      // The resting pose deck.ts gives this card, drawn before it runs (see html.init-pending below).
+      const pose = cardPose(index, quotes.length);
+      return (
+      <figure class="quote" style={`--pose-z: ${pose.zIndex}; --pose: translateY(${pose.y}px) rotate(${pose.rotation}deg) scale(${pose.scale})`}>
         <blockquote lang="en">{quote.text}</blockquote>
         <figcaption><b>{quote.name}</b><span>{quote.role}</span></figcaption>
       </figure>
-    ))}
+      );
+    })}
   </div>
 </section>
 <script>
@@ -61,10 +66,8 @@ const quotes = [
   .reco.deck-on .quote, html.init-pending .reco .quote { grid-area: 1 / 1; cursor: grab; touch-action: pan-y; user-select: none }
   .reco.deck-on .quote:active { cursor: grabbing }
   .reco.deck-still .quote { cursor: default; touch-action: auto }
-  /* Matches cardPose() in deck-model.ts for a deck of three. */
-  html.init-pending .reco .quote:nth-child(1) { z-index: 3 }
-  html.init-pending .reco .quote:nth-child(2) { z-index: 2; transform: translateY(16px) rotate(-3deg) scale(.95) }
-  html.init-pending .reco .quote:nth-child(3) { z-index: 1; transform: translateY(32px) rotate(3deg) scale(.9) }
+  /* --pose and --pose-z come from cardPose() in deck-model.ts, so any number of cards matches deck.ts. */
+  html.init-pending .reco .quote { z-index: var(--pose-z); transform: var(--pose) }
   .reco .quote blockquote { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: clamp(17px, 1.8vw, 22px); line-height: 1.35; letter-spacing: -.01em }
   .reco .quote figcaption { display: grid; gap: 2px }
   .reco .quote figcaption span { color: var(--muted); font-size: 14px }

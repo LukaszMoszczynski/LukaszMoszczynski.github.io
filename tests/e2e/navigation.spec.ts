@@ -134,4 +134,23 @@ test.describe('first paint', () => {
     await expect(page.locator('html')).not.toHaveClass(/\bmotion\b/);
     await expect(page.locator('.hero .char').first()).toHaveCSS('transform', 'none');
   });
+  test('with storage blocked, Pause animations survives a client-side page change', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window, 'localStorage', {
+        get() {
+          throw new DOMException('blocked', 'SecurityError');
+        },
+      });
+    });
+    await page.goto('./');
+    await settled(page);
+    const pause = page.locator('footer [data-motion-toggle]');
+    await pause.evaluate((button: HTMLElement) => button.click());
+    await expect(pause).toHaveAttribute('aria-pressed', 'true');
+    await page.locator('#work a.project-link[href$="/work/dcc/"]').evaluate((link: HTMLElement) => link.click());
+    await expect(page).toHaveURL(/\/work\/dcc\/$/);
+    await settled(page);
+    await expect(page.locator('html')).toHaveClass(/\bmotion-paused\b/);
+    await expect(page.locator('footer [data-motion-toggle]')).toHaveAttribute('aria-pressed', 'true');
+  });
 });

@@ -24,14 +24,23 @@ const { lang, title, description, path, noindex } = Astro.props;
     <Seo lang={lang} title={title} description={description} path={path} noindex={noindex} />
     <script is:inline>
       (function () {
-        var apply = function (target) {
+        // `current`: the page being replaced on a client-side navigation. When storage can't be
+        // read, its theme and pause choice carry over, so they last until the next full load.
+        var apply = function (target, current) {
           var stored = null;
-          try { stored = localStorage.getItem('theme'); } catch (error) {}
+          var paused = false;
+          try {
+            stored = localStorage.getItem('theme');
+            // "Pause animations" (motion-pause.ts): remembered across pages and visits.
+            paused = localStorage.getItem('motion-paused') === '1';
+          } catch (error) {
+            if (current) {
+              stored = current.dataset.theme;
+              paused = current.classList.contains('motion-paused');
+            }
+          }
           // Dark unless the reader chose light (resolveTheme in theme.ts); the OS setting is not consulted.
           target.dataset.theme = stored === 'light' || stored === 'dark' ? stored : 'dark';
-          // "Pause animations" (motion-pause.ts): remembered across pages and visits.
-          var paused = false;
-          try { paused = localStorage.getItem('motion-paused') === '1'; } catch (error) {}
           target.classList.toggle('motion-paused', paused);
           // `js`: scripts run, so CSS may hide controls that only JS can reach elsewhere (the menu).
           target.classList.add('js');
@@ -51,7 +60,7 @@ const { lang, title, description, path, noindex } = Astro.props;
         apply(document.documentElement);
         mark(document.documentElement);
         document.addEventListener('astro:before-swap', function (event) {
-          apply(event.newDocument.documentElement);
+          apply(event.newDocument.documentElement, document.documentElement);
           mark(event.newDocument.documentElement);
         });
       })();

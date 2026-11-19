@@ -134,56 +134,68 @@ export function initTokenBuild(root: HTMLElement): () => void {
     },
   });
 
-  const build = gsap.timeline({ defaults: { ease: 'power2.inOut', duration: 1 } });
-  build.addLabel('s0');
-  for (let step = 1; step <= last; step++) {
-    pieces.forEach((piece, pieceIndex) => build.to(piece, pieceStyle(BUILD_STATES[step][pieceIndex]), `s${step - 1}`));
-    // Layers that change at this step: fading ones go out early, appearing ones come in late.
-    const before = layerOpacity(step - 1);
-    const after = layerOpacity(step);
-    for (const name of layerNames) {
-      if (!layers[name].length || before[name] === after[name]) continue;
-      const position = after[name] > before[name] ? `s${step - 1}+=0.55` : `s${step - 1}`;
-      build.to(layers[name], { opacity: after[name], duration: 0.45 }, position);
+  const makeBuild = () => {
+    const build = gsap.timeline({ defaults: { ease: 'power2.inOut', duration: 1 } });
+    build.addLabel('s0');
+    for (let step = 1; step <= last; step++) {
+      pieces.forEach((piece, pieceIndex) => build.to(piece, pieceStyle(BUILD_STATES[step][pieceIndex]), `s${step - 1}`));
+      // Layers that change at this step: fading ones go out early, appearing ones come in late.
+      const before = layerOpacity(step - 1);
+      const after = layerOpacity(step);
+      for (const name of layerNames) {
+        if (!layers[name].length || before[name] === after[name]) continue;
+        const position = after[name] > before[name] ? `s${step - 1}+=0.55` : `s${step - 1}`;
+        build.to(layers[name], { opacity: after[name], duration: 0.45 }, position);
+      }
+      build.addLabel(`s${step}`);
     }
-    build.addLabel(`s${step}`);
-  }
+    return build;
+  };
 
   let lockedStep = -1;
   let lockUntil = 0;
-  const pinned = window.matchMedia(PIN_MEDIA).matches;
-  const placement: ScrollTrigger.StaticVars = pinned
-    ? { trigger: root, start: 'top top', end: '+=140%', pin: true, snap: { snapTo: 'labels', duration: { min: 0.2, max: 0.5 }, ease: 'power1.inOut' } }
-    : {
-      // From the frame's bottom reaching the bottom of the screen to its top reaching the header.
-      trigger: stage,
-      start: () => `top ${Math.max(HEADER_CLEARANCE + 200, window.innerHeight - stage.offsetHeight - 24)}px`,
-      end: `top ${HEADER_CLEARANCE}px`,
-      invalidateOnRefresh: true,
+  let trigger: ScrollTrigger | undefined;
+  // The CSS switches between side by side and stacked at PIN_MEDIA, so the trigger is rebuilt
+  // whenever the viewport crosses it (rotating a tablet, resizing a window).
+  const media = gsap.matchMedia();
+  media.add({ pinned: PIN_MEDIA, flowing: `not all and ${PIN_MEDIA}` }, (context) => {
+    const placement: ScrollTrigger.StaticVars = context.conditions?.pinned
+      ? { trigger: root, start: 'top top', end: '+=140%', pin: true, snap: { snapTo: 'labels', duration: { min: 0.2, max: 0.5 }, ease: 'power1.inOut' } }
+      : {
+        // From the frame's bottom reaching the bottom of the screen to its top reaching the header.
+        trigger: stage,
+        start: () => `top ${Math.max(HEADER_CLEARANCE + 200, window.innerHeight - stage.offsetHeight - 24)}px`,
+        end: `top ${HEADER_CLEARANCE}px`,
+        invalidateOnRefresh: true,
+      };
+    trigger = ScrollTrigger.create({
+      ...placement,
+      scrub: 0.35,
+      animation: makeBuild(),
+      onUpdate: (self) => {
+        const index = Math.round(self.progress * last);
+        if (lockedStep >= 0) {
+          if (index === lockedStep || performance.now() > lockUntil) lockedStep = -1;
+          else return;
+        }
+        setStep(index);
+      },
+    });
+    return () => {
+      trigger = undefined;
     };
-  const trigger = ScrollTrigger.create({
-    ...placement,
-    scrub: 0.35,
-    animation: build,
-    onUpdate: (self) => {
-      const index = Math.round(self.progress * last);
-      if (lockedStep >= 0) {
-        if (index === lockedStep || performance.now() > lockUntil) lockedStep = -1;
-        else return;
-      }
-      setStep(index);
-    },
   });
 
   listen((index) => {
     lockedStep = index;
     lockUntil = performance.now() + CLICK_LOCK_MS;
     setStep(index);
-    window.scrollTo({ top: stepScrollTop(trigger.start, trigger.end, index, BUILD_STATES.length), behavior: 'smooth' });
+    if (trigger) window.scrollTo({ top: stepScrollTop(trigger.start, trigger.end, index, BUILD_STATES.length), behavior: 'smooth' });
   });
 
   return () => {
     removeListeners();
     popIn?.kill();
+    media.revert();
   };
 }
