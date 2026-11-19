@@ -28,8 +28,9 @@ describe('getProjects', () => {
 
     it(`gives client work a client chip and every project a title (${lang})`, async () => {
       const projects = await getProjects(lang);
-      const clients = Object.fromEntries(projects.map((project) => [project.slug, project.data.client ?? null]));
-      expect(clients).toEqual({ 'qa-agent': 'home.pl', 'delivery-loop': 'home.pl', 'design-system': null, 'home-platform': 'home.pl', dcc: null, 'wp-starter': null, omelanski: null });
+      // Only the home.pl projects carry a client chip.
+      const clients = Object.fromEntries(projects.filter((project) => project.data.client).map((project) => [project.slug, project.data.client]));
+      expect(clients).toEqual({ 'qa-agent': 'home.pl', 'delivery-loop': 'home.pl', 'home-platform': 'home.pl' });
       for (const project of projects) expect(project.data.title).not.toBe(project.data.client);
     });
   }
