@@ -25,7 +25,7 @@ async function expectAtTop(page: Page, selector: string) {
 
 test.describe('scroll position after navigation', () => {
   test('menu Contact on a case study lands on #contact', async ({ page }) => {
-    await page.goto('work/dcc/');
+    await page.goto('work/wordpress-shop/');
     await settled(page);
     await page.getByRole('button', { name: 'Menu' }).click();
     await page.locator('#site-menu').getByRole('link', { name: 'Contact', exact: true }).click();
@@ -35,7 +35,7 @@ test.describe('scroll position after navigation', () => {
   });
 
   test('“← All work” opens the /work/ list', async ({ page }) => {
-    await page.goto('work/dcc/');
+    await page.goto('work/wordpress-shop/');
     await settled(page);
     await page.getByRole('link', { name: '← All work' }).click();
     await expect(page).toHaveURL(/\/portfolio-preview\/work\/$/);
@@ -44,7 +44,7 @@ test.describe('scroll position after navigation', () => {
   });
 
   test('“← Wszystkie projekty” on a Polish case opens /pl/work/', async ({ page }) => {
-    await page.goto('pl/work/dcc/');
+    await page.goto('pl/work/wordpress-shop/');
     await settled(page);
     await page.getByRole('link', { name: '← Wszystkie projekty' }).click();
     await expect(page).toHaveURL(/\/portfolio-preview\/pl\/work\/$/);
@@ -92,7 +92,7 @@ test.describe('scroll position after navigation', () => {
 test.describe('scroll position after navigation, reduced motion', () => {
   test.use({ reducedMotion: 'reduce' });
   test('“← All work” opens the /work/ list', async ({ page }) => {
-    await page.goto('work/dcc/');
+    await page.goto('work/wordpress-shop/');
     await settled(page);
     await page.getByRole('link', { name: '← All work' }).click();
     await expect(page).toHaveURL(/\/portfolio-preview\/work\/$/);
@@ -180,8 +180,8 @@ test.describe('first paint', () => {
     const pause = page.locator('footer [data-motion-toggle]');
     await pause.evaluate((button: HTMLElement) => button.click());
     await expect(pause).toHaveAttribute('aria-pressed', 'true');
-    await page.locator('#work a.project-link[href$="/work/dcc/"]').evaluate((link: HTMLElement) => link.click());
-    await expect(page).toHaveURL(/\/work\/dcc\/$/);
+    await page.locator('#work a.project-link[href$="/work/wordpress-shop/"]').evaluate((link: HTMLElement) => link.click());
+    await expect(page).toHaveURL(/\/work\/wordpress-shop\/$/);
     await settled(page);
     await expect(page.locator('html')).toHaveClass(/\bmotion-paused\b/);
     await expect(page.locator('footer [data-motion-toggle]')).toHaveAttribute('aria-pressed', 'true');

@@ -4,7 +4,7 @@ import type { Lang } from '../i18n/utils';
 export type Project = CollectionEntry<'projects'>['data'];
 export type ProjectEntry = CollectionEntry<'projects'> & { slug: string };
 
-/** Projects of one language, sorted by `order`; `slug` is the file name (`en/dcc` → `dcc`). */
+/** Projects of one language, sorted by `order`; `slug` is the file name (`en/wordpress-shop` → `wordpress-shop`). */
 export async function getProjects(lang: Lang): Promise<ProjectEntry[]> {
   const entries = await getCollection('projects', (entry) => entry.id.startsWith(`${lang}/`));
   return entries

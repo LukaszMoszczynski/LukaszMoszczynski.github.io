@@ -6,7 +6,7 @@ summary: "The sales sites of a hosting group with 8 brands: more than 700 landin
 meta: Gatsby · CMS · multi-brand
 tags: [Gatsby, GraphQL, Squidex, React, Redux, styled-components, Tailwind, Storybook, Weblate, Playwright, Vitest, Biome, Multi-brand]
 order: 4
-visual: home-platform
+visual: multi-brand-sites
 team: true
 links:
   - label: home.pl
@@ -32,4 +32,4 @@ The home.pl frontend team builds the marketing and sales sites of a multi-brand 
 - Users, not developers, put the pages together: they pick predefined sections in the CMS, and Gatsby builds the page for every brand.
 - The sales paths are part of the same system: upsells, baskets and product configurators on the way from a landing page to an order.
 - I onboarded new developers into the project.
-- This system is the ground my AI work stands on: the [QA agent](../qa-agent/) and the [human-in-the-loop delivery](../delivery-loop/). The delivery runs on my "resolve ticket" skill, which reads Figma and builds components and sections in Tailwind step by step.
+- This system is the ground my AI work stands on: the [QA agent](../qa-agent/) and the [human-in-the-loop delivery](../human-in-the-loop/). The delivery runs on my "resolve ticket" skill, which reads Figma and builds components and sections in Tailwind step by step.

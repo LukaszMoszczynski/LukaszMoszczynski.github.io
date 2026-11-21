@@ -5,7 +5,7 @@ summary: Szybka statyczna strona w Astro dla firmy zarządzającej nieruchomośc
 meta: Astro · strona statyczna
 tags: [Astro, TypeScript, SEO, Dostępność, Playwright]
 order: 7
-visual: omelanski
+visual: company-website
 links:
   - label: omelanski.pl
     href: https://omelanski.pl

@@ -5,7 +5,7 @@ summary: Motyw blokowy WordPressa zbudowany z Figmy dla firmy szkoleniowej, ze s
 meta: WordPress · sklep · płatności
 tags: [WordPress, WooCommerce, PHP, Przelewy24, GSAP, Swup, Playwright]
 order: 5
-visual: dcc
+visual: wordpress-shop
 links:
   - label: Wersja testowa
     href: http://test.lotusblanc.eu/

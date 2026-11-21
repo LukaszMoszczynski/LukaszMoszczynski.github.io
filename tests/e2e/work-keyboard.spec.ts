@@ -108,6 +108,6 @@ test('Enter on a focused card opens its case study', async ({ page }) => {
   await page.keyboard.press('Shift+Tab');
   await expectWholeAndRinged(page, COUNT - 2);
   await page.keyboard.press('Enter');
-  await expect(page).toHaveURL(/\/portfolio-preview\/work\/wp-starter\/$/);
+  await expect(page).toHaveURL(/\/portfolio-preview\/work\/figma-to-wordpress\/$/);
 });
 

@@ -50,13 +50,13 @@ test.describe('language switch keeps the reader’s place', () => {
   });
 
   test('case study: the same prose section is at the top even though heading ids are translated', async ({ page }) => {
-    await page.goto('work/dcc/');
+    await page.goto('work/wordpress-shop/');
     const headings = '.case-prose h2[id]';
     const heading = page.locator(headings).nth(1);
     await heading.evaluate((element) => element.scrollIntoView({ behavior: 'instant', block: 'start' }));
     const englishTop = await heading.evaluate((element) => element.getBoundingClientRect().top);
     await switchLanguage(page);
-    await expect(page).toHaveURL(/\/portfolio-preview\/pl\/work\/dcc\/$/);
+    await expect(page).toHaveURL(/\/portfolio-preview\/pl\/work\/wordpress-shop\/$/);
     await settled(page);
     await expect.poll(() => page.locator(headings).nth(1).evaluate((element, top) => Math.abs(element.getBoundingClientRect().top - top), englishTop)).toBeLessThan(40);
     await expect(page).not.toHaveURL(/#/);

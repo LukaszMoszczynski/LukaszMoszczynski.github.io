@@ -5,7 +5,7 @@ summary: A fast static Astro site for a property management company, with severa
 meta: Astro · static site
 tags: [Astro, TypeScript, SEO, Accessibility, Playwright]
 order: 7
-visual: omelanski
+visual: company-website
 links:
   - label: omelanski.pl
     href: https://omelanski.pl

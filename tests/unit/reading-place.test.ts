@@ -35,8 +35,8 @@ describe('measurePlace and resolvePlace', () => {
   });
 
   it('matches a translated anchor id by position when both pages have the same number of anchors', () => {
-    const place = measurePlace([{ id: 'problem', top: 1000 }, { id: 'what-i-built', top: 2000 }], 2500, 3000, 900, '/pl/work/dcc/', 0);
-    expect(resolvePlace(place, [{ id: 'problem', top: 1000 }, { id: 'co-zbudowalem', top: 2200 }], 3400, 900, '/pl/work/dcc/', 0)).toBe(2800);
+    const place = measurePlace([{ id: 'problem', top: 1000 }, { id: 'what-i-built', top: 2000 }], 2500, 3000, 900, '/pl/work/wordpress-shop/', 0);
+    expect(resolvePlace(place, [{ id: 'problem', top: 1000 }, { id: 'co-zbudowalem', top: 2200 }], 3400, 900, '/pl/work/wordpress-shop/', 0)).toBe(2800);
   });
 
   it('falls back to the fraction of the page when the anchor cannot be matched', () => {

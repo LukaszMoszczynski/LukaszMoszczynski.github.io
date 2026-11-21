@@ -2,7 +2,7 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
-const VISUALS = ['dcc', 'design-system', 'wp-starter', 'omelanski', 'qa-agent', 'delivery-loop', 'home-platform'] as const;
+const VISUALS = ['wordpress-shop', 'design-system', 'figma-to-wordpress', 'company-website', 'qa-agent', 'human-in-the-loop', 'multi-brand-sites'] as const;
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),

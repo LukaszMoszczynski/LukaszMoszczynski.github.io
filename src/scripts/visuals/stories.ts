@@ -1,19 +1,19 @@
-import { dccStory } from './dcc';
-import { deliveryLoopStory } from './delivery-loop';
+import { dccStory } from './wordpress-shop';
+import { deliveryLoopStory } from './human-in-the-loop';
 import { designSystemStory } from './design-system';
-import { homePlatformStory } from './home-platform';
-import { omelanskiStory } from './omelanski';
+import { homePlatformStory } from './multi-brand-sites';
+import { omelanskiStory } from './company-website';
 import { qaAgentStory } from './qa-agent';
 import type { StoryFactory } from './story';
-import { wpStarterStory } from './wp-starter';
+import { wpStarterStory } from './figma-to-wordpress';
 
 /** Story per `data-visual` key. A visual without an entry stays on its static drawing. */
 export const STORIES: Record<string, StoryFactory> = {
   'qa-agent': qaAgentStory,
-  'delivery-loop': deliveryLoopStory,
+  'human-in-the-loop': deliveryLoopStory,
   'design-system': designSystemStory,
-  'home-platform': homePlatformStory,
-  dcc: dccStory,
-  'wp-starter': wpStarterStory,
-  omelanski: omelanskiStory,
+  'multi-brand-sites': homePlatformStory,
+  'wordpress-shop': dccStory,
+  'figma-to-wordpress': wpStarterStory,
+  'company-website': omelanskiStory,
 };

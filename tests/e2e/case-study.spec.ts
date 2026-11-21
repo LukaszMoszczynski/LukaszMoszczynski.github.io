@@ -4,10 +4,10 @@ import { showSwitches, useTheme } from './helpers';
 /** Waits until the ClientRouter has finished its view transition. */
 const settled = (page: Page) => expect(page.locator('html')).not.toHaveAttribute('data-astro-transition', /.*/);
 
-const SLUGS = ['qa-agent', 'delivery-loop', 'design-system', 'home-platform', 'dcc', 'wp-starter', 'omelanski'];
-const HOME_PL = ['qa-agent', 'delivery-loop'];
+const SLUGS = ['qa-agent', 'human-in-the-loop', 'design-system', 'multi-brand-sites', 'wordpress-shop', 'figma-to-wordpress', 'company-website'];
+const HOME_PL = ['qa-agent', 'human-in-the-loop'];
 /** Team work, told in the team's voice. */
-const TEAM = ['home-platform'];
+const TEAM = ['multi-brand-sites'];
 const SECTIONS = {
   en: { prefix: '', headings: ['Problem', 'What I built', 'Highlights'], teamHeadings: ['Problem', 'What we built', 'Highlights'], next: 'Next project', note: 'Built at home.pl', credit: 'Built with the home.pl frontend team.' },
   pl: { prefix: 'pl/', headings: ['Problem', 'Co zbudowałem', 'Najważniejsze'], teamHeadings: ['Problem', 'Co zbudowaliśmy', 'Najważniejsze'], next: 'Następny projekt', note: 'Zbudowane w home.pl', credit: 'Zbudowane z zespołem frontendu home.pl.' },
@@ -34,10 +34,10 @@ test.describe('case study pages', () => {
   }
 
   test('language switch keeps the case study', async ({ page }) => {
-    await page.goto('work/dcc/');
+    await page.goto('work/wordpress-shop/');
     await showSwitches(page);
     await page.getByRole('link', { name: 'Zmień język na polski' }).click();
-    await expect(page).toHaveURL(/\/portfolio-preview\/pl\/work\/dcc\/$/);
+    await expect(page).toHaveURL(/\/portfolio-preview\/pl\/work\/wordpress-shop\/$/);
     await expect(page.locator('html')).toHaveAttribute('lang', 'pl');
     await expect(page.locator('.case-prose h2').nth(1)).toHaveText('Co zbudowałem');
   });
@@ -55,7 +55,7 @@ test.describe('case study pages', () => {
 
   test('the home.pl platform credits the team, has no description-only note and no images', async ({ page }) => {
     for (const copy of Object.values(SECTIONS)) {
-      await page.goto(`${copy.prefix}work/home-platform/`);
+      await page.goto(`${copy.prefix}work/multi-brand-sites/`);
       await expect(page.locator('.case-note')).toHaveText(copy.credit);
       await expect(page.locator('.case-client')).toHaveText('home.pl');
       await expect(page.locator('img')).toHaveCount(0);
@@ -64,13 +64,13 @@ test.describe('case study pages', () => {
 
   test('DCC, Omelański and the home.pl platform link to their live versions in both languages', async ({ page }) => {
     const expected = [
-      { path: 'work/dcc/', name: 'Test version', href: 'http://test.lotusblanc.eu/' },
-      { path: 'pl/work/dcc/', name: 'Wersja testowa', href: 'http://test.lotusblanc.eu/' },
-      { path: 'work/omelanski/', name: 'GitHub Pages preview', href: 'https://lukaszmoszczynski.github.io/omelanski-site/' },
-      { path: 'pl/work/omelanski/', name: 'Podgląd na GitHub Pages', href: 'https://lukaszmoszczynski.github.io/omelanski-site/' },
-      { path: 'work/home-platform/', name: 'home.pl', href: 'https://home.pl/' },
-      { path: 'work/home-platform/', name: 'az.pl', href: 'https://az.pl/' },
-      { path: 'pl/work/home-platform/', name: 'az.pl', href: 'https://az.pl/' },
+      { path: 'work/wordpress-shop/', name: 'Test version', href: 'http://test.lotusblanc.eu/' },
+      { path: 'pl/work/wordpress-shop/', name: 'Wersja testowa', href: 'http://test.lotusblanc.eu/' },
+      { path: 'work/company-website/', name: 'GitHub Pages preview', href: 'https://lukaszmoszczynski.github.io/omelanski-site/' },
+      { path: 'pl/work/company-website/', name: 'Podgląd na GitHub Pages', href: 'https://lukaszmoszczynski.github.io/omelanski-site/' },
+      { path: 'work/multi-brand-sites/', name: 'home.pl', href: 'https://home.pl/' },
+      { path: 'work/multi-brand-sites/', name: 'az.pl', href: 'https://az.pl/' },
+      { path: 'pl/work/multi-brand-sites/', name: 'az.pl', href: 'https://az.pl/' },
     ];
     for (const { path, name, href } of expected) {
       await page.goto(path);
@@ -81,7 +81,7 @@ test.describe('case study pages', () => {
   });
 
   test('other projects carry no home.pl note', async ({ page }) => {
-    await page.goto('work/dcc/');
+    await page.goto('work/wordpress-shop/');
     await expect(page.locator('.case-note')).toHaveCount(0);
   });
 
@@ -98,20 +98,20 @@ test.describe('case study pages', () => {
 
   test('the delivery loop hero has no visual; the interactive board carries the shared transition name', async ({ page }) => {
     await page.goto('./');
-    const card = page.locator('#work .project-card', { has: page.locator('a.project-link[href$="/work/delivery-loop/"]') });
-    expect(await card.locator('.project-visual').evaluate((element) => getComputedStyle(element).viewTransitionName)).toBe('visual-delivery-loop');
+    const card = page.locator('#work .project-card', { has: page.locator('a.project-link[href$="/work/human-in-the-loop/"]') });
+    expect(await card.locator('.project-visual').evaluate((element) => getComputedStyle(element).viewTransitionName)).toBe('visual-human-in-the-loop');
     await card.locator('a.project-link').click();
-    await expect(page).toHaveURL(/\/work\/delivery-loop\/$/);
+    await expect(page).toHaveURL(/\/work\/human-in-the-loop\/$/);
     await expect(page.locator('.case-hero .project-visual')).toHaveCount(0);
     await expect(page.locator('.factory-loop .factory-board')).toBeVisible();
-    expect(await page.locator('.factory-loop .factory-board').evaluate((element) => getComputedStyle(element).viewTransitionName)).toBe('visual-delivery-loop');
+    expect(await page.locator('.factory-loop .factory-board').evaluate((element) => getComputedStyle(element).viewTransitionName)).toBe('visual-human-in-the-loop');
   });
 });
 
 test.describe('delivery loop', () => {
   test('Run walks the ticket round the loop to a clean review', async ({ page }) => {
     test.setTimeout(60_000);
-    await page.goto('work/delivery-loop/');
+    await page.goto('work/human-in-the-loop/');
     const factory = page.locator('.factory-loop');
     const run = factory.getByRole('button', { name: 'Run' });
     const status = factory.locator('.factory-status');
@@ -130,7 +130,7 @@ test.describe('delivery loop', () => {
     test(`the run ends with the ticket in the middle of the hub, the "human" label clear below it (${scheme})`, async ({ page }) => {
       test.setTimeout(60_000);
       await useTheme(page, scheme);
-      await page.goto('work/delivery-loop/');
+      await page.goto('work/human-in-the-loop/');
       const factory = page.locator('.factory-loop');
       await factory.getByRole('button', { name: 'Run' }).click();
       await expect(factory.locator('.factory-status')).toHaveText('review clean · ready for a human', { timeout: 25_000 });
@@ -154,7 +154,7 @@ test.describe('delivery loop', () => {
 
   test('Enter on the Jira label starts a run (PL)', async ({ page }) => {
     test.setTimeout(60_000);
-    await page.goto('pl/work/delivery-loop/');
+    await page.goto('pl/work/human-in-the-loop/');
     const factory = page.locator('.factory-loop');
     const label = factory.getByRole('button', { name: 'etykieta Jira' });
     const box = (await label.boundingBox())!;
@@ -171,7 +171,7 @@ test.describe('delivery loop', () => {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
     page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
-    await page.goto('work/delivery-loop/');
+    await page.goto('work/human-in-the-loop/');
     await page.locator('.factory-loop').getByRole('button', { name: 'Run' }).click();
     await expect(page.locator('.factory-status')).toHaveText(/Agents in a Docker container/);
     await page.getByRole('navigation', { name: 'Next project' }).getByRole('link').click();
@@ -184,7 +184,7 @@ test.describe('delivery loop', () => {
 test.describe('delivery loop, reduced motion', () => {
   test.use({ reducedMotion: 'reduce' });
   test('is a static labelled diagram listing every stage', async ({ page }) => {
-    await page.goto('work/delivery-loop/');
+    await page.goto('work/human-in-the-loop/');
     const factory = page.locator('.factory-loop');
     await expect(factory.locator('.factory-stages li')).toHaveText([
       'Jira label · the task goes to the agent pipeline',
@@ -210,7 +210,7 @@ test('home ↔ case study navigation keeps the token-build pin on the design-sys
   page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
   await page.goto('./');
   await expect(page.locator('.pin-spacer')).toHaveCount(0);
-  for (const slug of ['design-system', 'dcc', 'design-system', 'omelanski', 'design-system']) {
+  for (const slug of ['design-system', 'wordpress-shop', 'design-system', 'company-website', 'design-system']) {
     // Back from a case, the page may be restored near the end of the sticky stack, where later cards cover earlier ones.
     await page.evaluate(() => document.querySelector('#work')!.scrollIntoView({ block: 'start', behavior: 'instant' }));
     await page.locator(`#work a.project-link[href$="/work/${slug}/"]`).click();

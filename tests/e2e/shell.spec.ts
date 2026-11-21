@@ -148,13 +148,13 @@ test('language switch goes to /pl/ and sets html lang', async ({ page }) => {
 });
 
 test('language switch keeps the page: a case study opens in the other language', async ({ page }) => {
-  await page.goto('work/dcc/');
+  await page.goto('work/wordpress-shop/');
   await showSwitches(page);
   await page.getByRole('link', { name: 'Zmień język na polski' }).click();
-  await expect(page).toHaveURL(/\/portfolio-preview\/pl\/work\/dcc\/$/);
+  await expect(page).toHaveURL(/\/portfolio-preview\/pl\/work\/wordpress-shop\/$/);
   await showSwitches(page);
   await page.getByRole('link', { name: 'Switch language to English' }).click();
-  await expect(page).toHaveURL(/\/portfolio-preview\/work\/dcc\/$/);
+  await expect(page).toHaveURL(/\/portfolio-preview\/work\/wordpress-shop\/$/);
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 });
 
@@ -531,7 +531,7 @@ for (const theme of ['dark', 'light'] as const) {
     test(`the next-project hover line follows each line of text, not the container (${theme}, ${width}px)`, async ({ page }) => {
       await useTheme(page, theme);
       await page.setViewportSize({ width, height: 800 });
-      await page.goto('work/delivery-loop/');
+      await page.goto('work/human-in-the-loop/');
       const link = page.locator('.case-next a');
       await link.scrollIntoViewIfNeeded();
       await link.hover();

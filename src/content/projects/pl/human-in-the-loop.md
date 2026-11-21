@@ -6,7 +6,7 @@ summary: Etykieta w Jirze przekazuje zadanie agentom w kontenerze Dockera. Rozwi
 meta: AI · agenci · proces
 tags: [Claude, Skille, Agenci, Docker, GitLab, Jira, Code review]
 order: 2
-visual: delivery-loop
+visual: human-in-the-loop
 links: []
 origin: home.pl
 ---

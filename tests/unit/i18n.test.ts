@@ -8,17 +8,17 @@ describe('i18n utils', () => {
   });
 
   it('detects language from the URL', () => {
-    expect(getLang(new URL('https://x.dev/portfolio-preview/pl/work/dcc/'))).toBe('pl');
-    expect(getLang(new URL('https://x.dev/portfolio-preview/work/dcc/'))).toBe('en');
+    expect(getLang(new URL('https://x.dev/portfolio-preview/pl/work/wordpress-shop/'))).toBe('pl');
+    expect(getLang(new URL('https://x.dev/portfolio-preview/work/wordpress-shop/'))).toBe('en');
   });
 
   it('localizes paths with base and language prefix', () => {
     expect(localizePath('/', 'en')).toBe('/portfolio-preview/');
-    expect(localizePath('/work/dcc/', 'pl')).toBe('/portfolio-preview/pl/work/dcc/');
+    expect(localizePath('/work/wordpress-shop/', 'pl')).toBe('/portfolio-preview/pl/work/wordpress-shop/');
   });
 
   it('switches language keeping the page', () => {
-    expect(switchLangPath(new URL('https://x.dev/portfolio-preview/work/dcc/'), 'pl')).toBe('/portfolio-preview/pl/work/dcc/');
+    expect(switchLangPath(new URL('https://x.dev/portfolio-preview/work/wordpress-shop/'), 'pl')).toBe('/portfolio-preview/pl/work/wordpress-shop/');
     expect(switchLangPath(new URL('https://x.dev/portfolio-preview/pl/'), 'en')).toBe('/portfolio-preview/');
   });
 

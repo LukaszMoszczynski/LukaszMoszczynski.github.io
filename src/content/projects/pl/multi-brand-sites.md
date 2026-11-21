@@ -6,7 +6,7 @@ summary: "Strony sprzedażowe 8 marek grupy hostingowej: ponad 700 landing pages
 meta: Gatsby · CMS · wiele marek
 tags: [Gatsby, GraphQL, Squidex, React, Redux, styled-components, Tailwind, Storybook, Weblate, Playwright, Vitest, Biome, Multi-brand]
 order: 4
-visual: home-platform
+visual: multi-brand-sites
 team: true
 links:
   - label: home.pl
@@ -32,4 +32,4 @@ Zespół frontendu home.pl buduje strony marketingowe i sprzedażowe wielomarkow
 - Strony składają użytkownicy, nie programiści: wybierają w CMS-ie gotowe sekcje, a Gatsby buduje stronę dla każdej marki.
 - Ścieżki sprzedaży są częścią tego samego systemu: upselle, koszyki i konfiguratory produktów na drodze od landing page do zamówienia.
 - Wdrażałem nowych pracowników w projekt.
-- Na tym systemie stoi moja praca z AI: [agent QA](../qa-agent/) i [automatyczny proces z człowiekiem w pętli](../delivery-loop/). Proces działa na moim skillu „resolve ticket”, który krok po kroku czyta Figmę i tworzy komponenty i sekcje w Tailwindzie.
+- Na tym systemie stoi moja praca z AI: [agent QA](../qa-agent/) i [automatyczny proces z człowiekiem w pętli](../human-in-the-loop/). Proces działa na moim skillu „resolve ticket”, który krok po kroku czyta Figmę i tworzy komponenty i sekcje w Tailwindzie.

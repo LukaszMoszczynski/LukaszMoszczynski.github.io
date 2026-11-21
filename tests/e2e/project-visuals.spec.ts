@@ -2,10 +2,10 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { useTheme } from './helpers';
 
 /** Projects whose visual tells an animated story (all six once every story is in). */
-const STORY_SLUGS: string[] = ['qa-agent', 'delivery-loop', 'design-system', 'home-platform', 'dcc', 'wp-starter', 'omelanski'];
+const STORY_SLUGS: string[] = ['qa-agent', 'human-in-the-loop', 'design-system', 'multi-brand-sites', 'wordpress-shop', 'figma-to-wordpress', 'company-website'];
 
 /** The delivery loop case page has no hero visual: its interactive board takes the place (and the transition name). */
-const CASE_SLUGS = STORY_SLUGS.filter((slug) => slug !== 'delivery-loop');
+const CASE_SLUGS = STORY_SLUGS.filter((slug) => slug !== 'human-in-the-loop');
 
 const settled = (page: Page) => expect(page.locator('html')).not.toHaveAttribute('data-astro-transition', /.*/);
 
@@ -93,7 +93,7 @@ test.describe('project visuals', () => {
     for (const index of [0, 2, 4]) {
       await showHomeCard(page, index);
       await expect.poll(() => visuals.evaluateAll((elements) => elements.map((element) => element.getAttribute('data-visual-state') === 'playing'))).toEqual(
-        [0, 1, 2, 3, 4, 5, 6].map((position) => position === index && STORY_SLUGS.includes(['qa-agent', 'delivery-loop', 'design-system', 'home-platform', 'dcc', 'wp-starter', 'omelanski'][position])),
+        [0, 1, 2, 3, 4, 5, 6].map((position) => position === index && STORY_SLUGS.includes(['qa-agent', 'human-in-the-loop', 'design-system', 'multi-brand-sites', 'wordpress-shop', 'figma-to-wordpress', 'company-website'][position])),
       );
     }
   });
@@ -216,9 +216,9 @@ test.describe('delivery loop: the card is a compact copy of the case board', () 
     test(`same stations, track, hub, ticket and colours as the board (${scheme})`, async ({ page }) => {
       await useTheme(page, scheme);
       await page.goto('work/');
-      const card = indexVisual(page, 'delivery-loop');
+      const card = indexVisual(page, 'human-in-the-loop');
       const cardLook = await look(card);
-      await page.goto('work/delivery-loop/');
+      await page.goto('work/human-in-the-loop/');
       const boardLook = await look(page.locator('.factory-board'));
       expect(cardLook).toEqual(boardLook);
       expect(cardLook.nodes).toBe(6);
@@ -228,7 +228,7 @@ test.describe('delivery loop: the card is a compact copy of the case board', () 
   test('at rest only the hub is lit, the ticket sits in its middle, and every light sits exactly on its station', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('work/');
-    const card = indexVisual(page, 'delivery-loop');
+    const card = indexVisual(page, 'human-in-the-loop');
     await card.scrollIntoViewIfNeeded();
     const rest = await card.evaluate((root) => {
       const centre = (element: Element) => {
@@ -256,7 +256,7 @@ test.describe('delivery loop: the card is a compact copy of the case board', () 
   test('while it plays, one station at a time lights up, exactly over the station (no stray rings), as on the board', async ({ page }) => {
     test.setTimeout(30_000);
     await page.goto('work/');
-    const card = indexVisual(page, 'delivery-loop');
+    const card = indexVisual(page, 'human-in-the-loop');
     await card.scrollIntoViewIfNeeded();
     await expect(card).toHaveAttribute('data-visual-state', 'playing');
     const seen = new Set<string>();
@@ -288,7 +288,7 @@ test.describe('delivery loop: the card is a compact copy of the case board', () 
 test.describe('home.pl platform: sections build a page that re-skins per brand', () => {
   test('the slots come from the CMS column, every brand accent takes its turn, and basket and configurator fan out', async ({ page }) => {
     test.setTimeout(30_000);
-    await page.goto('work/home-platform/');
+    await page.goto('work/multi-brand-sites/');
     const hero = page.locator('.case-hero .project-visual');
     await hero.scrollIntoViewIfNeeded();
     await expect(hero).toHaveAttribute('data-visual-state', 'playing');

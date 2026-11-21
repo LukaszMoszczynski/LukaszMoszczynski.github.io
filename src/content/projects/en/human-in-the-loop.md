@@ -6,7 +6,7 @@ summary: A Jira label hands a task to agents in a Docker container. They solve i
 meta: AI · agents · workflow
 tags: [Claude, Skills, Agents, Docker, GitLab, Jira, Code review]
 order: 2
-visual: delivery-loop
+visual: human-in-the-loop
 links: []
 origin: home.pl
 ---

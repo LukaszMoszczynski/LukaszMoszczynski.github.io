@@ -5,7 +5,7 @@ summary: A WordPress block theme built from Figma for a training company, with a
 meta: WordPress · shop · payments
 tags: [WordPress, WooCommerce, PHP, Przelewy24, GSAP, Swup, Playwright]
 order: 5
-visual: dcc
+visual: wordpress-shop
 links:
   - label: Test version
     href: http://test.lotusblanc.eu/

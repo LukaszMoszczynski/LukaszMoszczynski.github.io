@@ -5,7 +5,7 @@ summary: Narzędzie, które czyta plik strony w Figmie zbudowany z mojej bibliot
 meta: WordPress · Figma · automatyzacja
 tags: [WordPress, Figma, Claude Code, Docker, Node.js, Playwright]
 order: 6
-visual: wp-starter
+visual: figma-to-wordpress
 links:
   - label: Repozytorium na GitHubie
     href: https://github.com/LukaszMoszczynski/wp-starter

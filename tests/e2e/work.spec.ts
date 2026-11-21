@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const SLUGS = ['qa-agent', 'delivery-loop', 'design-system', 'home-platform', 'dcc', 'wp-starter', 'omelanski'];
+const SLUGS = ['qa-agent', 'human-in-the-loop', 'design-system', 'multi-brand-sites', 'wordpress-shop', 'figma-to-wordpress', 'company-website'];
 
 test.describe('selected work', () => {
   for (const [path, prefix] of [['./', 'work/'], ['pl/', 'pl/work/']]) {
@@ -37,11 +37,11 @@ test.describe('selected work', () => {
   }
 
   test('case pages, their titles and next links name the delivery; the menu keeps short names', async ({ page }) => {
-    await page.goto('work/omelanski/');
+    await page.goto('work/company-website/');
     await expect(page.locator('h1')).toHaveText('Fast static company website');
     await expect(page).toHaveTitle(/^Fast static company website · /);
     await expect(page.locator('.case-client')).toHaveCount(0);
-    await page.goto('pl/work/wp-starter/');
+    await page.goto('pl/work/figma-to-wordpress/');
     await expect(page.locator('.case-next-name')).toHaveText('Szybka statyczna strona firmowa');
     await expect(page.locator('.case-client')).toHaveCount(0);
     await expect(page.locator('.menu-projects a')).toHaveText(['Agent QA', 'Człowiek w pętli', 'Design system', 'Strony wielu marek', 'Sklep WordPress', 'Figma → WordPress', 'Strona firmowa']);

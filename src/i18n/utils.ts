@@ -7,7 +7,7 @@ function base(): string {
   return value.endsWith('/') ? value : `${value}/`;
 }
 
-/** Path below the site base, always starting with "/" (e.g. "/pl/work/dcc/"). */
+/** Path below the site base, always starting with "/" (e.g. "/pl/work/wordpress-shop/"). */
 function pathBelowBase(url: URL): string {
   const prefix = base();
   const path = url.pathname;
@@ -24,7 +24,7 @@ export function t(lang: Lang, key: UiKey): string {
   return ui[lang][key];
 }
 
-/** `path` is a site path without base and without "/pl", e.g. "/work/dcc/". */
+/** `path` is a site path without base and without "/pl", e.g. "/work/wordpress-shop/". */
 export function localizePath(path: string, lang: Lang): string {
   const clean = path.replace(/^\/+/, '');
   return `${base()}${lang === 'pl' ? 'pl/' : ''}${clean}`;

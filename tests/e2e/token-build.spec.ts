@@ -35,7 +35,7 @@ test.describe('token build', () => {
       return { afterHero: follows('.case-hero'), beforeProse: !follows('.case-prose') };
     });
     expect(order).toEqual({ afterHero: true, beforeProse: true });
-    for (const path of ['./', 'pl/', 'work/dcc/']) {
+    for (const path of ['./', 'pl/', 'work/wordpress-shop/']) {
       await page.goto(path);
       await expect(page.locator('.build')).toHaveCount(0);
       await expect(page.locator('.pin-spacer')).toHaveCount(0);

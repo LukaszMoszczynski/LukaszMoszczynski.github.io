@@ -10,7 +10,7 @@ interface Props { lang: Lang; project: ProjectEntry; next: ProjectEntry }
 const { lang, project, next } = Astro.props;
 const { title, summary, meta, tags, links, origin, team, client, visual } = project.data;
 /** The delivery loop has no hero visual: its interactive board below the hero is the visual (and carries the transition name). */
-const hasLoop = visual === 'delivery-loop';
+const hasLoop = visual === 'human-in-the-loop';
 const transitionName = `visual-${project.slug}`;
 ---
 <BaseLayout lang={lang} title={`${title} · ${t(lang, 'meta.caseSuffix')} · Łukasz Moszczyński`} description={summary} path={`/work/${project.slug}/`}>

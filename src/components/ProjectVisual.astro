@@ -24,7 +24,7 @@ const brandAccents = ['#eb6126', '#2f6fe4', '#16a37f', '#c2367a'];
 ---
 <div class:list={['project-visual', { 'is-compact': compact }]} data-visual={visual} aria-hidden="true" transition:name={transitionName}>
   <div class={`project-screen v-${visual}`}>
-    {visual === 'dcc' && (
+    {visual === 'wordpress-shop' && (
       <>
         <span class="shape soft" style="inset: 7% 7% 86% 7%"></span>
         <span class="shape" style="inset: 20% 46% 66% 7%"></span>
@@ -68,10 +68,10 @@ const brandAccents = ['#eb6126', '#2f6fe4', '#16a37f', '#c2367a'];
         )}
       </>
     )}
-    {visual === 'delivery-loop' && (
+    {visual === 'human-in-the-loop' && (
       <div class="loop-board"><LoopDiagram ticketAt="hub" lit compact /></div>
     )}
-    {visual === 'home-platform' && (
+    {visual === 'multi-brand-sites' && (
       <>
         <span class="hp-cms" style="inset: 12% 74% 12% 6%"></span>
         {cmsSections.map((section) => <span class="hp-section" style={inset(section)}></span>)}
@@ -87,7 +87,7 @@ const brandAccents = ['#eb6126', '#2f6fe4', '#16a37f', '#c2367a'];
         {!compact && <span class="label" style="left: 6%; top: 3%">CMS</span>}
       </>
     )}
-    {visual === 'wp-starter' && (
+    {visual === 'figma-to-wordpress' && (
       <>
         <span class="frame" style="inset: 12% 58% 12% 7%"><i class="wp-source" style="inset: 6% 8% 70% 8%"></i><i class="wp-source accent" style="inset: 36% 8% 40% 8%"></i><i class="wp-source" style="inset: 66% 8% 6% 8%"></i></span>
         <svg class="arrow" viewBox="0 0 400 300" preserveAspectRatio="none"><path d="M176 150 H222" /><path d="M212 140 L224 150 L212 160" /></svg>
@@ -100,7 +100,7 @@ const brandAccents = ['#eb6126', '#2f6fe4', '#16a37f', '#c2367a'];
         )}
       </>
     )}
-    {visual === 'omelanski' && (
+    {visual === 'company-website' && (
       <>
         <svg class="lines" viewBox="0 0 400 300" preserveAspectRatio="none">
           <path d="M150 66 C200 66 200 150 244 150" />
@@ -126,15 +126,15 @@ const brandAccents = ['#eb6126', '#2f6fe4', '#16a37f', '#c2367a'];
     transform-style: preserve-3d; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .08);
     --white: rgb(255 255 255 / .92); --night: #1a1230; --brand: #372662; --orange: #eb6126; --purple: #7b5bd6;
   }
-  .v-dcc { background: linear-gradient(135deg, #372662, #5b3fa8) }
+  .v-wordpress-shop { background: linear-gradient(135deg, #372662, #5b3fa8) }
   .v-design-system { background: linear-gradient(135deg, #eb6126, #c2410c) }
   .v-qa-agent { background: linear-gradient(135deg, #1a1230, #2a1d4d) }
   /* Delivery loop: a compact copy of the board on the case page (LoopDiagram.astro), in the board's own colours. */
-  .v-delivery-loop { background: var(--surface); box-shadow: inset 0 0 0 1px var(--line) }
+  .v-human-in-the-loop { background: var(--surface); box-shadow: inset 0 0 0 1px var(--line) }
   .loop-board { position: absolute; inset: 8% }
-  .v-home-platform { background: linear-gradient(135deg, #2a1d4d, #5b3fa8) }
-  .v-wp-starter { background: linear-gradient(135deg, #1a1230, #372662) }
-  .v-omelanski { background: linear-gradient(135deg, #5b3fa8, #eb6126) }
+  .v-multi-brand-sites { background: linear-gradient(135deg, #2a1d4d, #5b3fa8) }
+  .v-figma-to-wordpress { background: linear-gradient(135deg, #1a1230, #372662) }
+  .v-company-website { background: linear-gradient(135deg, #5b3fa8, #eb6126) }
 
   .shape, .shot, .frame, .check, .ticket { position: absolute; border-radius: 10px; background: var(--white) }
   .shape i, .shot i, .shot em, .frame i { position: absolute; border-radius: 4px; background: rgb(42 29 77 / .14) }

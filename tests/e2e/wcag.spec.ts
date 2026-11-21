@@ -95,7 +95,7 @@ test.describe('keyboard', () => {
     expect(inMain).toBe(true);
   });
 
-  for (const path of ['./', 'work/', 'work/design-system/', 'work/delivery-loop/']) {
+  for (const path of ['./', 'work/', 'work/design-system/', 'work/human-in-the-loop/']) {
     test(`every Tab stop on ${path} has a visible ring and is not covered (2.4.7, 2.4.11)`, async ({ page }) => {
       test.setTimeout(120_000);
       await ready(page, path);
@@ -179,7 +179,7 @@ test.describe('keyboard', () => {
     await steps.nth(2).focus();
     await page.keyboard.press('Enter');
     await expect(steps.nth(2)).toHaveClass(/\bon\b/);
-    await ready(page, 'work/delivery-loop/');
+    await ready(page, 'work/human-in-the-loop/');
     const run = page.locator('.factory-loop').getByRole('button', { name: 'Run' });
     await run.focus();
     await page.keyboard.press('Enter');
@@ -268,7 +268,7 @@ test.describe('pause animations (2.2.2)', () => {
 test.describe('reduced motion (2.3.3)', () => {
   test('nothing pins, scrubs or is split, and the content is complete', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    for (const path of ['./', 'work/design-system/', 'work/delivery-loop/']) {
+    for (const path of ['./', 'work/design-system/', 'work/human-in-the-loop/']) {
       await ready(page, path);
       await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight / 2, behavior: 'instant' }));
       await page.waitForTimeout(300);
@@ -314,7 +314,7 @@ test.describe('reflow, zoom and text spacing', () => {
 
   test('WCAG text spacing does not clip text or controls (1.4.12)', async ({ page }) => {
     test.setTimeout(90_000);
-    for (const path of ['./', 'pl/', 'work/', 'work/delivery-loop/', 'work/design-system/']) {
+    for (const path of ['./', 'pl/', 'work/', 'work/human-in-the-loop/', 'work/design-system/']) {
       await ready(page, path);
       await page.addStyleTag({
         content: '* { line-height: 1.5 !important; letter-spacing: .12em !important; word-spacing: .16em !important } p { margin-bottom: 2em !important }',

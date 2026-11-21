@@ -66,7 +66,7 @@ for (const scheme of ['light', 'dark'] as const) {
 test('axe: reduced motion pages have no violations either', async ({ page }) => {
   test.setTimeout(120_000);
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  for (const path of ['./', 'pl/', 'work/design-system/', 'work/delivery-loop/']) {
+  for (const path of ['./', 'pl/', 'work/design-system/', 'work/human-in-the-loop/']) {
     await page.goto(path);
     await expect(page.locator('html')).not.toHaveClass(/init-pending/);
     expect(await audit(page), path).toEqual([]);
